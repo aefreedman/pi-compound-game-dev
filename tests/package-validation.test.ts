@@ -13,7 +13,10 @@ const referenceReaderText = readFileSync(new URL("../extensions/read-reference.t
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
+assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
 assert(referenceReaderText.includes("cg_read_reference"), "Expected package reference reader tool registration.");
+assert(referenceReaderText.includes("renderResult"), "Expected package reference reader to provide expandable result rendering.");
+assert(referenceReaderText.includes("app.tools.expand"), "Expected package reference reader rendering to include the standard expand key hint.");
 assert(pkg.pi?.prompts?.includes("./prompts"), "Expected prompt directory registration.");
 assert(pkg.pi?.skills?.includes("./skills"), "Expected skill directory registration.");
 
@@ -37,8 +40,9 @@ const topLevelPrompts = promptEntries.filter((entry) => entry.isFile() && entry.
 const promptTexts = topLevelPrompts.map((prompt) => readFileSync(new URL(`../prompts/${prompt}`, import.meta.url), "utf8"));
 for (const promptText of promptTexts) {
   assert(!promptText.includes("../references/"), "Prompt package references must use cg_read_reference package-relative paths, not ../references paths.");
-  if (promptText.includes("references/")) {
-    assert(promptText.includes("cg_read_reference"), "Prompts that reference package references must instruct use of cg_read_reference.");
+  assert(!promptText.includes("../prompts/"), "Prompt package prompt references must use cg_read_reference package-relative paths, not ../prompts paths.");
+  if (promptText.includes("references/") || promptText.includes("prompts/")) {
+    assert(promptText.includes("cg_read_reference"), "Prompts that reference package files must instruct use of cg_read_reference.");
   }
 }
 
@@ -49,10 +53,11 @@ const packageMarkdownFiles = (function walk(url: URL): URL[] {
     return entry.isFile() && entry.name.endsWith(".md") ? [child] : [];
   });
 })(new URL("../", import.meta.url));
-const packageReferencePattern = /(?:references|skills)\/[A-Za-z0-9_./-]+\.(?:md|markdown|txt|json|ya?ml|ts|js|sh)/g;
+const packageReferencePattern = /(?:prompts|references|skills)\/[A-Za-z0-9_./-]+\.(?:md|markdown|txt|json|ya?ml|ts|js|sh)/g;
 for (const markdownFile of packageMarkdownFiles) {
   const markdownText = readFileSync(markdownFile, "utf8");
   assert(!markdownText.includes("../references/"), `Package docs should not refer to ../references paths: ${markdownFile.pathname}`);
+  assert(!markdownText.includes("../prompts/"), `Package docs should not refer to ../prompts paths: ${markdownFile.pathname}`);
   for (const [referencePath] of markdownText.matchAll(packageReferencePattern)) {
     assert(existsSync(new URL(`../${referencePath}`, import.meta.url)), `Expected package reference to exist: ${referencePath}`);
   }

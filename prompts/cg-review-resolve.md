@@ -9,7 +9,15 @@ description: Run review, auto-triage new todos, and resolve them in parallel on 
 
 <review_target>$ARGUMENTS</review_target>
 
-Read and follow these local workflow definitions in strict sequence:
+## Package File Loading
+
+CRITICAL: Use `cg_read_reference` for Compound Game Dev package prompt and reference files.
+
+- Pass package-relative paths such as `prompts/cg-review.md` or `references/_shared/vcs-detection.md`.
+- When an instruction says to load, use, read, or follow a package prompt/reference path, call `cg_read_reference` for that path.
+- Do NOT use `read` with `prompts/...` or `references/...`; file tools resolve relative to the current project cwd, not this package.
+
+Load with `cg_read_reference` and follow these local workflow definitions in strict sequence:
 
 1) `prompts/cg-review.md` (`cg-review`)
 2) `prompts/cg-resolve-todo-parallel.md` (`cg-resolve-todo-parallel`)

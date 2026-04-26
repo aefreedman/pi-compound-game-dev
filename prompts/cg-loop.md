@@ -9,6 +9,14 @@ description: Run plan -> work -> review -> resolve-todo-parallel as one continuo
 
 <plan_input>$ARGUMENTS</plan_input>
 
+## Package File Loading
+
+CRITICAL: Use `cg_read_reference` for Compound Game Dev package prompt and reference files.
+
+- Pass package-relative paths such as `prompts/cg-plan.md` or `references/_shared/vcs-detection.md`.
+- When an instruction says to load, use, read, or follow a package prompt/reference path, call `cg_read_reference` for that path.
+- Do NOT use `read` with `prompts/...` or `references/...`; file tools resolve relative to the current project cwd, not this package.
+
 ## Input handling
 
 - Use `$ARGUMENTS` only for step 1 (`cg-plan`).
@@ -50,22 +58,22 @@ Default branch creation when currently on top-level branch:
 
 # Execution Stages
 
-1. Run the local planning workflow defined by `prompts/cg-plan.md` with `<plan_input>`.
+1. Load `prompts/cg-plan.md` with `cg_read_reference`, then run that local planning workflow with `<plan_input>`.
    - Capture the generated plan artifact path.
 
-2. Run the local work-execution workflow defined by `prompts/cg-work.md` using the plan artifact path from step 1.
+2. Load `prompts/cg-work.md` with `cg_read_reference`, then run that local work-execution workflow using the plan artifact path from step 1.
    - Capture the produced review target (PR URL/number, branch, or equivalent).
    - Ensure the work is executed on the dedicated sub-branch for this run.
    - Use atomic commits.
 
-3. Run the local review workflow defined by `prompts/cg-review.md` using step 2 output.
+3. Load `prompts/cg-review.md` with `cg_read_reference`, then run that local review workflow using step 2 output.
 
 4. Auto-triage newly-created todo files:
    - Attempt to resolve all findings.
    - Promote matching pending todos to ready automatically.
    - Leave any un-resolvable todos pending.
 
-5. Run the local todo-resolution workflow defined by `prompts/cg-resolve-todo-parallel.md` on the ready todos from step 4.
+5. Load `prompts/cg-resolve-todo-parallel.md` with `cg_read_reference`, then run that local todo-resolution workflow on the ready todos from step 4.
    - Prefer resolving `p1` first, then `p2`, then `p3`.
    - Ensure fixes are committed/checkedin atomically before marking todos complete.
    - Continue until all in-scope todos are resolved or marked blocked with reason.

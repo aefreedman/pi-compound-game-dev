@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import { keyHint, type ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import { Text } from "@mariozechner/pi-tui";
 import { Type } from "typebox";
 
 const TEXT_EXTENSIONS = new Set([
@@ -62,6 +63,16 @@ function sliceLines(text: string, offset?: number, limit?: number): string {
   return lines.slice(start, end).join("\n");
 }
 
+function countLines(text: string): number {
+  if (!text) return 0;
+  return text.split(/\r?\n/).length;
+}
+
+function getTextContent(result: { content?: Array<{ type?: string; text?: string }> }): string {
+  const first = result.content?.[0];
+  return first?.type === "text" && typeof first.text === "string" ? first.text : "";
+}
+
 export default function registerCompoundGameDevReferenceReader(pi: ExtensionAPI) {
   const extensionDir = path.dirname(fileURLToPath(import.meta.url));
   const packageRoot = path.resolve(extensionDir, "..");
@@ -69,14 +80,14 @@ export default function registerCompoundGameDevReferenceReader(pi: ExtensionAPI)
   pi.registerTool({
     name: "cg_read_reference",
     label: "Read Compound Game Dev Reference",
-    description: "Read a Compound Game Dev package reference file by package-relative path.",
-    promptSnippet: "Read Compound Game Dev package reference files by package-relative path",
+    description: "Read a Compound Game Dev package prompt, reference, skill asset, or other text file by package-relative path.",
+    promptSnippet: "Read Compound Game Dev package files by package-relative path",
     promptGuidelines: [
-      "Use cg_read_reference for Compound Game Dev package references such as references/cg-plan/research-agents.md instead of the read tool with ../references paths.",
+      "Use cg_read_reference for Compound Game Dev package files such as prompts/cg-work.md or references/cg-plan/research-agents.md instead of the read tool with package-relative paths.",
       "Pass cg_read_reference package-relative paths only; do not pass project cwd-relative paths or absolute local package paths.",
     ],
     parameters: Type.Object({
-      path: Type.String({ description: "Package-relative path such as references/cg-plan/research-agents.md" }),
+      path: Type.String({ description: "Package-relative path such as prompts/cg-work.md or references/cg-plan/research-agents.md" }),
       offset: Type.Optional(Type.Number({ description: "1-indexed line number to start reading from" })),
       limit: Type.Optional(Type.Number({ description: "Maximum number of lines to return" })),
     }),
@@ -102,6 +113,8 @@ export default function registerCompoundGameDevReferenceReader(pi: ExtensionAPI)
             absolutePath,
             offset: params.offset,
             limit: params.limit,
+            lines: countLines(output),
+            totalLines: countLines(text),
           },
         };
       } catch (error) {
@@ -112,6 +125,42 @@ export default function registerCompoundGameDevReferenceReader(pi: ExtensionAPI)
           isError: true,
         };
       }
+    },
+    renderCall(args, theme) {
+      let text = theme.fg("toolTitle", theme.bold("cg_read_reference "));
+      text += theme.fg("accent", args.path ?? "<missing path>");
+      if (args.offset || args.limit) {
+        const parts: string[] = [];
+        if (args.offset) parts.push(`offset=${args.offset}`);
+        if (args.limit) parts.push(`limit=${args.limit}`);
+        text += theme.fg("dim", ` (${parts.join(", ")})`);
+      }
+      return new Text(text, 0, 0);
+    },
+    renderResult(result, { expanded, isPartial }, theme) {
+      if (isPartial) return new Text(theme.fg("warning", "Reading package reference..."), 0, 0);
+
+      const details = result.details as { path?: string; error?: string; lines?: number; totalLines?: number } | undefined;
+      const output = getTextContent(result);
+
+      if (details?.error || result.isError) {
+        const message = details?.error ?? output.split("\n")[0] ?? "Unknown error";
+        return new Text(theme.fg("error", `Error: ${message}`), 0, 0);
+      }
+
+      const shownLines = details?.lines ?? countLines(output);
+      const totalLines = details?.totalLines ?? shownLines;
+      const pathLabel = details?.path ? theme.fg("accent", details.path) : "package reference";
+      let text = theme.fg("success", `Read ${shownLines} line${shownLines === 1 ? "" : "s"}`);
+      if (totalLines !== shownLines) text += theme.fg("dim", ` of ${totalLines}`);
+      text += theme.fg("dim", ` from ${pathLabel}`);
+
+      if (!expanded) {
+        text += ` ${theme.fg("muted", `(${keyHint("app.tools.expand", "to expand")})`)}`;
+        return new Text(text, 0, 0);
+      }
+
+      return new Text(`${text}\n${theme.fg("toolOutput", output)}`, 0, 0);
     },
   });
 }

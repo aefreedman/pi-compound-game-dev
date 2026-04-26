@@ -9,6 +9,14 @@ description: Run work -> review -> resolve-todo-parallel as one continuous loop
 
 <plan_input>$ARGUMENTS</plan_input>
 
+## Package File Loading
+
+CRITICAL: Use `cg_read_reference` for Compound Game Dev package prompt and reference files.
+
+- Pass package-relative paths such as `prompts/cg-work.md` or `references/_shared/vcs-detection.md`.
+- When an instruction says to load, use, read, or follow a package prompt/reference path, call `cg_read_reference` for that path.
+- Do NOT use `read` with `prompts/...` or `references/...`; file tools resolve relative to the current project cwd, not this package.
+
 ## Input handling
 
 - Use `$ARGUMENTS` only for step 1.
@@ -50,19 +58,19 @@ Default branch creation when currently on top-level branch:
 
 # Execution Stages
 
-1. Run the local work-execution workflow defined by `prompts/cg-work.md` using `$ARGUMENTS`.
+1. Load `prompts/cg-work.md` with `cg_read_reference`, then run that local work-execution workflow using `$ARGUMENTS`.
    - Capture the produced review target (PR URL/number, branch, or equivalent).
    - Ensure the work is executed on the dedicated sub-branch for this run.
    - Use atomic commits.
 
-2. Run the local review workflow defined by `prompts/cg-review.md` using step 1 output.
+2. Load `prompts/cg-review.md` with `cg_read_reference`, then run that local review workflow using step 1 output.
 
 3. Auto-triage newly-created todo files:
    - Attempt to resolve all findings.
    - Promote matching pending todos to ready automatically.
    - Leave any un-resolvable todos pending.
 
-4. Run the local todo-resolution workflow defined by `prompts/cg-resolve-todo-parallel.md` on the ready todos from step 3.
+4. Load `prompts/cg-resolve-todo-parallel.md` with `cg_read_reference`, then run that local todo-resolution workflow on the ready todos from step 3.
    - Prefer resolving `p1` first, then `p2`, then `p3`.
    - Ensure fixes are committed/checkedin atomically before marking todos complete.
    - Continue until all in-scope todos are resolved or marked blocked with reason.
