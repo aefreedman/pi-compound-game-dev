@@ -1,0 +1,122 @@
+---
+description: Create engaging changelogs from recent completed work
+---
+## Orchestration
+
+- Delegate specialist work only from the root workflow session when helpful.
+- Delegated workers must return handoffs rather than spawning more workers.
+- Nested delegation is blocked at runtime.
+
+## Game-Development Stack Awareness
+
+- Read project-specific stack guidance from `AGENTS.md` or a similar project-local guidance file when present.
+- Detect what can be detected about the engine, VCS, project tracker, build/test pipeline, and content pipeline.
+- Ask targeted questions for missing stack facts instead of assuming Git, GitHub, Unity, PlasticSCM, Codecks, or any other tool.
+- Use companion Pi packages when available and relevant; otherwise provide a clear fallback.
+
+# Writing Changelogs Skill
+
+Purpose: generate concise, traceable changelogs from recent completed work across supported sources.
+
+## Input
+
+User input: $ARGUMENTS 
+
+Supported hints:
+- Time window: `daily`, `weekly` (previous week starting Monday), or `<days>`
+- Source override: `source:github|plastic|codecks`
+- Plastic branch override: `branch:/dev` (default) or another branch
+- Optional posting intent: `post:discord`
+
+## External File Loading
+
+CRITICAL: Use relative path references and load files only when needed for the current step.
+
+- Do NOT preemptively load all reference files.
+- Treat loaded references as mandatory instructions for the active task scope.
+- Follow nested `@...` references recursively only when relevant.
+- For long files, use Read with `offset`/`limit` to load only needed sections.
+
+## Workflow
+
+### Step 0: Resolve Artifact Roots
+
+Load:
+- ../references/_shared/artifact-root-resolution.md
+- ../references/_shared/artifact-path-contract.md
+
+### Step 1: Parse Time Window
+
+Load ../references/cg-changelog/time-window.md.
+
+### Step 2: Select Changes Source (Branching)
+
+Load ../references/cg-changelog/source-selection.md.
+
+Do not assume GitHub. Select one source:
+- GitHub merged PRs
+- Plastic merge changesets
+- Codecks cards moved to done
+
+### Step 3: Collect Source Data
+
+Load only the selected source workflow:
+- GitHub -> ../references/cg-changelog/github-workflow.md
+- Plastic -> ../references/cg-changelog/plastic-workflow.md
+- Codecks -> ../references/cg-changelog/codecks-workflow.md
+
+### Step 4: Normalize and Prioritize
+
+Normalize records into a common format and prioritize content:
+1. Breaking changes
+2. User-facing features
+3. Critical bug fixes
+4. Performance improvements
+5. Developer experience improvements
+6. Documentation updates
+
+Also extract concise usage/access details when available, especially for:
+- New capabilities
+- Menu/navigation changes
+- Workflow changes
+
+Examples of access details:
+- Command path (`Tools > Missions > Skip Intro`)
+- In-editor location (`Window > AI > Session Inspector`)
+- Runtime action (`Press F8 to toggle debug overlay`)
+- Config path (`Project Settings > Build > Fast Iteration`)
+
+Do not invent access instructions. If source material does not provide enough detail, omit this field.
+
+### Step 5: Render Changelog
+
+Load ../references/cg-changelog/output-template.md.
+
+Requirements:
+- Keep output concise and engaging
+- Include traceability references (`#123`, `cs:456`, `https://<tld>.codecks.io/ABC-7`)
+- Include a short "How to access" note for user-facing changes when determinable from available information
+
+### Step 6: Optional Discord Posting (Lazy-Load)
+
+Only if the user explicitly asks to post to Discord:
+- Load ../references/cg-changelog/discord-posting.md
+
+Do not load this reference for standard changelog generation.
+
+### Step 7: Error Handling
+
+Load ../references/cg-changelog/error-handling.md.
+
+## Reference Files (Load On Demand)
+
+1. Source selection -> ../references/cg-changelog/source-selection.md
+2. Time window parsing -> ../references/cg-changelog/time-window.md
+3. GitHub workflow -> ../references/cg-changelog/github-workflow.md
+4. Plastic workflow -> ../references/cg-changelog/plastic-workflow.md
+5. Codecks workflow -> ../references/cg-changelog/codecks-workflow.md
+6. Output template -> ../references/cg-changelog/output-template.md
+7. Error handling -> ../references/cg-changelog/error-handling.md
+8. Discord posting (lazy-load) -> ../references/cg-changelog/discord-posting.md
+9. Artifact root resolution -> ../references/_shared/artifact-root-resolution.md
+10. Artifact path contract -> ../references/_shared/artifact-path-contract.md

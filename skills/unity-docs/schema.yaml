@@ -1,0 +1,226 @@
+# Unity Documentation Schema
+# This schema MUST be validated before writing any documentation file
+
+required_fields:
+  module:
+    type: string
+    description: "Unity subsystem/module (e.g., 'Physics', 'Rendering', 'UI', 'Animation')"
+    examples:
+      - "Physics"
+      - "Rendering"
+      - "UI (UI Toolkit)"
+      - "Animation"
+      - "Audio"
+      - "Input System"
+      - "Gameplay Logic"
+      - "AI / Navigation"
+      - "Networking"
+      - "Editor Tools"
+      - "Build Pipeline"
+      - "Asset Management"
+      - "Addressables"
+      - "Timeline"
+      - "Cinemachine"
+      - "Shader Graph"
+      - "VFX Graph"
+
+  date:
+    type: string
+    pattern: '^\d{4}-\d{2}-\d{2}$'
+    description: "Date when this problem was solved (YYYY-MM-DD)"
+
+  problem_type:
+    type: enum
+    values:
+      - build_error           # Build failures, compilation errors
+      - editor_crash          # Unity Editor crashes or hangs
+      - runtime_error         # Exceptions, crashes during play
+      - performance_issue     # FPS drops, memory issues, GC spikes
+      - asset_import_issue    # Model, texture, audio import problems
+      - physics_bug           # Rigidbody, collision, physics issues
+      - rendering_bug         # Visual artifacts, shader issues, camera problems
+      - ui_bug                # UI Toolkit, UGUI, Canvas issues
+      - audio_bug             # Audio playback, mixing, spatial audio
+      - animation_bug         # Animator, Animation Clip issues
+      - input_bug             # Input System, old Input Manager issues
+      - integration_issue     # Package, plugin, external service integration
+      - logic_error           # Gameplay logic bugs
+      - editor_workflow       # Editor workflow, custom tools
+      - best_practice         # Documenting patterns and practices
+      - documentation_gap     # Missing or inadequate documentation
+      - serialization_issue   # Serialization, prefab, ScriptableObject issues
+      - platform_specific     # iOS, Android, WebGL, console-specific issues
+    description: "Primary category of the problem"
+
+  component:
+    type: enum
+    values:
+      - monobehaviour        # MonoBehaviour scripts
+      - scriptable_object    # ScriptableObject assets
+      - prefab               # Prefab assets
+      - scene                # Scene files
+      - material             # Materials
+      - shader               # Shaders, Shader Graph
+      - animation_controller # Animator Controllers
+      - timeline             # Timeline assets
+      - addressable          # Addressable assets
+      - asset                # General asset (texture, model, audio)
+      - editor_script        # Editor scripts, custom inspectors
+      - build_script         # Build pipeline scripts
+      - package              # Unity packages, Package Manager
+      - plugin               # Native plugins, third-party
+      - ui_toolkit           # UI Toolkit (UXML, USS, C#)
+      - particle_system      # Particle Systems, VFX Graph
+      - terrain              # Terrain, terrain tools
+      - navmesh              # NavMesh, navigation
+      - lighting             # Lighting, light probes, reflection probes
+      - canvas               # UGUI Canvas
+    description: "Unity component involved"
+
+  symptoms:
+    type: array[string]
+    min_items: 1
+    max_items: 5
+    description: "Observable symptoms (error messages, visual issues, crashes)"
+    examples:
+      - "NullReferenceException in PlayerController.Update()"
+      - "Physics collision not detected between player and enemies"
+      - "UI buttons not responding to clicks"
+
+  root_cause:
+    type: enum
+    values:
+      - null_reference          # NullReferenceException
+      - lifecycle_timing        # Awake/Start/Update timing issues
+      - serialization_error     # [SerializeField], serialization issues
+      - missing_reference       # Missing GameObject, Component, or Asset reference
+      - circular_dependency     # Circular script dependencies
+      - memory_leak             # Memory not being released
+      - resource_not_loaded     # Asset not loaded (Addressables, Resources)
+      - coroutine_stopped       # Coroutine stopped unexpectedly
+      - wrong_thread            # Main thread vs Job System thread issues
+      - prefab_override_issue   # Prefab overrides or nesting problems
+      - asset_import_settings   # Wrong import settings on asset
+      - physics_layer_collision # Layer collision matrix misconfiguration
+      - render_pipeline_config  # URP/HDRP settings incorrect
+      - scene_not_loaded        # Scene not loaded or additively loaded
+      - component_disabled      # Component or GameObject disabled
+      - version_incompatibility # Unity version or package version mismatch
+      - logic_error             # Algorithm/gameplay logic bug
+      - config_error            # Project Settings, Player Settings
+      - missing_validation      # Missing null checks or validation
+    description: "Fundamental cause of the problem"
+
+  resolution_type:
+    type: enum
+    values:
+      - code_fix              # Fixed by changing C# code
+      - asset_reimport        # Fixed by reimporting asset
+      - prefab_revert         # Fixed by reverting prefab or applying overrides
+      - config_change         # Fixed by changing Project/Player Settings
+      - package_update        # Fixed by updating package version
+      - editor_restart        # Fixed by restarting Unity Editor
+      - cache_clear           # Fixed by clearing Library cache
+      - player_settings_change # Fixed by modifying Player Settings
+      - build_settings_change # Fixed by modifying Build Settings
+      - dependency_update     # Fixed by updating dependency
+      - environment_setup     # Fixed by environment configuration
+      - tooling_addition      # Added helper script or tool
+    description: "Type of fix applied"
+
+  severity:
+    type: enum
+    values:
+      - critical             # Blocks development or shipping (build fails, crashes)
+      - high                 # Impairs core functionality (feature broken, major bug)
+      - medium               # Affects specific feature (visual bug, performance hit)
+      - low                  # Minor issue or edge case
+    description: "Impact severity"
+
+optional_fields:
+  unity_version:
+    type: string
+    pattern: '^\d{4}\.\d+\.\d+[abfp]\d+$'
+    description: "Unity version (e.g., '2022.3.21f1', '2023.2.5f1')"
+    examples:
+      - "2022.3.21f1"
+      - "2023.2.5f1"
+      - "6000.0.0f1"
+
+  render_pipeline:
+    type: string
+    description: "Render pipeline used (Built-in, URP, HDRP)"
+    examples:
+      - "Built-in"
+      - "URP 14.0.8"
+      - "HDRP 14.0.8"
+
+  platform:
+    type: string
+    description: "Platform where issue occurred (Editor, Standalone, Mobile, WebGL, Console)"
+    examples:
+      - "Windows Editor"
+      - "iOS"
+      - "Android"
+      - "WebGL"
+      - "PlayStation 5"
+      - "Xbox Series X"
+
+  related_components:
+    type: array[string]
+    description: "Other components that interact with this issue"
+
+  tags:
+    type: array[string]
+    max_items: 8
+    description: "Searchable keywords (lowercase, hyphen-separated)"
+    examples:
+      - "null-reference"
+      - "update-loop"
+      - "physics-collision"
+      - "ui-toolkit"
+
+validation_rules:
+  - "module must be a valid Unity subsystem or module name"
+  - "date must be in YYYY-MM-DD format"
+  - "problem_type must match one of the enum values"
+  - "component must match one of the enum values"
+  - "symptoms must be specific and observable (not vague)"
+  - "root_cause must be the ACTUAL cause, not a symptom"
+  - "resolution_type must match one of the enum values"
+  - "severity must match one of the enum values"
+  - "tags should be lowercase, hyphen-separated"
+
+# Example valid front matter:
+# ---
+# module: Physics
+# date: 2025-11-12
+# problem_type: runtime_error
+# component: monobehaviour
+# symptoms:
+#   - "NullReferenceException in PlayerController.Update()"
+#   - "Player character freezes when jumping"
+# root_cause: null_reference
+# unity_version: 2022.3.21f1
+# render_pipeline: URP 14.0.8
+# platform: Windows Editor
+# resolution_type: code_fix
+# severity: high
+# tags: [null-reference, update-loop, player-controller]
+# ---
+#
+# Example Editor Workflow issue front matter:
+# ---
+# module: Editor Tools
+# date: 2025-11-13
+# problem_type: editor_workflow
+# component: editor_script
+# symptoms:
+#   - Custom inspector not showing serialized fields
+#   - Editor window layout resets on Unity restart
+# root_cause: serialization_error
+# unity_version: 2022.3.21f1
+# resolution_type: code_fix
+# severity: medium
+# tags: [editor-script, custom-inspector, serialization]
+# ---

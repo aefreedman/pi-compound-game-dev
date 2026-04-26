@@ -1,0 +1,38 @@
+{
+  "name": "@aefree/pi-compound-game-dev",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Compound Game Dev workflows for Pi.",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "game-dev",
+    "compound-game-dev"
+  ],
+  "scripts": {
+    "test": "npx --yes tsx tests/package-validation.test.ts"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions"
+    ],
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts"
+    ]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/aefreedman/pi-compound-game-dev.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aefreedman/pi-compound-game-dev/issues"
+  },
+  "homepage": "https://github.com/aefreedman/pi-compound-game-dev#readme"
+}
