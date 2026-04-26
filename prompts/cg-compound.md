@@ -18,21 +18,23 @@ description: Capture solved problems and compound team knowledge
 
 Purpose: detect multiple solved problems in a session and document each using `unity-docs` sequentially.
 
-## External File Loading
+## Package Reference Loading
 
-CRITICAL: Use relative path references and load files only when needed for the current step.
+CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 
+- Pass package-relative paths such as `references/cg-plan/research-agents.md`.
+- When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
+- Do NOT use `read` with `references/...`; file tools resolve relative to the current project cwd, not this package.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
-- Follow nested `@...` references recursively only when relevant.
-- For long files, use Read with `offset`/`limit` to load only needed sections.
+- For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
 
 ## Workflow
 
 ### Step 0: Resolve Artifact Roots
 
-Load ../references/_shared/artifact-root-resolution.md and
-../references/_shared/artifact-path-contract.md.
+Load references/_shared/artifact-root-resolution.md and
+references/_shared/artifact-path-contract.md.
 
 ### Step 1: Detect Solved Problems
 
@@ -40,7 +42,7 @@ Load ../references/_shared/artifact-root-resolution.md and
 - Extract context windows and problem indicators.
 - Create a short description per solution.
 
-See ../references/cg-compound/detection-phrases.md.
+See references/cg-compound/detection-phrases.md.
 
 ### Step 2: Document Each Solution (Sequential)
 
@@ -50,21 +52,21 @@ See ../references/cg-compound/detection-phrases.md.
 
 ### Step 3: Summary Report
 
-Use ../references/cg-compound/summary-template.md.
+Use references/cg-compound/summary-template.md.
 
 ## Error Handling
 
-See ../references/cg-compound/error-handling.md.
+See references/cg-compound/error-handling.md.
 
 ## Reference Files (Load On Demand)
 
-1. Detection phrases -> ../references/cg-compound/detection-phrases.md
-2. Summary -> ../references/cg-compound/summary-template.md
-3. Artifact root resolution -> ../references/_shared/artifact-root-resolution.md
-4. Artifact path contract -> ../references/_shared/artifact-path-contract.md
+1. Detection phrases -> references/cg-compound/detection-phrases.md
+2. Summary -> references/cg-compound/summary-template.md
+3. Artifact root resolution -> references/_shared/artifact-root-resolution.md
+4. Artifact path contract -> references/_shared/artifact-path-contract.md
 
 On-demand:
 
-- Examples -> ../references/cg-compound/examples.md
-- Best practices -> ../references/cg-compound/best-practices.md
-- Future enhancements -> ../references/cg-compound/future-enhancements.md
+- Examples -> references/cg-compound/examples.md
+- Best practices -> references/cg-compound/best-practices.md
+- Future enhancements -> references/cg-compound/future-enhancements.md

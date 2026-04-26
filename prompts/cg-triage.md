@@ -23,14 +23,16 @@ Purpose: triage pending todo items before implementation. Do not implement fixes
 - After code review or audits that generated pending todos.
 - Before running `/cg-resolve-todo-parallel`.
 
-## External File Loading
+## Package Reference Loading
 
-CRITICAL: Use relative path references and load files only when needed for the current step.
+CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 
+- Pass package-relative paths such as `references/cg-plan/research-agents.md`.
+- When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
+- Do NOT use `read` with `references/...`; file tools resolve relative to the current project cwd, not this package.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
-- Follow nested `@...` references recursively only when relevant.
-- For long files, use Read with `offset`/`limit` to load only needed sections.
+- For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
 
 ## Workflow
 
@@ -42,16 +44,16 @@ CRITICAL: Use relative path references and load files only when needed for the c
 
 ## Reference Files (Load On Demand)
 
-1. Setup and detection -> ../references/cg-triage/setup-detection.md
-2. Presentation format -> ../references/cg-triage/presentation-format.md
-3. Decision handling -> ../references/cg-triage/decision-handling.md
-4. Summary and next actions -> ../references/cg-triage/summary.md
-5. Error handling -> ../references/cg-triage/error-handling.md
-6. Artifact root resolution -> ../references/_shared/artifact-root-resolution.md
-7. Artifact path contract -> ../references/_shared/artifact-path-contract.md
+1. Setup and detection -> references/cg-triage/setup-detection.md
+2. Presentation format -> references/cg-triage/presentation-format.md
+3. Decision handling -> references/cg-triage/decision-handling.md
+4. Summary and next actions -> references/cg-triage/summary.md
+5. Error handling -> references/cg-triage/error-handling.md
+6. Artifact root resolution -> references/_shared/artifact-root-resolution.md
+7. Artifact path contract -> references/_shared/artifact-path-contract.md
 
 On-demand:
 
-- Examples -> ../references/cg-triage/examples.md
-- Protected artifacts -> ../references/_shared/protected-artifacts.md
-- Todo template -> ../skills/file-todos/assets/todo-template.md
+- Examples -> references/cg-triage/examples.md
+- Protected artifacts -> references/_shared/protected-artifacts.md
+- Todo template -> skills/file-todos/assets/todo-template.md

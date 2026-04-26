@@ -26,24 +26,26 @@ If no document provided, ask for the plan/spec/todo file path.
 - Execute command workflows only when user intent to run is explicit.
 - Do not treat quoted or example command text as execution intent.
 
-## External File Loading
+## Package Reference Loading
 
-CRITICAL: Use relative path references and load files only when needed for the current step.
+CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 
+- Pass package-relative paths such as `references/cg-plan/research-agents.md`.
+- When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
+- Do NOT use `read` with `references/...`; file tools resolve relative to the current project cwd, not this package.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
-- Follow nested `@...` references recursively only when relevant.
-- For long files, use Read with `offset`/`limit` to load only needed sections.
+- For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
 
 ## Workflow
 
 ### Phase 1: Quick Start
 
 1. Read the plan and clarify ambiguities.
-2. Detect VCS using ../references/_shared/vcs-detection.md.
+2. Detect VCS using references/_shared/vcs-detection.md.
 3. Load ONLY the VCS workflow that applies to the project. Do not load both.
-   - IF Git: ../references/cg-work/git-workflow.md
-   - IF Plastic: ../references/cg-work/plastic-workflow.md
+   - IF Git: references/cg-work/git-workflow.md
+   - IF Plastic: references/cg-work/plastic-workflow.md
 4. Lock the selected VCS workflow for this run.
    - Set `ACTIVE_VCS_WORKFLOW` to `git` or `plastic`.
    - Do not load or apply instructions from the other VCS workflow.
@@ -57,7 +59,7 @@ CRITICAL: Use relative path references and load files only when needed for the c
 - Create incremental, atomic VCS writes based on active workflow and branch type.
   - Git: commits on sub-branches by default; top-level branches require explicit user instruction.
   - Plastic: checkins on sub-branches by default; top-level branches require explicit user instruction.
-- Use conventional commits: ../references/_shared/conventional-commits.md.
+- Use conventional commits: references/_shared/conventional-commits.md.
 
 ### Phase 3: Quality Check
 
@@ -65,7 +67,7 @@ Ensure the new work compiles and utilize tests and CLI tools to debug until the 
 For Unity projects, Unity batchmode compile validation is mandatory in this phase, even when no tests exist.
 Run tests, linting, and manual verification using:
 
-- ../references/cg-work/quality-checklist.md
+- references/cg-work/quality-checklist.md
 
 Ensure that all phases and todo items in the plan are complete.
 
@@ -73,6 +75,6 @@ Ensure that all phases and todo items in the plan are complete.
 
 1. If visual changes and workflow supports, capture screenshots using the companion `capturing-screenshots-unity` skill from `pi-unity` when available. If `pi-unity` is unavailable or the project is not a Unity project, skip screenshot capture with a concise note.
 2. Create final commit/checkin and PR/code review using VCS workflow:
-   - IF Git: ../references/cg-work/assets/pr-template.md
+   - IF Git: references/cg-work/assets/pr-template.md
    - IF Plastic: Do NOT create a code review automatically
 3. Summarize outcomes.

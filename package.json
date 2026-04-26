@@ -25,7 +25,8 @@
     ]
   },
   "peerDependencies": {
-    "@mariozechner/pi-coding-agent": "*"
+    "@mariozechner/pi-coding-agent": "*",
+    "typebox": "*"
   },
   "repository": {
     "type": "git",

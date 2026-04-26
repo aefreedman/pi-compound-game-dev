@@ -4,12 +4,16 @@ import { strict as assert } from "node:assert";
 const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
   name?: string;
   pi?: { extensions?: string[]; prompts?: string[]; skills?: string[] };
+  peerDependencies?: Record<string, string>;
 };
 const readmeText = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const extensionText = readFileSync(new URL("../extensions/register-subagents.ts", import.meta.url), "utf8");
+const referenceReaderText = readFileSync(new URL("../extensions/read-reference.ts", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
+assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
+assert(referenceReaderText.includes("cg_read_reference"), "Expected package reference reader tool registration.");
 assert(pkg.pi?.prompts?.includes("./prompts"), "Expected prompt directory registration.");
 assert(pkg.pi?.skills?.includes("./skills"), "Expected skill directory registration.");
 
@@ -30,6 +34,29 @@ for (const prompt of [
 
 const promptEntries = readdirSync(new URL("../prompts", import.meta.url), { withFileTypes: true });
 const topLevelPrompts = promptEntries.filter((entry) => entry.isFile() && entry.name.endsWith(".md")).map((entry) => entry.name);
+const promptTexts = topLevelPrompts.map((prompt) => readFileSync(new URL(`../prompts/${prompt}`, import.meta.url), "utf8"));
+for (const promptText of promptTexts) {
+  assert(!promptText.includes("../references/"), "Prompt package references must use cg_read_reference package-relative paths, not ../references paths.");
+  if (promptText.includes("references/")) {
+    assert(promptText.includes("cg_read_reference"), "Prompts that reference package references must instruct use of cg_read_reference.");
+  }
+}
+
+const packageMarkdownFiles = (function walk(url: URL): URL[] {
+  return readdirSync(url, { withFileTypes: true }).flatMap((entry) => {
+    const child = new URL(`${entry.name}${entry.isDirectory() ? "/" : ""}`, url);
+    if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== ".git") return walk(child);
+    return entry.isFile() && entry.name.endsWith(".md") ? [child] : [];
+  });
+})(new URL("../", import.meta.url));
+const packageReferencePattern = /(?:references|skills)\/[A-Za-z0-9_./-]+\.(?:md|markdown|txt|json|ya?ml|ts|js|sh)/g;
+for (const markdownFile of packageMarkdownFiles) {
+  const markdownText = readFileSync(markdownFile, "utf8");
+  assert(!markdownText.includes("../references/"), `Package docs should not refer to ../references paths: ${markdownFile.pathname}`);
+  for (const [referencePath] of markdownText.matchAll(packageReferencePattern)) {
+    assert(existsSync(new URL(`../${referencePath}`, import.meta.url)), `Expected package reference to exist: ${referencePath}`);
+  }
+}
 assert(promptEntries.every((entry) => entry.isFile()), "The prompts directory must contain only prompt files; reference material belongs in ../references.");
 assert(existsSync(new URL("../references/_shared/vcs-detection.md", import.meta.url)), "Expected shared reference files outside prompts.");
 assert(!existsSync(new URL("../prompt-support", import.meta.url)), "Did not expect obsolete prompt-support directory.");

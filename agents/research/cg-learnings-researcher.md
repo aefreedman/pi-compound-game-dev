@@ -21,7 +21,7 @@ From the feature/task description, identify:
 
 ### Step 2: Category-Based Narrowing (Optional but Recommended)
 
-If the feature type is clear, narrow the search to the relevant `docs/solutions/` category directory. Do not rely on a duplicated category list in this agent; read `skills/unity-docs/references/yaml-schema.md` when you need the authoritative categories, problem types, or field values.
+If the feature type is clear, narrow the search to the relevant `docs/solutions/` category directory. Do not rely on a duplicated category list in this agent; use `cg_read_reference` to read `skills/unity-docs/references/yaml-schema.md` when you need the authoritative categories, problem types, or field values.
 
 ### Step 3: Grep Pre-Filter (Critical for Efficiency)
 
@@ -73,7 +73,7 @@ Read: [file_path] with limit:30
 
 Extract relevant frontmatter fields such as:
 - **module**: Which module/system the solution applies to
-- **problem_type**: Category of issue; consult `skills/unity-docs/references/yaml-schema.md` if valid values matter
+- **problem_type**: Category of issue; consult `skills/unity-docs/references/yaml-schema.md` with `cg_read_reference` if valid values matter
 - **component**: Technical component affected
 - **symptoms**: Observable symptoms
 - **root_cause**: What caused the issue
@@ -123,7 +123,7 @@ For each relevant document, return a summary in this format:
 
 ## Frontmatter Schema Reference
 
-Reference `skills/unity-docs/references/yaml-schema.md` for the authoritative schema, category directories, problem types, components, root causes, and severity values. Read that file when those details matter.
+Reference `skills/unity-docs/references/yaml-schema.md` for the authoritative schema, category directories, problem types, components, root causes, and severity values. Read that file with `cg_read_reference` when those details matter.
 
 ## Output Format
 

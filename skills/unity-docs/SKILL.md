@@ -7,21 +7,25 @@ description: Capture solved Unity problems as categorized documentation with YAM
 Purpose: document solved Unity problems into logical `docs/solutions/`
 with validated YAML frontmatter.
 
-## External File Loading
+## Package Reference Loading
 
-CRITICAL: Use relative path references and load files only when needed for the current step.
+CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 
+- Pass package-relative paths such as `skills/unity-docs/references/yaml-schema.md`.
+- When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
+- Do NOT use `read` with package-reference paths; file tools resolve relative to the current project cwd, not this package.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
-- Follow nested `@...` references recursively only when relevant.
-- For long files, use Read with `offset`/`limit` to load only needed sections.
+- For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
 
 ## Workflow
 
 ### Step 0: Resolve Artifact Roots
 
-Load ../../references/_shared/artifact-root-resolution.md and
-../../references/_shared/artifact-path-contract.md.
+Load with `cg_read_reference`:
+
+- `references/_shared/artifact-root-resolution.md`
+- `references/_shared/artifact-path-contract.md`
 
 ### Step 1: Detect Confirmation
 
@@ -53,14 +57,14 @@ Format: `[sanitized-symptom]-[module]-[YYYYMMDD].md`
 
 Validate against:
 
-- ../unity-docs/schema.yaml
-- ../unity-docs/references/yaml-schema.md
+- `skills/unity-docs/schema.yaml`
+- `skills/unity-docs/references/yaml-schema.md`
 
 Do not proceed if validation fails.
 
 ### Step 6: Create Documentation
 
-Use ../unity-docs/assets/resolution-template.md and write to:
+Use `skills/unity-docs/assets/resolution-template.md` via `cg_read_reference` and write to:
 
 - Logical path: `docs/solutions/<category>/<filename>.md`
 - Physical path: `${DOCS_ROOT}/solutions/<category>/<filename>.md`
@@ -76,21 +80,21 @@ Recommend elevation only when the documented solution is likely to prevent repea
 - a non-obvious engine/editor/package interaction that future work is likely to hit again
 - a project convention that should become required reading before touching a subsystem
 
-If the doc meets that bar, tell the user why and recommend creating a critical pattern entry using ../unity-docs/assets/critical-pattern-template.md. Do not auto-promote without explicit confirmation.
+If the doc meets that bar, tell the user why and recommend creating a critical pattern entry using `skills/unity-docs/assets/critical-pattern-template.md` via `cg_read_reference`. Do not auto-promote without explicit confirmation.
 
 If it does not meet that bar, state that no critical-pattern elevation is recommended and why.
 
 ## Reference Files (Load On Demand)
 
-1. YAML schema -> ../unity-docs/schema.yaml
-2. YAML guide -> ../unity-docs/references/yaml-schema.md
-3. Resolution template -> ../unity-docs/assets/resolution-template.md
-4. Artifact root resolution -> ../../references/_shared/artifact-root-resolution.md
-5. Artifact path contract -> ../../references/_shared/artifact-path-contract.md
+1. YAML schema -> `skills/unity-docs/schema.yaml`
+2. YAML guide -> `skills/unity-docs/references/yaml-schema.md`
+3. Resolution template -> `skills/unity-docs/assets/resolution-template.md`
+4. Artifact root resolution -> `references/_shared/artifact-root-resolution.md`
+5. Artifact path contract -> `references/_shared/artifact-path-contract.md`
 
 On-demand:
 
-- Error handling -> ../unity-docs/references/error-handling.md
-- Quality guidelines -> ../unity-docs/references/quality-guidelines.md
-- Example -> ../unity-docs/references/example.md
-- Critical pattern template -> ../unity-docs/assets/critical-pattern-template.md
+- Error handling -> `skills/unity-docs/references/error-handling.md`
+- Quality guidelines -> `skills/unity-docs/references/quality-guidelines.md`
+- Example -> `skills/unity-docs/references/example.md`
+- Critical pattern template -> `skills/unity-docs/assets/critical-pattern-template.md`
