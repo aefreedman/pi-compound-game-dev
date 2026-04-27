@@ -65,6 +65,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 
 Ensure the new work compiles and utilize tests and CLI tools to debug until the issues are resolved.
 For Unity projects, Unity batchmode compile validation is mandatory in this phase, even when no tests exist.
+Run Unity batchmode and Unity Test Framework invocations serially per project folder; do not launch multiple Unity processes for the same project in parallel.
 Run tests, linting, and manual verification using:
 
 - references/cg-work/quality-checklist.md

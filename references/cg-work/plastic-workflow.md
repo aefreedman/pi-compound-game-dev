@@ -110,10 +110,11 @@ echo "✅ Working on branch: $suggested_name"
 
 ### Parallel Work (No Worktrees in Plastic)
 
-Plastic doesn't have Git worktrees. Use shelving instead:
+Plastic doesn't have Git worktrees. Use shelving instead for tracked pending changes. Before shelving, inspect `cm status --all`; private files are not included in shelves unless they are added first. If the only pending work is a new private file that should move with the branch, add it intentionally or switch branches with the explicit pending-change strategy supported by the `plastic_switchBranch` tool.
 
 ```bash
-# Save current work before switching branches
+# Save current tracked work before switching branches
+cm status --all
 feature_x_shelf=$(cm shelveset create -c="Working on feature X" --summaryformat)
 
 # Switch to another branch

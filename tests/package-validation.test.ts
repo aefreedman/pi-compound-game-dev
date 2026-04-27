@@ -9,6 +9,7 @@ const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url),
 const readmeText = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const extensionText = readFileSync(new URL("../extensions/register-subagents.ts", import.meta.url), "utf8");
 const referenceReaderText = readFileSync(new URL("../extensions/read-reference.ts", import.meta.url), "utf8");
+const qualityChecklistText = readFileSync(new URL("../references/cg-work/quality-checklist.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
@@ -17,6 +18,8 @@ assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui 
 assert(referenceReaderText.includes("cg_read_reference"), "Expected package reference reader tool registration.");
 assert(referenceReaderText.includes("renderResult"), "Expected package reference reader to provide expandable result rendering.");
 assert(referenceReaderText.includes("app.tools.expand"), "Expected package reference reader rendering to include the standard expand key hint.");
+assert(qualityChecklistText.includes("Do not issue multiple `unity_launch_batchmode` calls"), "Expected Unity validation guidance to forbid parallel batchmode runs for one project.");
+assert(qualityChecklistText.includes("do not pass `-quit` with `-runTests`"), "Expected Unity Test Framework guidance to avoid -quit with -runTests.");
 assert(pkg.pi?.prompts?.includes("./prompts"), "Expected prompt directory registration.");
 assert(pkg.pi?.skills?.includes("./skills"), "Expected skill directory registration.");
 

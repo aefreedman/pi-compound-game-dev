@@ -4,6 +4,12 @@ This file contains quality assurance steps to run before shipping work.
 
 ---
 
+## Unity Process Safety
+
+Unity allows only one process per project folder. For a single Unity project, run batchmode compile checks and Unity Test Framework test runs serially. Do not issue multiple `unity_launch_batchmode` calls for the same project in the same parallel tool turn.
+
+For Unity Test Framework runs, do not pass `-quit` with `-runTests`; the test runner controls process exit. Use absolute `-testResults` and `-logFile` paths when practical.
+
 ## Core Quality Checks (Always Run)
 
 Run these checks before submitting any PR or code review:
@@ -213,8 +219,7 @@ Before running tests, complete mandatory batchmode compile validation from Core 
 unity -runTests -batchmode -projectPath . \
   -testPlatform EditMode \
   -testResults EditModeResults.xml \
-  -logFile - \
-  -quit
+  -logFile -
 
 # Check results
 if [ -f EditModeResults.xml ]; then
@@ -232,8 +237,7 @@ fi
 unity -runTests -batchmode -projectPath . \
   -testPlatform PlayMode \
   -testResults PlayModeResults.xml \
-  -logFile - \
-  -quit
+  -logFile -
 
 # Check results
 if [ -f PlayModeResults.xml ]; then

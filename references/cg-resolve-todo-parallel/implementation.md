@@ -22,6 +22,7 @@ Load detection logic from ../_shared/vcs-detection.md.
 - Provide todo content and acceptance criteria.
 - Include resolved `WORKSPACE_ROOT` and `TODOS_ROOT` in each agent prompt.
 - Agents should not mark complete.
+- Unity projects: agents may prepare code/test changes in parallel, but Unity batchmode compile/test validation for the same project folder must be coordinated serially from the root session. Do not launch multiple Unity processes for one project in parallel.
 
 ## Step 4: Commit/Checkin
 

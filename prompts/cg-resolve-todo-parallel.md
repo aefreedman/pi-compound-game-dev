@@ -33,7 +33,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 2. Detect VCS (load references/_shared/vcs-detection.md).
 3. Collect ready todos from `${TODOS_ROOT}` and filter protected artifacts.
 4. Analyze dependencies and group by level.
-5. Resolve todos in parallel batches.
+5. Resolve todos in parallel batches. For Unity projects, do not run Unity batchmode/test validation in parallel against the same project folder; coordinate those validation runs serially from the root session.
 6. Commit/checkin changes using atomic commits.
 7. Mark todos complete and update work logs.
 8. Push/sync (Git/Plastic).
