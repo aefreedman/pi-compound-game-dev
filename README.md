@@ -2,7 +2,7 @@
 
 Compound Game Dev is a Pi workflow package for game-development teams that want repeatable planning, work, review, todo, and learning-capture workflows without assuming a single engine, version-control system, tracker, or build pipeline.
 
-The package adapts the Compound Engineering idea for game development. Game projects vary widely: Unity, Unreal, Godot, custom engines, Git, PlasticSCM, Perforce, Codecks, GitHub, spreadsheets, bespoke asset pipelines, and manual review processes may all appear. Compound Game Dev workflows inspect the local project and follow project-specific guidance instead of guessing.
+The package adapts the [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin) idea for game development. Game projects vary widely: Unity, Unreal, Godot, custom engines, Git, PlasticSCM, Perforce, Codecks, GitHub, spreadsheets, bespoke asset pipelines, and manual review processes may all appear. Compound Game Dev workflows inspect the local project and follow project-specific guidance instead of guessing.
 
 ## Install
 
