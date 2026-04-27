@@ -62,11 +62,11 @@ No compatibility aliases are provided for old workflow command names or earlier 
 
 ## Companion packages
 
-- `pi-subagents` - recommended for multi-agent research/review workflows and package-owned agent discovery
-- `pi-codecks` - optional Codecks tracker integration
-- `pi-plastic` - optional PlasticSCM integration
-- `pi-unity` - optional Unity tooling and screenshot workflows
-- `pi-extras` - optional utility prompts/skills such as `/continue` and `streamlining-skills`
+- [`pi-subagents`](https://github.com/aefreedman/pi-subagents) - recommended for multi-agent research/review workflows and package-owned agent discovery
+- [`pi-codecks`](https://github.com/aefreedman/pi-codecks) - optional Codecks tracker integration
+- [`pi-plastic`](https://github.com/aefreedman/pi-plastic) - optional PlasticSCM integration
+- [`pi-unity`](https://github.com/aefreedman/pi-unity) - optional Unity tooling and screenshot workflows
+- [`pi-extras`](https://github.com/aefreedman/pi-extras) - optional utility prompts/skills such as `/continue` and `streamlining-skills`
 
 Workflows degrade gracefully when optional companion packages are unavailable.
 
