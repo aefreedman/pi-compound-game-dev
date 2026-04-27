@@ -2,9 +2,29 @@
 
 Compound Game Dev is a Pi workflow package for game-development teams that want repeatable planning, work, review, todo, and learning-capture workflows without assuming a single engine, version-control system, tracker, or build pipeline.
 
-The package adapts the Compound Engineering idea for game development. Game projects vary widely: Unity, Unreal, Godot, custom engines, Git, PlasticSCM, Perforce, Codecks, GitHub, spreadsheets, bespoke asset pipelines, and manual review processes may all appear. Compound Game Dev workflows should inspect the local project and follow project-specific guidance instead of guessing.
+The package adapts the Compound Engineering idea for game development. Game projects vary widely: Unity, Unreal, Godot, custom engines, Git, PlasticSCM, Perforce, Codecks, GitHub, spreadsheets, bespoke asset pipelines, and manual review processes may all appear. Compound Game Dev workflows inspect the local project and follow project-specific guidance instead of guessing.
 
-## Project Stack Guidance
+## Install
+
+From GitHub:
+
+```bash
+pi install git:git@github.com:aefreedman/pi-compound-game-dev.git
+```
+
+Local development install:
+
+```bash
+pi install <path-to-pi-compound-game-dev>
+```
+
+Project-local install:
+
+```bash
+pi install -l <path-to-pi-compound-game-dev>
+```
+
+## Project stack guidance
 
 Projects using this package should document their game-development stack expectations in `AGENTS.md` or a similar project-local guidance file. Useful details include:
 
@@ -15,7 +35,7 @@ Projects using this package should document their game-development stack expecta
 - asset/content pipeline constraints
 - review, playtest, screenshot, and release expectations
 
-The `cg-*` workflows are expected to read that local guidance when present and ask targeted questions when the stack is unclear.
+The `cg-*` workflows read that local guidance when present and ask targeted questions when the stack is unclear.
 
 ## Commands
 
@@ -34,32 +54,36 @@ Prompt filenames map to Pi slash commands:
 
 No compatibility aliases are provided for old workflow command names or earlier draft prefix conventions.
 
-## Included Skills
-
-Some helper skills remain available directly:
+## Included skills
 
 - `file-todos`
 - `git-worktree`
 - `unity-docs`
 
-## Companion Packages
+## Companion packages
 
-- `pi-subagents` - recommended for multi-agent research/review workflows and package-owned agent discovery.
-- `pi-codecks` - optional Codecks tracker integration.
-- `pi-plastic` - optional PlasticSCM integration.
-- `pi-unity` - optional Unity tooling and screenshot workflows.
-- `pi-extras` - optional utility prompts/skills such as `/continue` and `streamlining-skills`.
+- `pi-subagents` - recommended for multi-agent research/review workflows and package-owned agent discovery
+- `pi-codecks` - optional Codecks tracker integration
+- `pi-plastic` - optional PlasticSCM integration
+- `pi-unity` - optional Unity tooling and screenshot workflows
+- `pi-extras` - optional utility prompts/skills such as `/continue` and `streamlining-skills`
 
-Workflows should degrade gracefully when optional companion packages are unavailable.
+Workflows degrade gracefully when optional companion packages are unavailable.
 
-## Package Contents
+## Package contents
 
 - prompt templates under `prompts/`
 - prompt reference material under `references/`
 - helper skills under `skills/`
 - package-owned agent definitions under `agents/`
 - package maintenance notes under `docs/`, including output format contracts and removed-agent return paths
-- a package registration extension under `extensions/` so `pi-subagents` can discover package-owned agents automatically
+- registration extensions under `extensions/`
+
+## Testing
+
+```bash
+npm test
+```
 
 ## License
 
