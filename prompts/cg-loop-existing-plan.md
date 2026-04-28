@@ -1,12 +1,6 @@
 ---
 description: Run work -> review -> resolve-todo-parallel as one continuous loop
 ---
-## Orchestration
-
-- Delegate specialist work only from the root workflow session when helpful.
-- Delegated workers must return handoffs rather than spawning more workers.
-- Nested delegation is blocked at runtime.
-
 <plan_input>$ARGUMENTS</plan_input>
 
 ## Package File Loading

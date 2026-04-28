@@ -1,19 +1,6 @@
 ---
 description: Capture solved problems and compound team knowledge
 ---
-## Orchestration
-
-- Delegate specialist work only from the root workflow session when helpful.
-- Delegated workers must return handoffs rather than spawning more workers.
-- Nested delegation is blocked at runtime.
-
-## Game-Development Stack Awareness
-
-- Read project-specific stack guidance from `AGENTS.md` or a similar project-local guidance file when present.
-- Detect what can be detected about the engine, VCS, project tracker, build/test pipeline, and content pipeline.
-- Ask targeted questions for missing stack facts instead of assuming Git, GitHub, Unity, PlasticSCM, Codecks, or any other tool.
-- Use companion Pi packages when available and relevant; otherwise provide a clear fallback.
-
 # cg-compound Skill
 
 Purpose: detect multiple solved problems in a session and document each using `unity-docs` sequentially.

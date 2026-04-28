@@ -1,19 +1,6 @@
 ---
 description: Resolve ready todos using safe parallel processing
 ---
-## Orchestration
-
-- Delegate specialist work only from the root workflow session when helpful.
-- Delegated workers must return handoffs rather than spawning more workers.
-- Nested delegation is blocked at runtime.
-
-## Game-Development Stack Awareness
-
-- Read project-specific stack guidance from `AGENTS.md` or a similar project-local guidance file when present.
-- Detect what can be detected about the engine, VCS, project tracker, build/test pipeline, and content pipeline.
-- Ask targeted questions for missing stack facts instead of assuming Git, GitHub, Unity, PlasticSCM, Codecks, or any other tool.
-- Use companion Pi packages when available and relevant; otherwise provide a clear fallback.
-
 # Resolve Todo Parallel
 
 ## Package Reference Loading

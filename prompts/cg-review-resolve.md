@@ -1,12 +1,6 @@
 ---
 description: Run review, auto-triage new todos, and resolve them in parallel on a safe branch
 ---
-## Orchestration
-
-- Delegate specialist work only from the root workflow session when helpful.
-- Delegated workers must return handoffs rather than spawning more workers.
-- Nested delegation is blocked at runtime.
-
 <review_target>$ARGUMENTS</review_target>
 
 ## Package File Loading
