@@ -1,10 +1,11 @@
 # Codecks Workflow (Cards Instead of PRs)
 
-Use this workflow only when source selection resolves to Codecks.
+Use this workflow when source selection includes Codecks.
 
 ## Default Inclusion Rule
 
 - Include cards that moved to done/completed in the selected time window.
+- Prefer transition-based evidence over current-status snapshots. A card should be included because it moved to done inside the window, not just because it is done now.
 
 ## Data to Collect
 
@@ -17,25 +18,42 @@ Use this workflow only when source selection resolves to Codecks.
 - Contributor context from card history/comments when useful
 - Codecks account/domain context for URL construction
 - Usage/access hints from card content/comments (menu path, command, setting location)
+- Source status (`available`, `empty`, `partial`, or `failed`)
 
 ## Query Strategy
 
 1. Preferred: use `codecks_card_list_done_within_timeframe` to fetch cards with done transitions between `WINDOW_START` and `WINDOW_END`.
 2. For each returned card, enrich details (title/tags/priority/content hints) with `codecks_card_get_formatted` as needed.
-3. If the dedicated timeframe tool is unavailable in the current runtime, fallback to `codecks_query` for transition history.
-4. If transition history is still unavailable, fallback to search/list operations and clearly note reduced confidence in output synthesis.
+3. If the dedicated timeframe tool is unavailable in the current runtime, use only supported Codecks query objects or supported shorthand documented by the active tool; do not send free-text prompts or GraphQL strings to `codecks_query`.
+4. If transition history is still unavailable, fallback to card search/list operations only as metadata enrichment and clearly mark Codecks source status as `partial` or `failed`.
 5. Extract concise usage details from card body/comments/checklists when available.
 
-Important: prefer transition-based results over "currently done" snapshots. A card should be included because it moved to done inside the window, not just because it is done now.
-
-Tool-first options:
+Preferred tool payload:
 
 ```text
-codecks_card_list_done_within_timeframe(...)
-codecks_card_search(...)
-codecks_card_get_formatted(...)
-codecks_query(...)
+codecks_card_list_done_within_timeframe({
+  since: "2026-04-19T00:00:00-04:00",
+  until: "2026-04-27T00:00:00-04:00",
+  mode: "cards",
+  limit: 200,
+  scanLimit: 3000,
+  format: "json"
+})
 ```
+
+Use ISO 8601 datetimes with an explicit timezone offset or `Z`. Treat `since` as inclusive. Treat `until` as the upper window bound supplied to the tool; for weekly windows, prefer the next local midnight so the requested end date is unambiguous.
+
+Do not call `codecks_card_search` with `location: "done"` unless the current tool schema explicitly supports that location. Search results are not done-transition evidence by themselves.
+
+## Source Status Labels
+
+- `available`: Codecks transition query succeeded and produced in-window records, or a confirmed quiet window.
+- `empty`: Codecks transition query succeeded and found no in-window records.
+- `partial`: Codecks card metadata was available, but done-transition timeframe evidence was unavailable or incomplete.
+- `failed`: Codecks could not be queried or the timeframe query failed.
+- `not requested`: Codecks was not requested or selected.
+
+If Codecks is only used to enrich card codes found in another source, label it `partial` and state that done-transition evidence was not independently collected.
 
 ## URL Construction Rules
 
