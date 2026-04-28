@@ -1,7 +1,7 @@
 ---
 description: Transform feature descriptions into well-structured project plans following Compound Game Dev conventions
 ---
-# Planning Features Skill
+# Planning Features
 
 Purpose: produce a clear plan document. Do not code.
 Note: the current year is 2026 for plan dates.

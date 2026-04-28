@@ -1,7 +1,7 @@
 ---
 description: Triage findings for the file-based todo system
 ---
-# Triage Skill
+# Triage
 
 Purpose: triage pending todo items before implementation. Do not implement fixes.
 

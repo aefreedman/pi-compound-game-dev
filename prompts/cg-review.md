@@ -1,7 +1,7 @@
 ---
 description: Review changes using stack-aware multi-agent analysis
 ---
-# Reviewing Code Skill
+# Reviewing Code
 
 Purpose: perform a thorough review using parallel agents and structured synthesis.
 

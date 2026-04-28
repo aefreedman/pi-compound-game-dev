@@ -1,7 +1,7 @@
 ---
 description: Create engaging changelogs from recent completed work
 ---
-# Writing Changelogs Skill
+# Writing Changelogs
 
 Purpose: generate concise, traceable changelogs from recent completed work across supported sources.
 

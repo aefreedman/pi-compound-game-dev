@@ -1,7 +1,7 @@
 ---
 description: Capture solved problems and compound team knowledge
 ---
-# cg-compound Skill
+# cg-compound
 
 Purpose: detect multiple solved problems in a session and document each using `unity-docs` sequentially.
 
