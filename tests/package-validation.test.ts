@@ -10,6 +10,11 @@ const readmeText = readFileSync(new URL("../README.md", import.meta.url), "utf8"
 const extensionText = readFileSync(new URL("../extensions/register-subagents.ts", import.meta.url), "utf8");
 const referenceReaderText = readFileSync(new URL("../extensions/read-reference.ts", import.meta.url), "utf8");
 const qualityChecklistText = readFileSync(new URL("../references/cg-work/quality-checklist.md", import.meta.url), "utf8");
+const changelogPromptText = readFileSync(new URL("../prompts/cg-changelog.md", import.meta.url), "utf8");
+const changelogPlasticText = readFileSync(new URL("../references/cg-changelog/plastic-workflow.md", import.meta.url), "utf8");
+const changelogCodecksText = readFileSync(new URL("../references/cg-changelog/codecks-workflow.md", import.meta.url), "utf8");
+const changelogSourceSelectionText = readFileSync(new URL("../references/cg-changelog/source-selection.md", import.meta.url), "utf8");
+const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
@@ -20,6 +25,15 @@ assert(referenceReaderText.includes("renderResult"), "Expected package reference
 assert(referenceReaderText.includes("app.tools.expand"), "Expected package reference reader rendering to include the standard expand key hint.");
 assert(qualityChecklistText.includes("Do not issue multiple `unity_launch_batchmode` calls"), "Expected Unity validation guidance to forbid parallel batchmode runs for one project.");
 assert(qualityChecklistText.includes("do not pass `-quit` with `-runTests`"), "Expected Unity Test Framework guidance to avoid -quit with -runTests.");
+assert(!changelogPlasticText.includes("--orderby"), "Plastic changelog docs must not use unsupported cm find --orderby syntax.");
+assert(!changelogPlasticText.includes("--limit"), "Plastic changelog docs must not use unsupported cm find --limit syntax.");
+assert(changelogPlasticText.includes("order by date desc limit 200"), "Expected Plastic changelog docs to show query-text ordering and limit syntax.");
+assert(changelogCodecksText.includes("codecks_card_list_done_within_timeframe({"), "Expected Codecks changelog docs to show explicit done-timeframe payload.");
+assert(changelogCodecksText.includes("since:") && changelogCodecksText.includes("until:"), "Expected Codecks changelog docs to include since and until arguments.");
+assert(changelogCodecksText.includes("do not send free-text prompts or GraphQL strings"), "Expected Codecks changelog docs to forbid unsupported query fallbacks.");
+assert(changelogPromptText.includes("multiple sources") && changelogPromptText.includes("track status for each source"), "Expected changelog prompt to support multi-source source-status reporting.");
+assert(changelogSourceSelectionText.includes("Do not collapse a multi-source request"), "Expected source selection docs to preserve multi-source requests.");
+assert(changelogErrorHandlingText.includes("Source Status") && changelogErrorHandlingText.includes("reduced confidence"), "Expected changelog error handling to document source status and reduced confidence.");
 assert(pkg.pi?.prompts?.includes("./prompts"), "Expected prompt directory registration.");
 assert(pkg.pi?.skills?.includes("./skills"), "Expected skill directory registration.");
 

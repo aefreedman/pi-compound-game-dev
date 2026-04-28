@@ -51,18 +51,20 @@ Load:
 
 Load references/cg-changelog/time-window.md.
 
-### Step 2: Select Changes Source (Branching)
+### Step 2: Select Changes Source(s)
 
 Load references/cg-changelog/source-selection.md.
 
-Do not assume GitHub. Select one source:
+Do not assume GitHub. Select source(s) from:
 - GitHub merged PRs
 - Plastic merge changesets
 - Codecks cards moved to done
 
+If the user explicitly asks for multiple sources (for example, "use both Plastic and Codecks"), collect each requested source independently and track status for each source. Do not collapse a multi-source request into metadata enrichment from one source.
+
 ### Step 3: Collect Source Data
 
-Load only the selected source workflow:
+Load only the workflow files for selected/requested sources:
 - GitHub -> references/cg-changelog/github-workflow.md
 - Plastic -> references/cg-changelog/plastic-workflow.md
 - Codecks -> references/cg-changelog/codecks-workflow.md
