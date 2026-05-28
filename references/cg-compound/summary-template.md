@@ -9,7 +9,7 @@ Skipped: Y
 
 ### Created Documentation
 
-1. docs/solutions/[category]/[filename].md (workspace-root relative logical path)
+1. ${DOCS_ROOT}/solutions/[category]/[filename].md
    - Problem: [brief description]
    - Category: [category]
    - Detected at: [approximate time]

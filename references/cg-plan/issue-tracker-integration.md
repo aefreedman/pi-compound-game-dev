@@ -50,7 +50,7 @@ issue_tracker: github  # Options: github, codecks, none
 **Supported trackers:**
 - `github` - GitHub Issues and PRs
 - `codecks` - Codecks cards
-- `none` - File-based tracking only (logical docs/todos mapped by resolved roots)
+- `none` - File-based tracking only (paths resolved via `DOCS_ROOT`/`TODOS_ROOT`)
 
 ---
 
@@ -232,7 +232,7 @@ After creating an issue (or noting file-based tracking), report the created trac
 **Tracker:** github
 **Issue:** #123 - feat: Add player dash
 **URL:** https://github.com/org/repo/issues/123
-**Plan:** docs/plans/2026-02-04-feat-add-player-dash-plan.md (workspace-root relative logical path)
+**Plan:** ${DOCS_ROOT}/plans/2026-02-04-feat-add-player-dash-plan.md
 ```
 
 ---

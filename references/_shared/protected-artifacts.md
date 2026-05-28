@@ -8,18 +8,18 @@ This reference file documents Compound Game Dev pipeline artifacts that must nev
 
 <protected_artifacts>
 
-The following logical paths are Compound Game Dev pipeline artifacts and
-must never be flagged for deletion, removal, or gitignore by any review agent,
+The following physical artifact locations are Compound Game Dev pipeline artifacts
+and must never be flagged for deletion, removal, or gitignore by any review agent,
 triage process, or automated tool. Resolve physical roots via
 ./artifact-root-resolution.md.
 
-### `docs/plans/*.md`
+### `${DOCS_ROOT}/plans/*.md`
 - **Purpose:** Plan files created by `/cg-plan`
 - **Nature:** Living documents that track implementation progress
 - **Usage:** Checkboxes are checked off by `/cg-work` as tasks complete
 - **Retention:** Permanent - these document the planning and execution history
 
-### `docs/solutions/*.md`
+### `${DOCS_ROOT}/solutions/*.md`
 - **Purpose:** Solution documents created during problem-solving
 - **Nature:** Institutional knowledge and documented fixes
 - **Usage:** Referenced by future work to avoid repeating mistakes
@@ -114,4 +114,4 @@ workspaces.
 Load protected artifacts list from ./protected-artifacts.md
 ```
 
-Then filter findings to exclude any targeting these paths.
+Then filter findings to exclude any targeting these resolved physical paths.

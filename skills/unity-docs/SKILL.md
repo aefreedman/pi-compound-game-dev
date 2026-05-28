@@ -4,7 +4,7 @@ description: Capture solved Unity problems as categorized documentation with YAM
 ---
 # unity-docs Skill
 
-Purpose: document solved Unity problems into logical `docs/solutions/`
+Purpose: document solved Unity problems under `${DOCS_ROOT}/solutions/`
 with validated YAML frontmatter.
 
 ## Package Reference Loading
@@ -64,10 +64,9 @@ Do not proceed if validation fails.
 
 ### Step 6: Create Documentation
 
-Use `skills/unity-docs/assets/resolution-template.md` via `cg_read_reference` and write to:
+Use `skills/unity-docs/assets/resolution-template.md` via `cg_read_reference` and write to the physical path:
 
-- Logical path: `docs/solutions/<category>/<filename>.md`
-- Physical path: `${DOCS_ROOT}/solutions/<category>/<filename>.md`
+- `${DOCS_ROOT}/solutions/<category>/<filename>.md`
 
 ### Step 7: Critical Pattern Recommendation
 

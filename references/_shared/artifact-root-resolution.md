@@ -1,6 +1,6 @@
 # Artifact Root Resolution
 
-Purpose: resolve physical artifact directories for the logical `docs/` and `todos/`
+Purpose: resolve physical artifact directories for `docs/` and `todos/`
 conventions without hardcoding project-specific workspace naming in shared skills.
 
 ## Definitions
@@ -35,8 +35,8 @@ Shared skills MUST NOT embed project-specific names or marker assumptions.
 ## Required Behavior
 
 1. Resolve `WORKSPACE_ROOT` before any `docs/` or `todos/` read/write.
-2. Use logical path naming (`docs/...`, `todos/...`) in templates and outputs.
-3. Map logical paths to physical roots via `DOCS_ROOT` and `TODOS_ROOT`.
+2. Use physical paths via `DOCS_ROOT` and `TODOS_ROOT` in templates and outputs.
+3. Map any `docs/...` or `todos/...` references to physical roots before reporting paths.
 4. If operating from a coordination root, never create unresolved root-level
    `docs/` or `todos/` directories.
 5. Validate resolved workspace markers before writing.

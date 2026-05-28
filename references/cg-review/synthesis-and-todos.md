@@ -17,8 +17,7 @@
 
 ## Todo Creation (Required)
 
-All findings must become files in logical `todos/` (`${TODOS_ROOT}` physically)
-using the file-todos skill.
+All findings must become files under `${TODOS_ROOT}` using the file-todos skill.
 Create todos immediately after synthesis; do not ask for approval first.
 
 If launched from a coordination root, pass resolved `WORKSPACE_ROOT` and

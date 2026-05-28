@@ -74,10 +74,9 @@ Apply references/cg-plan/formatting-guidelines.md.
 
 ### Step 5: Output
 
-Write to:
+Write to the physical path:
 
-- Logical path: `docs/plans/YYYY-MM-DD-<type>-<descriptive-name>-plan.md`
-- Physical path: `${DOCS_ROOT}/plans/YYYY-MM-DD-<type>-<descriptive-name>-plan.md`
+- `${DOCS_ROOT}/plans/YYYY-MM-DD-<type>-<descriptive-name>-plan.md`
 
 ### Step 6: Issue Creation (Optional)
 

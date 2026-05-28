@@ -6,8 +6,7 @@ description: Manage file-based todo tracking in the todos/ directory
 
 ## Overview
 
-Todos are markdown files in logical `todos/` with YAML frontmatter and structured sections.
-Physical location is resolved via `${TODOS_ROOT}`.
+Todos are markdown files under `${TODOS_ROOT}` with YAML frontmatter and structured sections.
 Use this skill to create, triage, and update file-based todos.
 
 ## File Naming Convention
@@ -57,8 +56,8 @@ Before any todo read/write, load:
 - `references/_shared/artifact-root-resolution.md`
 - `references/_shared/artifact-path-contract.md`
 
-Then operate on `${TODOS_ROOT}` while keeping logical naming (`todos/...`) in
-templates and user-facing descriptions.
+Then operate on `${TODOS_ROOT}` and use physical paths in templates and
+user-facing descriptions.
 
 ## Reference Files (Load On Demand)
 

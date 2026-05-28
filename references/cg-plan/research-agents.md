@@ -45,8 +45,7 @@ Return:
 
 ### 2. cg-learnings-researcher
 
-**Purpose:** Search documented solutions in logical `docs/solutions/`
-(`${DOCS_ROOT}/solutions/` physically) for relevant gotchas, patterns, and lessons learned.
+**Purpose:** Search documented solutions under `${DOCS_ROOT}/solutions/` for relevant gotchas, patterns, and lessons learned.
 
 If you delegate to `cg-learnings-researcher`, pass it a brief like:
 

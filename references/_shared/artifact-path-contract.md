@@ -9,9 +9,9 @@ This contract keeps artifact behavior consistent across all skills.
 2. Shared skill references MUST stay project-agnostic.
 3. Project-specific workspace conventions MUST live in
    `artifact-roots.config.yaml` at the coordination root.
-4. Logical names remain stable across projects:
-   - `docs/...`
-   - `todos/...`
+4. User-facing artifact paths must be reported as physical paths via:
+   - `${DOCS_ROOT}/...`
+   - `${TODOS_ROOT}/...`
 
 ## Subagent Requirements
 
@@ -23,8 +23,8 @@ This contract keeps artifact behavior consistent across all skills.
 ## Example and Snippet Requirements
 
 - Prefer `${DOCS_ROOT}` and `${TODOS_ROOT}` in shell snippets.
-- If using logical `docs/...` or `todos/...` examples, label them as
-  "workspace-root relative".
+- Do not ask agents to report both logical and physical paths; report only the
+  physical path.
 - Do not include snippets that could create root-level coordination artifacts.
 
 ## Protected Artifact Requirements
@@ -38,4 +38,4 @@ This contract keeps artifact behavior consistent across all skills.
 
 - If updating any artifact-related skill, verify this contract still holds.
 - If switching from workspace-scoped mode to shared mode later, update only
-  project adapter values, not global logical path conventions.
+  project adapter values, not global artifact root conventions.
