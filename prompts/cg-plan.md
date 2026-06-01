@@ -44,15 +44,15 @@ Load references/cg-plan/research-agents.md and run:
 - cg-repo-researcher
 - cg-learnings-researcher
 
-### Step 1.5: Supplemental Research (Conditional)
+### Step 1.5: Supplemental Research and Docs Cross-Check (Conditional)
 
-Use criteria in references/cg-plan/research-agents.md.
+Use criteria in references/cg-plan/research-agents.md. Make separate decisions for broad supplemental research and lightweight authoritative docs cross-checks when the plan depends on external engine/framework/package/platform/tool API behavior.
 
 ### Step 1.6: Consolidate Findings
 
 - Include file references with line numbers.
 - Capture institutional learnings from `${DOCS_ROOT}/solutions/`.
-- Include source links if supplemental research was needed.
+- Include source links, local docs paths, or documentation tool/page identifiers if supplemental research or a docs cross-check was performed.
 
 ### Step 2: Choose Detail Level
 

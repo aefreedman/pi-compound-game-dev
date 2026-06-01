@@ -10,9 +10,9 @@ correct workspace.
 
 ## Local Research (Always Run - Parallel)
 
-These agents gather context from the local codebase and documented learnings. Run them in parallel before deciding whether supplemental research is needed.
+These agents gather context from the local codebase and documented learnings. Run them in parallel before deciding whether supplemental research or docs cross-checks are needed.
 
-Run `cg-repo-researcher` and `cg-learnings-researcher` in parallel from the root/orchestrator session before deciding whether supplemental research is needed.
+Run `cg-repo-researcher` and `cg-learnings-researcher` in parallel from the root/orchestrator session before deciding whether supplemental research or docs cross-checks are needed.
 
 ### 1. cg-repo-researcher
 
@@ -71,21 +71,35 @@ Return:
 
 ---
 
-## Supplemental Research (Manual/Tool-Assisted Only)
+## Supplemental Research and Authoritative Docs Cross-Checks
 
 The package no longer registers generic external-research agents for best practices or framework documentation. Those versions were too web-framework-biased for game-development workflows.
 
-When local research shows a real gap, gather supplemental information directly from project-local guidance, official engine/package documentation, or available documentation tools. Keep supplemental research game-dev-specific and cite the sources used.
+Distinguish two kinds of research after local research completes:
+
+1. **Broad supplemental research** - deeper game-dev-specific investigation for gaps, unfamiliar territory, high-risk domains, or open-ended approach selection.
+2. **Authoritative docs cross-check** - a lightweight verification pass against project-appropriate engine, framework, SDK, package, platform, or tool documentation when the plan depends on external API behavior.
+
+Strong local patterns may skip broad supplemental research, but they do not automatically skip an authoritative docs cross-check for API-sensitive behavior. Local examples can be stale, workaround-driven, or accidentally inconsistent with documented package behavior.
+
+Compound Game Dev must stay engine/tool agnostic. Do not assume Unity, Unreal, Godot, or any companion Pi documentation package is present. Use available sources in this order:
+
+1. Project guidance from `AGENTS.md`, README, local docs, and package/tool docs checked into the project.
+2. Engine/package/platform documentation included with the project or installed locally.
+3. Available Pi documentation tools or skills for the detected stack, if they exist in the active session.
+4. Official vendor documentation reachable through available tools.
+
+If no appropriate documentation source or tool is available, say so. Do not claim an authoritative docs check was performed.
 
 ---
 
 ## Research Decision Criteria
 
-**When to run supplemental research:**
+**When to run broad supplemental research or a docs cross-check:**
 
 ### High-Risk Topics → Always Research
 
-These topics warrant supplemental research regardless of local context:
+These topics warrant broad supplemental research regardless of local context:
 - **Security**: Authentication, authorization, data privacy, encryption
 - **Payments**: Financial transactions, billing, payment processing
 - **External APIs**: Third-party integrations, OAuth, webhooks
@@ -94,20 +108,38 @@ These topics warrant supplemental research regardless of local context:
 
 **Why:** The cost of missing something is too high. Supplemental research provides a safety net.
 
-### Strong Local Context → Skip Supplemental Research
+### Strong Local Context → May Skip Broad Supplemental Research
 
-Skip supplemental research when:
+Skip broad supplemental research when:
 - Codebase has good examples of similar functionality
 - AGENTS.md has specific guidance for this feature type
 - User knows exactly what they want (detailed requirements)
 - Technology is already well-used in the project
 - Recent similar work is documented in `${DOCS_ROOT}/solutions/`
 
-**Why:** Supplemental research adds little value when local patterns are clear.
+**Why:** Broad supplemental research adds little value when local patterns are clear.
+
+**Important:** This skip decision does not cover authoritative docs cross-checks. If the plan relies on external engine/framework/package/platform API behavior, still perform a lightweight docs cross-check when suitable docs or tools are available.
+
+### External API or Tool Behavior → Cross-Check Authoritative Docs
+
+Run a lightweight docs cross-check when the feature depends on behavior from:
+- Game engines and editor APIs
+- Engine packages, plugins, SDKs, middleware, or platform services
+- Serialization, asset pipelines, build pipelines, package managers, testing frameworks, or content import/export tools
+- Runtime subsystems such as input, physics, animation, audio, rendering, networking, UI, navigation, save data, localization, or async/task/coroutine systems
+
+**Why:** Local usage should be reconciled with the documented behavior of the engine/package/tool. Common local patterns may still be outdated, accidental, or an undocumented workaround.
+
+When local patterns conflict with authoritative docs:
+- Search `${DOCS_ROOT}/solutions/` and project guidance for an intentional workaround.
+- If a workaround is documented, cite it and follow the project-specific workaround.
+- If no workaround is documented, flag the mismatch as a planning risk or open question.
+- Do not silently treat local usage as correct just because it is common.
 
 ### Uncertainty or Unfamiliar Territory → Research
 
-Run supplemental research when:
+Run broad supplemental research when:
 - User is exploring options (not sure of approach)
 - Codebase has no examples of this functionality
 - New technology or framework being introduced
@@ -120,14 +152,22 @@ Run supplemental research when:
 
 ## Research Decision Announcement
 
-After local research completes, announce the decision and proceed:
+After local research completes, announce both decisions: broad supplemental research and authoritative docs cross-check.
 
 **Examples:**
 
 ```
 Your codebase has solid patterns for this feature.
-   Found 3 similar implementations in Assets/Scripts/.
-   Proceeding without supplemental research.
+   Found 3 similar implementations in the gameplay source tree.
+   Skipping broad supplemental research.
+   This is a project-local content change with no external API behavior assumptions, so no docs cross-check is needed.
+```
+
+```
+Your codebase has solid patterns for this feature.
+   Found 3 similar implementations in the gameplay source tree.
+   Skipping broad supplemental research.
+   This touches engine/package API behavior, and an appropriate docs source is available, so I am doing a lightweight authoritative docs cross-check.
 ```
 
 ```
@@ -143,7 +183,8 @@ Your codebase has solid patterns for this feature.
 ```
 ⚡ You provided detailed requirements and clear approach.
    Codebase patterns match your needs.
-   Proceeding without supplemental research.
+   Skipping broad supplemental research.
+   The feature depends on package API behavior, but no suitable docs source/tool is available; I will flag docs verification as an open risk.
 ```
 
 **User can redirect:** If the decision doesn't match their intent, user can request research be added or skipped.
@@ -166,11 +207,12 @@ After all research completes, consolidate findings:
 - Recommended patterns from institutional knowledge
 - Cross-references
 
-### From supplemental research (if performed):
-- Official engine/package documentation
+### From supplemental research or docs cross-checks (if performed):
+- Official engine/package/platform/tool documentation
 - Project-relevant game-dev practices
 - Version compatibility notes
-- Source URLs or local file paths
+- Source URLs, local docs paths, or documentation tool/page identifiers
+- Reconciliation notes for any mismatch between local patterns and authoritative docs
 
 ### Present consolidated summary:
 
@@ -186,10 +228,10 @@ After all research completes, consolidate findings:
 - ${DOCS_ROOT}/solutions/player-null-reference-fix.md: Always null-check Rigidbody references
 - ${DOCS_ROOT}/solutions/physics-performance.md: Use layer masks for physics queries
 
-### Supplemental Research (if performed)
-- Unity Input System docs: https://docs.unity3d.com/Packages/com.unity.inputsystem@latest
-- Rigidbody reference: https://docs.unity3d.com/Manual/class-Rigidbody.html
-- Project-relevant note: Cache frequently accessed components in initialization paths when profiling or hot-path usage justifies it
+### Supplemental Research / Docs Cross-Check (if performed)
+- Official engine/package docs: [source path, tool page identifier, or URL]
+- Version compatibility note: [engine/package/platform version relevance]
+- Reconciliation note: [local pattern agrees with docs, documented workaround applies, or mismatch flagged as risk]
 ```
 
 ---
@@ -200,7 +242,9 @@ After all research completes, consolidate findings:
 
 **Execution order:**
 1. Run local research agents in parallel (always)
-2. Make research decision based on criteria
-3. Gather supplemental research directly only when needed
-4. Consolidate all findings
-5. Proceed to planning phase
+2. Make separate decisions for broad supplemental research and authoritative docs cross-checks based on the criteria above
+3. Gather broad supplemental research only when needed
+4. Perform a lightweight docs cross-check when the feature relies on external API/tool behavior and suitable docs or tools are available
+5. Reconcile local patterns with docs and documented workarounds; flag unresolved contradictions as risks or open questions
+6. Consolidate all findings
+7. Proceed to planning phase
