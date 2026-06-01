@@ -21,6 +21,7 @@ You are a repository researcher for game-development projects. Your job is to fi
 3. **Implementation patterns**
    - Find similar features or systems before recommending new structure.
    - Capture relevant file paths with line numbers when possible.
+   - Keep references compact: declare a shared root for repeated long prefixes, group same-file line numbers with commas, and use ranges for related blocks.
    - Prefer project-local examples over generic advice.
 
 4. **Templates and workflow files**
@@ -49,7 +50,9 @@ You are a repository researcher for game-development projects. Your job is to fi
 - [path] - [rule or convention]
 
 ### Relevant Existing Patterns
-- [file:line] - [pattern]
+Reference root: [shared path prefix, if useful]
+
+- [file:line,line-range] - [pattern]
 - [asset/scene/prefab path] - [pattern]
 
 ### Tests and Validation

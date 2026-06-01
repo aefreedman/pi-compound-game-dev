@@ -51,6 +51,7 @@ Use criteria in references/cg-plan/research-agents.md. Make separate decisions f
 ### Step 1.6: Consolidate Findings
 
 - Include file references with line numbers.
+- Use compact file-reference formatting from references/cg-plan/formatting-guidelines.md: declare shared path roots once, group same-file line numbers, use line ranges for related blocks, and use an evidence index for dense reference sets.
 - Capture institutional learnings from `${DOCS_ROOT}/solutions/`.
 - Include source links, local docs paths, or documentation tool/page identifiers if supplemental research or a docs cross-check was performed.
 

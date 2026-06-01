@@ -117,10 +117,12 @@ Validation:
 
 ## References & Research
 
+Reference root: {SHARED_PATH_PREFIX_IF_USEFUL}
+
 ### Internal References
 
-- {FILE_PATH:LINE_NUMBER} - {WHY_RELEVANT}
-- {FILE_PATH:LINE_NUMBER} - {WHY_RELEVANT}
+- `{FILE_PATH:LINE_OR_RANGE,LINE}` - {WHY_RELEVANT}
+- `{FILE_PATH:LINE_OR_RANGE,LINE}` - {WHY_RELEVANT}
 
 ### External References
 

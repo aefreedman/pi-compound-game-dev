@@ -91,10 +91,12 @@ public class ExampleImplementation : MonoBehaviour
 
 ## References & Research
 
+Reference root: {SHARED_PATH_PREFIX_IF_USEFUL}
+
 ### Internal References
-- Similar implementations: {FILE_PATH:LINE_NUMBER}
-- Architecture patterns: {FILE_PATH:LINE_NUMBER}
-- Configuration: {FILE_PATH:LINE_NUMBER}
+- Similar implementations: `{FILE_PATH:LINE_OR_RANGE,LINE}` - {WHY_RELEVANT}
+- Architecture patterns: `{FILE_PATH:LINE_OR_RANGE,LINE}` - {WHY_RELEVANT}
+- Configuration: `{FILE_PATH:LINE_OR_RANGE,LINE}` - {WHY_RELEVANT}
 
 ### External References
 - Framework documentation: {URL}

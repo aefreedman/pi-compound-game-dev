@@ -34,6 +34,8 @@ Research focus:
 
 Return:
 - Relevant file paths with line numbers (e.g., Assets/Scripts/PlayerController.cs:42)
+- Compact same-file references when useful (e.g., Assets/Scripts/PlayerController.cs:42,88-104)
+- A shared reference root if it avoids repeating a long path prefix
 - Code examples showing existing patterns
 - AGENTS.md conventions (if any)
 - Technology assessment (familiar vs new to this project)
@@ -196,7 +198,7 @@ Your codebase has solid patterns for this feature.
 After all research completes, consolidate findings:
 
 ### From cg-repo-researcher:
-- Relevant file paths (with line numbers)
+- Relevant file paths with line numbers, compacted by shared root and same-file line groups when useful
 - Code examples showing existing patterns
 - AGENTS.md conventions
 - Recommended file locations
@@ -220,9 +222,11 @@ After all research completes, consolidate findings:
 ## Research Findings Summary
 
 ### Existing Patterns
-- Player movement: Assets/Scripts/PlayerController.cs:42
-- Input handling: Assets/Scripts/InputManager.cs:15
-- Animation system: Assets/Scripts/AnimationController.cs:78
+References use paths relative to the main gameplay source root unless noted.
+
+- Player movement: `PlayerController.cs:42,88-104`
+- Input handling: `InputManager.cs:15`
+- Animation system: `AnimationController.cs:78`
 
 ### Institutional Knowledge
 - ${DOCS_ROOT}/solutions/player-null-reference-fix.md: Always null-check Rigidbody references
