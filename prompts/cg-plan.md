@@ -39,9 +39,13 @@ references/_shared/artifact-path-contract.md.
 
 ### Step 1: Local Research (Always)
 
-Load references/cg-plan/research-agents.md and run:
+Load references/cg-plan/research-agents.md and references/_shared/repo-research-efficiency.md.
 
-- cg-repo-researcher
+Run the root fast pass from references/_shared/repo-research-efficiency.md before delegation: read local guidance, detect VCS, discover ignore files, identify likely source/content roots, and run a few focused searches from the feature terms. If the fast pass detects a Unity project, load references/_shared/unity-repo-research.md and apply it conditionally; otherwise stay engine/tool agnostic.
+
+Then run bounded local research in parallel:
+
+- cg-repo-researcher with the fast-pass findings, candidate roots/terms, VCS type, ignore-file instructions, and desired depth
 - cg-learnings-researcher
 
 ### Step 1.5: Supplemental Research and Docs Cross-Check (Conditional)
@@ -96,6 +100,8 @@ Use `issue_tracker: github|codecks|none` in AGENTS.md; treat missing/unknown val
 6. Issue creation -> references/cg-plan/issue-tracker-integration.md
 7. Artifact root resolution -> references/_shared/artifact-root-resolution.md
 8. Artifact path contract -> references/_shared/artifact-path-contract.md
+9. Repo research efficiency -> references/_shared/repo-research-efficiency.md
+10. Unity repo research (conditional) -> references/_shared/unity-repo-research.md
 
 ## Ambiguity Handling
 

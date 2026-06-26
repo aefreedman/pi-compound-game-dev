@@ -34,11 +34,11 @@ From the feature/task description, identify:
 - **Module/system names**: e.g., "InventorySystem", "PlayerController", "Addressables"
 - **Technical terms**: e.g., "serialization", "rigidbody", "shader variant", "input action"
 - **Problem indicators**: e.g., "slow", "error", "timeout", "memory", "missing reference"
-- **Component/content types**: e.g., "MonoBehaviour", "ScriptableObject", "prefab", "scene", "build settings"
+- **Component/content types**: e.g., engine components, data assets, prefabs/scenes/maps/levels, import settings, build settings
 
 ### Step 2: Category-Based Narrowing (Optional but Recommended)
 
-If the feature type is clear, narrow the search to the relevant `docs/solutions/` category directory. Do not rely on a duplicated category list in this agent; use `cg_read_reference` to read `skills/unity-docs/references/yaml-schema.md` when you need the authoritative categories, problem types, or field values.
+If the feature type is clear, narrow the search to the relevant `docs/solutions/` category directory. Do not rely on a duplicated category list in this agent. If the active project/package provides a schema reference for documented solutions, read that project-appropriate schema only when the exact categories, problem types, or field values matter. For projects using this package's Unity solution-doc skill, `skills/unity-docs/references/yaml-schema.md` remains the authoritative schema reference and should be loaded with `cg_read_reference` when schema details matter.
 
 ### Step 3: rg/Grep Pre-Filter (Critical for Efficiency)
 
@@ -71,15 +71,11 @@ If `rg` is not installed, use equivalent recursive `grep` commands with `--inclu
 rg -il --glob '*.md' 'physics' "${DOCS_ROOT}/solutions"
 ```
 
-### Step 3b: Always Check Critical Patterns
+### Step 3b: Check Critical Patterns When Present
 
-**Regardless of indexed or rg/Grep results**, always read the critical patterns file:
+If the knowledge base has a critical-patterns document, include it in the candidate set. Do not assume a specific engine package or path owns this file. Prefer indexed discovery first, then fall back to a direct existence check for common local paths such as `docs/solutions/patterns/critical-patterns.md`.
 
-```bash
-Read: docs/solutions/patterns/critical-patterns.md
-```
-
-This file contains must-know patterns that apply across all work - high-severity issues promoted to required reading. Scan for patterns relevant to the current feature/task.
+Critical-pattern documents contain must-know patterns that apply across work - high-severity issues promoted to required reading. Scan only for patterns relevant to the current feature/task.
 
 ### Step 4: Read Frontmatter of Candidates Only
 
@@ -92,7 +88,7 @@ Read: [file_path] with limit:30
 
 Extract relevant frontmatter fields such as:
 - **module**: Which module/system the solution applies to
-- **problem_type**: Category of issue; consult `skills/unity-docs/references/yaml-schema.md` with `cg_read_reference` if valid values matter
+- **problem_type**: Category of issue; consult a project-appropriate schema reference if valid values matter
 - **component**: Technical component affected
 - **symptoms**: Observable symptoms
 - **root_cause**: What caused the issue
@@ -142,7 +138,7 @@ For each relevant document, return a summary in this format:
 
 ## Frontmatter Schema Reference
 
-Reference `skills/unity-docs/references/yaml-schema.md` for the authoritative schema, category directories, problem types, components, root causes, and severity values. Read that file with `cg_read_reference` when those details matter.
+Use project-local solution documentation and any active package schema references as the authority for category directories, problem types, components, root causes, and severity values. Do not assume Unity-specific documentation schemas exist unless the project/package provides them; when this package's Unity solution-doc skill is in use, prefer `skills/unity-docs/references/yaml-schema.md` via `cg_read_reference` for those schema details.
 
 ## Output Format
 
@@ -157,8 +153,8 @@ Structure your findings as:
 - **Files Scanned**: [X total files]
 - **Relevant Matches**: [Y files]
 
-### Critical Patterns (Always Check)
-[Any matching patterns from critical-patterns.md]
+### Critical Patterns (If Present)
+[Any matching patterns from critical-patterns.md or equivalent local critical-pattern document]
 
 ### Relevant Learnings
 
@@ -193,7 +189,7 @@ Structure your findings as:
 - Use category directories to narrow scope when feature type is clear
 - Do a broader content rg/Grep as fallback if <3 candidates found
 - Re-narrow with more specific patterns if >25 candidates found
-- Always read the critical patterns file (Step 3b)
+- Check the critical patterns file when present (Step 3b)
 - Only read frontmatter of indexed or rg/Grep-matched candidates (not all files)
 - Filter aggressively - only fully read truly relevant files
 - Prioritize high-severity and critical patterns
@@ -209,7 +205,7 @@ Structure your findings as:
 - Read every file in full (wasteful)
 - Return raw document contents (distill instead)
 - Include tangentially related learnings (focus on relevance)
-- Skip the critical patterns file (always check it)
+- Skip a discovered critical patterns file without considering whether it applies
 
 ## Integration Points
 

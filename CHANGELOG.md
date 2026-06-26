@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.1 - 2026-06-26
+
+### Added
+
+- Added shared repo-research efficiency guidance for root fast-pass investigation, bounded subagent delegation, Plastic-aware `rg` ignore handling, and package/tool selection during research.
+- Added conditional Unity repo-research and review guidance reference files so Unity-specific checks are applied only when Unity is detected.
+
+### Changed
+
+- Updated `/cg-plan` and `cg-repo-researcher` to keep repository research scoped, fast, and evidence-focused instead of mapping whole projects by default.
+- Updated review prompts and review agents to focus on changed files and directly related local patterns, while still using relevant package tools such as `cg_search_artifacts`, VCS tools, raw `rg`, and companion documentation tools when available.
+- Generalized hard-coded Unity wording in review and learnings guidance while preserving access to this package's Unity solution-doc schema when that skill is in use.
+
 ## 0.2.0 - 2026-06-25
 
 ### Added

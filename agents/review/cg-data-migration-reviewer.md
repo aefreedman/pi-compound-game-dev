@@ -30,7 +30,7 @@ For every data migration or backfill, you must:
 - [ ] Does the migration run in chunks or with throttling for large save libraries?
 - [ ] Are migration steps scoped narrowly? Could it affect unrelated data?
 - [ ] Are we writing both new and legacy fields during transition (dual-write)?
-- [ ] Are there dependencies on asset GUIDs, ScriptableObject references, or addressables?
+- [ ] Are there dependencies on asset/content IDs, GUIDs, engine data objects, addressables/bundles, or equivalent content references?
 
 ### 3. Verify the Mapping / Transformation Logic
 
@@ -76,7 +76,7 @@ foreach (var save in migratedSaves.Take(10))
 
 1. **Swapped IDs** - `1 => TypeA, 2 => TypeB` in code but `1 => TypeB, 2 => TypeA` in real data
 2. **Missing error handling** - `.TryGetValue` fallback missing for unknown legacy values
-3. **Orphaned references** - ScriptableObject GUIDs replaced without mapping
+3. **Orphaned references** - asset/content IDs or GUIDs replaced without mapping
 4. **Incomplete dual-write** - New saves write only new field, breaking rollback
 
 ## Output Format

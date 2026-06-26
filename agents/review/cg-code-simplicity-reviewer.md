@@ -23,7 +23,7 @@ Check for:
 Common game-dev simplification opportunities:
 
 - Use existing engine/project lifecycle patterns instead of inventing parallel systems
-- Prefer serialized fields, ScriptableObjects, prefabs, or project data patterns where they are already the local convention
+- Prefer engine/project-native serialized fields, data assets, prefabs/content objects, or local data patterns where they are already the convention
 - Avoid custom event/input/save frameworks unless the plan requires them
 - Avoid object pooling or caching work unless frequency/profiling justifies it
 - Keep prototype code proportional to what the feature needs to prove

@@ -4,7 +4,9 @@ This file contains the definitions and prompts for research agents used during f
 
 When running from a coordination root, pass resolved `WORKSPACE_ROOT`,
 `DOCS_ROOT`, and `TODOS_ROOT` into each subagent prompt so searches stay in the
-correct workspace.
+correct workspace. Also pass root fast-pass findings from
+references/_shared/repo-research-efficiency.md so delegated research stays
+bounded.
 
 ---
 
@@ -12,35 +14,55 @@ correct workspace.
 
 These agents gather context from the local codebase and documented learnings. Run them in parallel before deciding whether supplemental research or docs cross-checks are needed.
 
-Run `cg-repo-researcher` and `cg-learnings-researcher` in parallel from the root/orchestrator session before deciding whether supplemental research or docs cross-checks are needed.
+Before delegation, the root/orchestrator agent performs the short fast pass from references/_shared/repo-research-efficiency.md. This keeps the main agent involved in the initial investigation and gives subagents a bounded scope instead of asking them to map the whole repository.
+
+Run `cg-repo-researcher` and `cg-learnings-researcher` in parallel from the root/orchestrator session after the fast pass. The repo researcher should receive candidate roots, candidate terms, already-read files, VCS type, ignore-file handling, and a depth budget.
 
 ### 1. cg-repo-researcher
 
 **Purpose:** Understand existing patterns, conventions, and technology familiarity in the codebase.
 
-If you delegate to `cg-repo-researcher`, pass it a brief like:
+If you delegate to `cg-repo-researcher`, pass it a bounded brief like:
 
 ```text
-Analyze the codebase for patterns and conventions related to this feature:
+Analyze local patterns and conventions related to this feature. Do not map the whole repo; use the fast-pass findings and stop when enough evidence exists for planning.
 
 Feature: {feature_description}
 
+Fast-pass findings from root agent:
+- WORKSPACE_ROOT: {workspace_root}
+- VCS: {plastic|git|none}
+- Ignore handling: {e.g., use --ignore-file ignore.conf --ignore-file cloaked.conf when present}
+- Likely source/content roots: {candidate_roots}
+- Candidate terms/symbols: {candidate_terms}
+- Already-read or known-relevant files: {known_files}
+- Project type hints: {engine/tool hints; if Unity detected, apply references/_shared/unity-repo-research.md guidance}
+- Depth: {fast|focused|deep; default fast}
+
 Research focus:
-- Existing patterns: How is similar functionality implemented?
+- Existing patterns: How is similar functionality implemented in the scoped roots?
 - Technology familiarity: Is this tech stack already used in the project?
-- AGENTS.md guidance: Are there documented conventions for this type of work?
+- AGENTS.md/local guidance: Are there documented conventions for this type of work?
 - Pattern consistency: What naming, structure, and style conventions should be followed?
 - File organization: Where should new code live based on existing structure?
 
+Default limits for fast depth:
+- Search likely roots first with VCS-aware ignore handling.
+- Read only the top 3-6 high-signal files unless the brief requests more.
+- Stop after finding 2-4 relevant patterns, or after a scoped search shows no local pattern.
+- Report uncertainty instead of expanding to generated, dependency, cache, build, or whole-repo searches.
+
 Return:
+- Search scope: roots searched, VCS/ignore handling, depth used
 - Relevant file paths with line numbers (e.g., Assets/Scripts/PlayerController.cs:42)
 - Compact same-file references when useful (e.g., Assets/Scripts/PlayerController.cs:42,88-104)
 - A shared reference root if it avoids repeating a long path prefix
 - Code examples showing existing patterns
-- AGENTS.md conventions (if any)
+- AGENTS.md/local conventions (if any)
 - Technology assessment (familiar vs new to this project)
 - Recommended file locations for new code
 - Consistency notes (naming, style, architecture)
+- Not-found or uncertain areas and recommended next reads for the root agent
 ```
 
 ---
@@ -198,10 +220,12 @@ Your codebase has solid patterns for this feature.
 After all research completes, consolidate findings:
 
 ### From cg-repo-researcher:
+- Search scope, VCS/ignore handling, and depth budget used
 - Relevant file paths with line numbers, compacted by shared root and same-file line groups when useful
 - Code examples showing existing patterns
 - AGENTS.md conventions
 - Recommended file locations
+- Not-found/uncertain areas and recommended next reads for the root agent
 
 ### From cg-learnings-researcher:
 - Relevant solution documents
@@ -245,10 +269,12 @@ References use paths relative to the main gameplay source root unless noted.
 **Load this file when:** Planning a feature and need to gather research context.
 
 **Execution order:**
-1. Run local research agents in parallel (always)
-2. Make separate decisions for broad supplemental research and authoritative docs cross-checks based on the criteria above
-3. Gather broad supplemental research only when needed
-4. Perform a lightweight docs cross-check when the feature relies on external API/tool behavior and suitable docs or tools are available
-5. Reconcile local patterns with docs and documented workarounds; flag unresolved contradictions as risks or open questions
-6. Consolidate all findings
-7. Proceed to planning phase
+1. Root/orchestrator agent performs the fast pass from references/_shared/repo-research-efficiency.md
+2. If the fast pass detects Unity, load references/_shared/unity-repo-research.md and pass the relevant constraints into the repo-research brief
+3. Run bounded local research agents in parallel
+4. Make separate decisions for broad supplemental research and authoritative docs cross-checks based on the criteria above
+5. Gather broad supplemental research only when needed
+6. Perform a lightweight docs cross-check when the feature relies on external API/tool behavior and suitable docs or tools are available
+7. Reconcile local patterns with docs and documented workarounds; flag unresolved contradictions as risks or open questions
+8. Consolidate root fast-pass findings, subagent findings, and any docs checks
+9. Proceed to planning phase

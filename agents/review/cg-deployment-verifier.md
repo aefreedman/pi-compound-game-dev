@@ -37,9 +37,9 @@ Checks to run BEFORE deployment:
 
 ```
 - Verify save schema version in latest live data
-- Run static validation on migrated ScriptableObjects
-- Validate build settings and scripting defines
-- Confirm addressable group consistency (no missing labels)
+- Run static validation on migrated engine/project data assets
+- Validate build settings, defines, and platform configuration
+- Confirm content bundle/addressable/package consistency when applicable
 ```
 
 **Expected Results:**
@@ -52,7 +52,7 @@ For each destructive step:
 
 | Step | Command | Estimated Runtime | Batching | Rollback |
 |------|---------|-------------------|----------|----------|
-| 1. Update build settings | Unity Editor | < 1 min | N/A | Revert settings asset |
+| 1. Update build settings | Engine/editor/tooling | < 1 min | N/A | Revert settings asset |
 | 2. Run data migration | Migration tool | ~10 min | Per save | Restore backup |
 | 3. Build target | Build pipeline | ~15 min | N/A | Rebuild previous version |
 | 4. Enable feature | Config flag | Instant | N/A | Disable flag |
@@ -61,8 +61,8 @@ For each destructive step:
 
 ```
 - Load a sample of real player saves (automated smoke test)
-- Open key scenes and verify no missing references
-- Validate addressables or asset bundles load
+- Open key scenes/levels/maps or content roots and verify no missing references
+- Validate addressables, bundles, packages, or equivalent content loads
 - Verify build logs contain no new warnings or errors
 - Compare crash rate and startup time with baseline
 ```
@@ -93,7 +93,7 @@ For each destructive step:
 **Sample console verification (run 1 hour after deploy):**
 ```
 - Load representative save files and verify key fields
-- Open critical scenes in editor and check console
+- Open critical scenes/levels/maps or content roots in the editor/tooling and check logs
 - Verify build output logs for warnings
 ```
 

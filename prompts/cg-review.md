@@ -38,9 +38,11 @@ Use the VCS workflow to collect:
 - Focus areas
 - File count
 
+Also collect lightweight stack/scope hints from changed file paths and local guidance. If Unity is detected, load references/_shared/unity-review-guidance.md and pass its relevant checks as conditional context to review agents. Otherwise keep stack guidance engine/tool agnostic.
+
 ### Step 3: Launch Parallel Review Agents
 
-Use prompts in references/cg-review/agent-prompts.md.
+Use prompts in references/cg-review/agent-prompts.md. Instruct agents to focus on changed files and directly related local patterns, not broad repository audits.
 
 ### Step 4: Run Conditional Agents (If Needed)
 
@@ -85,6 +87,7 @@ On-demand:
 
 - Protected artifacts -> references/_shared/protected-artifacts.md
 - Unity testing -> references/cg-review/unity-testing.md
+- Unity review guidance -> references/_shared/unity-review-guidance.md
 - Error handling -> references/cg-review/error-handling.md
 
 ## Success Criteria

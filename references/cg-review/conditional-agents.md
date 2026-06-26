@@ -8,11 +8,11 @@ These agents are run ONLY when the PR or code review matches specific criteria. 
 
 Run migration agents when changes contain:
 - Save system data structures
-- ScriptableObject schemas or asset serialization
-- Asset migration scripts or Unity upgrade paths
-- Asset import settings or addressable configurations
+- Engine/package data schemas or asset/content serialization
+- Asset/content migration scripts or engine/package upgrade paths
+- Asset import settings, addressable/bundle/content-pipeline configurations, or equivalent project systems
 - Build settings, platform configs, or deployment pipelines
-- Title/description mentions: migration, asset upgrade, save data, build config
+- Title/description mentions: migration, asset upgrade, content upgrade, save data, build config
 
 ---
 
@@ -22,18 +22,17 @@ Run migration agents when changes contain:
 
 1. **File patterns:**
    - `*Migration.cs`, `*Migrator.cs`
-   - `*.asset` (ScriptableObjects)
-   - `*.unity` (Scene files)
-   - `ProjectSettings/*.asset`
-   - `Assets/AddressableAssetsData/`
+   - Engine asset/content data files such as `*.asset`, scene/level/map files, or project-specific serialized content
+   - Engine/project settings files
+   - Addressable/bundle/content-pipeline configuration directories or equivalents
    - Build configuration files
 
 2. **Code patterns (grep for):**
-   - `[SerializeField]` changes
-   - `SaveData`, `SaveSystem`
-   - `ScriptableObject` schema modifications
-   - `AssetDatabase` operations
-   - `BuildPipeline`, `BuildTarget`
+   - Serialization attribute or schema changes
+   - `SaveData`, `SaveSystem`, or project-specific persistence types
+   - Engine data asset schema modifications
+   - Asset database/import/content-pipeline operations
+   - Build pipeline or target/platform APIs
 
 3. **Title/description keywords:**
    - "migration", "migrate"
@@ -50,7 +49,7 @@ Run migration agents when changes contain:
 
 Validate data migration safety and compatibility.
 
-**Run when:** Changes affect save data, ScriptableObjects, or asset serialization.
+**Run when:** Changes affect save data, engine data schemas, asset/content serialization, or migration paths.
 
 If you delegate to `cg-data-migration-reviewer`, pass it a brief like:
 
@@ -62,8 +61,8 @@ Title: $PR_TITLE
 
 Validate:
 - Save data format migrations and versioning
-- ScriptableObject schema changes and backward compatibility
-- Asset serialization changes
+- Engine/package data schema changes and backward compatibility
+- Asset/content serialization changes
 - Migration script correctness (prevents ID swaps, data loss)
 - Rollback procedures and recovery paths
 - Player data impact assessment

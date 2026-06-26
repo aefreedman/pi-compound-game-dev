@@ -24,7 +24,7 @@ Ensure that the code is ready for analysis (either in worktree or on current bra
 
 ## Step 2: Collect Review Context
 
-Before launching review agents, gather comprehensive context about the changes to pass to each agent.
+Before launching review agents, gather sufficient scoped context about the changes to pass to each agent. Do not perform broad repository research here; agents should focus on changed files and directly related local patterns.
 
 ```bash
 # Get PR metadata and changed files

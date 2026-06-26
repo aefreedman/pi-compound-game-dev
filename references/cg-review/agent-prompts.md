@@ -1,6 +1,10 @@
 # Standardized Agent Prompts
 
-This file contains the prompts for all review agents. Pass context variables (`$CHANGED_FILES`, `$PR_TITLE`, `$FOCUS_AREAS`, `$FILE_COUNT`) to each agent.
+This file contains the prompts for all review agents. Pass context variables (`$CHANGED_FILES`, `$PR_TITLE`, `$FOCUS_AREAS`, `$FILE_COUNT`) to each agent, plus stack/project hints gathered by the root agent.
+
+Before launching review agents, the root/orchestrator should identify obvious stack hints from changed files and project guidance. If Unity is detected, load references/_shared/unity-review-guidance.md and pass the relevant checks as conditional context. Otherwise keep prompts engine/tool agnostic and use local project guidance for equivalent engine/package concerns.
+
+Use relevant package/project tools where they fit the evidence source: `cg_search_artifacts` for docs/todos learnings, raw `rg` for changed source/content verification, VCS tools for history/diffs, and companion engine/package docs tools when available for authoritative API behavior.
 
 ---
 
@@ -46,16 +50,10 @@ $CHANGED_FILES
 Review focus: $FOCUS_AREAS
 
 Check for:
-- Design patterns and anti-patterns
-- Naming consistency (Unity conventions: PascalCase for public, camelCase for private)
-- Code duplication between files
-- Unity-specific issues:
-  * Update/FixedUpdate with heavy operations or allocations
-  * GameObject.Find() or FindObjectOfType() in frequently called methods
-  * Missing null checks for Unity object references
-  * String-based method calls (SendMessage, Invoke)
-  * LINQ or allocations in hot paths
-  * Unoptimized physics queries (missing layer masks)
+- Design patterns and anti-patterns in the changed files and directly related local patterns
+- Naming consistency against project/local conventions
+- Code duplication between changed files or nearby modules
+- Engine/package-specific issues only when the stack hints or changed files make them relevant; for Unity projects, apply references/_shared/unity-review-guidance.md
 - Architectural boundary violations
 
 Return findings with:
@@ -85,7 +83,7 @@ Evaluate:
 - Separation of concerns and modularity
 - Dependency management and coupling
 - Layer violations or architectural boundaries
-- Unity-specific architecture (Component pattern, ScriptableObject architecture, etc.)
+- Engine/package-specific architecture only when relevant; for Unity projects, apply references/_shared/unity-review-guidance.md
 - Scalability and maintainability implications
 - Technical debt introduction or reduction
 
@@ -141,11 +139,10 @@ Title: $PR_TITLE
 
 Check for:
 - State management consistency
-- Null reference handling
+- Null/reference handling
 - Race conditions or timing issues
 - Data validation and constraints
-- Unity serialization issues (SerializeField, [NonSerialized])
-- ScriptableObject data integrity
+- Engine/package serialization, schema, and asset/reference integrity only when relevant; for Unity projects, apply references/_shared/unity-review-guidance.md
 - Save/load data consistency
 - Event ordering and initialization
 
@@ -258,4 +255,6 @@ Launch all 8 agents in parallel from the root/orchestrator session using one par
 For the real run:
 - delegate all eight specialists together rather than one by one
 - pass the full review context (`$CHANGED_FILES`, `$PR_TITLE`, `$FOCUS_AREAS`, `$FILE_COUNT`) to each specialist
+- pass stack hints and any loaded conditional stack guidance, such as references/_shared/unity-review-guidance.md for Unity projects
+- tell agents to focus on changed files and directly related local patterns, not broad repository audits
 - wait for all results before proceeding to conditional agents and synthesis.

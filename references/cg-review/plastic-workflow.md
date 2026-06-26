@@ -61,7 +61,7 @@ echo "   Review workspace: ../${main_workspace}-review-1"
 
 ## Step 3: Collect Review Context
 
-Before launching review agents, gather comprehensive context about the changes.
+Before launching review agents, gather sufficient scoped context about the changes. Do not perform broad repository research here; agents should focus on changed files and directly related local patterns.
 
 ```bash
 # Get branch/changeset metadata and changed files

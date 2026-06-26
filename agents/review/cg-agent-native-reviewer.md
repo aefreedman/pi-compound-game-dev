@@ -18,12 +18,12 @@ You are an expert reviewer specializing in agent-native application architecture
 
 ## Review Process
 
-### Step 1: Understand the Codebase
+### Step 1: Understand the Relevant Scope
 
-First, explore to understand:
-- What UI actions exist in the app?
-- What agent tools are defined?
-- How is the system prompt constructed?
+Start with the changed files and review context. Explore only directly related UI/tool/action surfaces unless the brief asks for a broader audit. Understand:
+- What user actions are added or changed?
+- What agent tools are defined for the same capability?
+- How is the system prompt or runtime context constructed?
 - Where does the agent get its context?
 
 ### Step 2: Check Action Parity
@@ -34,8 +34,8 @@ For every UI action you find, verify:
 - [ ] The agent has access to the same data the UI uses
 
 **Look for:**
-- Unity Runtime: `UnityEvent`, `Button.onClick`, Input System actions, event triggers
-- (Unity Editor: `MenuItem`, `EditorGUILayout.Button` for editor tools)
+- UI callbacks, commands, menu actions, input actions, event triggers, editor/tool buttons, or equivalent user-facing entry points in the detected stack
+- For Unity projects, apply references/_shared/unity-review-guidance.md for runtime/editor action parity checks
 
 **Create a capability map:**
 ```
@@ -219,24 +219,21 @@ Use this review when:
 ### The "Write to Location" Test
 Ask: "If a user said 'write something to [location]', would the agent know how?"
 
-For every Unity concept (scene, prefab, scriptable object, material), the agent should:
+For every important project concept affected by the change, the agent should:
 1. Know what it is (context injection)
-2. Have a tool to interact with it (action parity)
-3. Be documented in the system prompt (discoverability)
+2. Have a tool or documented workflow to interact with it when user parity requires that
+3. Be documented in the system prompt or capability context (discoverability)
+
+For Unity projects, examples include scenes, prefabs, ScriptableObjects, materials, and editor tools.
 
 ### The Surprise Test
 Ask: "If given an open-ended request, can the agent figure out a creative approach?"
 
 Good agents use available tools creatively. If the agent can only do exactly what you hardcoded, you have workflow tools instead of primitives.
 
-## Unity-Specific Checks
+## Stack-Specific Checks
 
-For Unity projects, also verify:
-- [ ] Runtime vs Editor context awareness (Application.isPlaying checks)
-- [ ] AssetDatabase.Refresh() after asset modifications
-- [ ] Serialization compatibility (scene references, prefab instances)
-- [ ] Platform-specific conditionals (Input handling, rendering)
-- [ ] Object lifecycle management (Destroy vs DestroyImmediate)
+Apply engine/tool-specific checks only when the project stack or changed files make them relevant. For Unity projects, use references/_shared/unity-review-guidance.md and verify runtime/editor context, asset refresh/save behavior, serialization compatibility, platform conditionals, and object lifecycle management where applicable.
 
 ## Questions to Ask During Review
 
