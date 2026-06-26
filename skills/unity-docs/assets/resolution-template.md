@@ -1,14 +1,17 @@
 ---
+schema_version: 2
+doc_type: [solution|pattern|workflow|documentation_gap]
+category: [build_ci|editor_workflow|asset_pipeline|packages_integrations|project_configuration|serialization_data|prefabs_scenes|gameplay_code|physics_navigation|rendering_shaders|ui|animation_timeline|audio|input|performance|platform|testing_validation|tooling_vcs]
+failure_mode: [compile_error|build_failure|test_failure|editor_crash|editor_hang|runtime_exception|runtime_crash|incorrect_behavior|visual_artifact|asset_import_failure|performance_regression|missing_reference|data_loss_or_corruption|version_incompatibility|workflow_friction|documentation_gap]
 module: [Unity subsystem name or specific module]
 date: [YYYY-MM-DD]
-problem_type: [build_error|editor_crash|runtime_error|performance_issue|asset_import_issue|physics_bug|rendering_bug|ui_bug|audio_bug|animation_bug|input_bug|integration_issue|logic_error|editor_workflow|best_practice|documentation_gap|serialization_issue|platform_specific]
-component: [monobehaviour|scriptable_object|prefab|scene|material|shader|animation_controller|timeline|addressable|asset|editor_script|build_script|package|plugin|ui_toolkit|particle_system|terrain|navmesh|lighting|canvas]
+component: [monobehaviour|scriptable_object|prefab|scene|material|shader|animation_controller|timeline|addressable|asset|editor_script|build_script|package|plugin|ui_toolkit|particle_system|terrain|navmesh|lighting|canvas|test|tooling|version_control]
 symptoms: 
-root_cause: [null_reference|lifecycle_timing|serialization_error|missing_reference|circular_dependency|memory_leak|resource_not_loaded|coroutine_stopped|wrong_thread|prefab_override_issue|asset_import_settings|physics_layer_collision|render_pipeline_config|scene_not_loaded|component_disabled|version_incompatibility|logic_error|config_error|missing_validation]
+root_cause: [null_reference|lifecycle_timing|serialization_error|missing_reference|circular_dependency|memory_leak|resource_not_loaded|coroutine_stopped|wrong_thread|prefab_override_issue|asset_import_settings|physics_layer_collision|render_pipeline_config|scene_not_loaded|component_disabled|version_incompatibility|logic_error|config_error|missing_validation|tooling_error|documentation_gap]
 unity_version: [e.g., 2022.3.21f1]
 render_pipeline: [Built-in|URP X.X.X|HDRP X.X.X - optional]
 platform: [Windows Editor|iOS|Android|WebGL|etc. - optional]
-resolution_type: [code_fix|asset_reimport|prefab_revert|config_change|package_update|editor_restart|cache_clear|player_settings_change|build_settings_change|dependency_update|environment_setup|tooling_addition]
+resolution_type: [code_fix|asset_reimport|prefab_revert|config_change|package_update|editor_restart|cache_clear|player_settings_change|build_settings_change|dependency_update|environment_setup|tooling_addition|documentation_update]
 severity: [critical|high|medium|low]
 tags: [keyword1, keyword2, keyword3]
 ---

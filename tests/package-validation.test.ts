@@ -21,7 +21,7 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
-assert.equal(pkg.version, "0.2.1");
+assert.equal(pkg.version, "0.3.0");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
@@ -36,10 +36,12 @@ assert(artifactSearchText.includes("normalizeTodoStatus") && artifactSearchText.
 assert(artifactSearchText.includes("inMemoryIndexCache") && artifactSearchText.includes("cached.size === indexStat.size"), "Expected artifact search to cache the parsed index in memory safely.");
 assert(artifactSearchText.includes("inProcessIndexQueues") && artifactSearchText.includes("acquireIndexLock") && artifactSearchText.includes(".lock"), "Expected artifact search to serialize concurrent index refreshes.");
 assert(artifactSearchText.includes("requiredTerms") && artifactSearchText.includes("optionalTerms") && artifactSearchText.includes("searchFields") && artifactSearchText.includes("minTermMatches") && artifactSearchText.includes("countMatchedTerms") && artifactSearchText.includes("totalMatches"), "Expected artifact search to support broad-query noise controls and uncapped match counts.");
+assert(artifactSearchText.includes("docType") && artifactSearchText.includes("category") && artifactSearchText.includes("failureMode") && artifactSearchText.includes("failure_mode"), "Expected artifact search to support Unity solution-doc schema v2 filters.");
 assert(artifactSearchText.includes("normalizeSearchText") && artifactSearchText.includes("replace(/[-_/]+/g"), "Expected artifact search to normalize common query separators.");
 assert(artifactSearchText.includes("buildSearchText") && artifactSearchText.includes("suggestedRgCommand") && artifactSearchText.includes("groupResultsByKind") && artifactSearchText.includes("attachRelatedArtifacts"), "Expected artifact search to include normalized index text, rg suggestions, grouping, and related artifacts.");
 assert(artifactSearchText.includes("freshnessMode") && artifactSearchText.includes("freshnessTtlMs") && artifactSearchText.includes("dirtyIndexPaths") && artifactSearchText.includes("bodyPreview"), "Expected artifact search to support fast-path freshness and avoid full-body indexing by default.");
 assert(artifactSearchText.includes("preparedResultCount") && artifactSearchText.includes("returnedResultCount"), "Expected artifact search details to distinguish prepared and returned result counts.");
+assert(changelogText.includes("0.3.0") && changelogText.includes("migrate-unity-docs-schema"), "Expected changelog entry for Unity docs schema migration.");
 assert(changelogText.includes("0.2.0") && changelogText.includes("cg_search_artifacts"), "Expected changelog entry for artifact search.");
 assert(artifactSearchDocText.includes(".compound-game-dev/") && artifactSearchDocText.includes("Do not ignore `docs/` or `todos/`"), "Expected artifact search docs to recommend ignoring only the generated cache directory.");
 assert(artifactSearchDocText.includes("Concurrent Search Safety") && artifactSearchDocText.includes("artifact-index.json.lock"), "Expected artifact search docs to describe lock behavior.");
@@ -70,6 +72,7 @@ for (const prompt of [
   "cg-compound.md",
   "cg-changelog.md",
   "cg-groom-docs.md",
+  "cg-migrate-unity-docs-schema.md",
 ]) {
   assert(existsSync(new URL(`../prompts/${prompt}`, import.meta.url)), `Expected prompt ${prompt}`);
 }
@@ -167,6 +170,8 @@ assert(extensionText.includes("@aefree/pi-compound-game-dev"), "Expected extensi
 assert(existsSync(new URL("../docs/removed-agents.md", import.meta.url)), "Expected removed-agent documentation.");
 assert(existsSync(new URL("../docs/output-format-contracts.md", import.meta.url)), "Expected output format contract documentation.");
 assert(existsSync(new URL("../docs/artifact-search.md", import.meta.url)), "Expected artifact search documentation.");
+assert(existsSync(new URL("../scripts/migrate-unity-docs-schema.ts", import.meta.url)), "Expected Unity docs schema migrator script.");
+assert(existsSync(new URL("../skills/unity-docs/references/category-selection.md", import.meta.url)), "Expected Unity docs category-selection guidance.");
 assert(existsSync(new URL("../docs/markdown-artifact-authoring.md", import.meta.url)), "Expected markdown artifact authoring documentation.");
 assert(!existsSync(new URL("../references/cg-review/ultra-thinking.md", import.meta.url)), "Did not expect review ultra-thinking reference.");
 

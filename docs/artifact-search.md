@@ -70,7 +70,7 @@ Lock acquisition uses atomic directory creation. The tool waits up to 30 seconds
 
 Use the index and raw markdown search together instead of treating either one as the only source:
 
-1. **Index, structured pass** - use `cg_search_artifacts` with `scopes`, status/priority, problem type, tags, module, or severity filters to get high-signal candidates. For a metadata-first pass, set `includeBody: false` to reduce body-text noise.
+1. **Index, structured pass** - use `cg_search_artifacts` with `scopes`, status/priority, schema v2 `docType`/`category`/`failureMode`, legacy `problemType`, tags, module, or severity filters to get high-signal candidates. For a metadata-first pass, set `includeBody: false` to reduce body-text noise.
 2. **Index, broad recall pass** - for exploratory feature descriptions, use `matchMode: "any"` with a focused synonym list. This catches gotchas that do not contain every term in the user request.
 3. **Raw docs verification** - use `rg` on final keywords, API names, code symbols, paths, and exact error text to catch body-only mentions and verify that the index did not miss important wording.
 4. **Read markdown source** - read the final candidate `.md` files directly before planning or citing evidence. The index is a discovery aid, not a substitute for source docs.
@@ -108,7 +108,7 @@ Important parameters:
 - `matchMode` - `all`, `any`, or `phrase`. Use `all` for precise searches, `any` for exploratory recall/gotcha discovery, and `phrase` for exact phrase validation.
 - `minTermMatches` - minimum number of unique query/optional terms that must match. Use this with `matchMode: "any"` to reduce noise from single common terms while keeping broad recall.
 
-Query matching normalizes common separators, so `ui-toolkit`, `ui_toolkit`, `ui/toolkit`, and `ui toolkit` can match the same indexed text. The index stores normalized per-field search text at build time so repeated searches do not have to recompute normalization for every field. Structured filters such as `problemType` still use frontmatter values rather than query-term normalization.
+Query matching normalizes common separators, so `ui-toolkit`, `ui_toolkit`, `ui/toolkit`, and `ui toolkit` can match the same indexed text. The index stores normalized per-field search text at build time so repeated searches do not have to recompute normalization for every field. Structured filters such as `docType`, `category`, `failureMode`, and legacy `problemType` still use frontmatter values rather than query-term normalization.
 
 Search results include a suggested raw `rg` verification command when query terms are present. Use it as a starting point for exact source-text validation; refine the pattern for API names, file paths, or error strings when needed.
 
@@ -118,7 +118,7 @@ Search results include a suggested raw `rg` verification command when query term
 - `relatedLimit` - maximum related artifacts per result; defaults to `5`.
 - `groupByKind` - group displayed results by artifact kind (`plan`, `solution`, `todo`, etc.) while preserving score order inside each group.
 - `includeCompletedTodos` - include completed todos when no explicit status filter is supplied; defaults to `true`.
-- `status`, `priority`, `tags`, `module`, `component`, `problemType`, `severity` - structured frontmatter filters. Todo status normalizes legacy `completed` values to `complete`.
+- `status`, `priority`, `tags`, `module`, `component`, `docType`, `category`, `failureMode`, `problemType`, `severity` - structured frontmatter filters. `docType`, `category`, and `failureMode` target Unity solution-doc schema v2; `problemType` remains for legacy/unmigrated solution docs. Todo status normalizes legacy `completed` values to `complete`.
 - `limit` - maximum displayed results; defaults to `20`.
 - `maxSnippetChars` - approximate maximum snippet characters; defaults to `220`.
 - `explain` - include scoring reasons for each result.
@@ -176,6 +176,8 @@ Set `explain: true` when you need to audit why an agent ranked results in a part
 cg_search_artifacts query="ui toolkit validation" scopes=["solutions"] rankProfile="frontmatter" explain=true
 cg_search_artifacts scopes=["todos"] status="ready" priority="p1" includeCompletedTodos=false
 cg_search_artifacts query="Addressables build" scopes=["docs","todos"] matchMode="all" limit=10
+cg_search_artifacts scopes=["solutions"] category=["ui","serialization_data"] failureMode="runtime_exception"
+
 cg_search_artifacts scopes=["solutions"] severity=["critical","high"] tags="validation"
 ```
 

@@ -19,8 +19,11 @@ For solution/learning docs, include structured fields when applicable:
 ```yaml
 ---
 title: Objective GUID dropdown saved empty target
+schema_version: 2
+doc_type: solution
+category: editor_workflow
+failure_mode: workflow_friction
 module: Editor Tools
-problem_type: editor_workflow
 component: editor_script
 severity: high
 tags: [objective-guid, objective-dropdown, empty-target, mission-authoring]

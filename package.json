@@ -1,7 +1,7 @@
 {
   "name": "@aefree/pi-compound-game-dev",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Compound Game Dev workflows for Pi.",
   "license": "MIT",
   "type": "module",
@@ -11,7 +11,8 @@
     "compound-game-dev"
   ],
   "scripts": {
-    "test": "npx --yes tsx tests/package-validation.test.ts"
+    "test": "npx --yes tsx tests/package-validation.test.ts",
+    "migrate:unity-docs-schema": "npx --yes tsx scripts/migrate-unity-docs-schema.ts"
   },
   "pi": {
     "extensions": [

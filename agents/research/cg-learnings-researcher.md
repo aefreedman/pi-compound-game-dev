@@ -38,7 +38,7 @@ From the feature/task description, identify:
 
 ### Step 2: Category-Based Narrowing (Optional but Recommended)
 
-If the feature type is clear, narrow the search to the relevant `docs/solutions/` category directory. Do not rely on a duplicated category list in this agent. If the active project/package provides a schema reference for documented solutions, read that project-appropriate schema only when the exact categories, problem types, or field values matter. For projects using this package's Unity solution-doc skill, `skills/unity-docs/references/yaml-schema.md` remains the authoritative schema reference and should be loaded with `cg_read_reference` when schema details matter.
+If the feature type is clear, narrow the search to the relevant `docs/solutions/` category directory. Do not rely on a duplicated category list in this agent. If the active project/package provides a schema reference for documented solutions, read that project-appropriate schema only when exact categories, doc types, failure modes, legacy problem types, or field values matter. For projects using this package's Unity solution-doc skill, `skills/unity-docs/references/yaml-schema.md` remains the authoritative schema reference and should be loaded with `cg_read_reference` when schema details matter.
 
 ### Step 3: rg/Grep Pre-Filter (Critical for Efficiency)
 
@@ -88,7 +88,8 @@ Read: [file_path] with limit:30
 
 Extract relevant frontmatter fields such as:
 - **module**: Which module/system the solution applies to
-- **problem_type**: Category of issue; consult a project-appropriate schema reference if valid values matter
+- **doc_type/category/failure_mode**: Schema v2 knowledge type, filing/ownership category, and observable failure shape when present
+- **problem_type**: Legacy schema v1 category when present; prefer v2 fields for migrated docs
 - **component**: Technical component affected
 - **symptoms**: Observable symptoms
 - **root_cause**: What caused the issue
@@ -106,13 +107,14 @@ Match frontmatter fields against the feature/task description:
 - `component` matches the technical area being touched
 
 **Moderate matches (include):**
-- `problem_type` is relevant (e.g., `performance_issue` for optimization work)
+- `category` or legacy `problem_type` is relevant (e.g., `performance` for optimization work)
+- `failure_mode` matches the kind of risk being investigated
 - `root_cause` suggests a pattern that might apply
 - Related modules or components mentioned
 
 **Weak matches (skip):**
-- No overlapping tags, symptoms, or modules
-- Unrelated problem types
+- No overlapping tags, symptoms, modules, or categories
+- Unrelated categories/failure modes
 
 ### Step 6: Full Read of Relevant Files
 
@@ -128,9 +130,9 @@ For each relevant document, return a summary in this format:
 
 ```markdown
 ### [Title from document]
-- **File**: docs/solutions/[category]/[filename].md
+- **File**: docs/solutions/[category-folder]/[filename].md
 - **Module**: [module from frontmatter]
-- **Problem Type**: [problem_type]
+- **Classification**: [doc_type/category/failure_mode, or legacy problem_type if not migrated]
 - **Relevance**: [Brief explanation of why this is relevant to the current task]
 - **Key Insight**: [The most important takeaway - the thing that prevents repeating the mistake]
 - **Severity**: [severity level]
@@ -138,7 +140,7 @@ For each relevant document, return a summary in this format:
 
 ## Frontmatter Schema Reference
 
-Use project-local solution documentation and any active package schema references as the authority for category directories, problem types, components, root causes, and severity values. Do not assume Unity-specific documentation schemas exist unless the project/package provides them; when this package's Unity solution-doc skill is in use, prefer `skills/unity-docs/references/yaml-schema.md` via `cg_read_reference` for those schema details.
+Use project-local solution documentation and any active package schema references as the authority for category directories, doc types, failure modes, components, root causes, and severity values. Do not assume Unity-specific documentation schemas exist unless the project/package provides them; when this package's Unity solution-doc skill is in use, prefer `skills/unity-docs/references/yaml-schema.md` and `skills/unity-docs/references/category-selection.md` via `cg_read_reference` for those schema details. Treat `problem_type` as legacy schema v1 metadata when encountered.
 
 ## Output Format
 

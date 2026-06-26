@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.0 - 2026-06-26
+
+### Added
+
+- Added Unity solution-doc schema v2 with separate `doc_type`, `category`, and `failure_mode` classification fields.
+- Added `scripts/migrate-unity-docs-schema.ts` and the `migrate:unity-docs-schema` npm script for dry-run-first migration of existing Unity solution docs.
+- Added `/cg-migrate-unity-docs-schema` to guide agents through project-specific schema migration with VCS checks, dry-run review, optional mapping overrides, and apply validation.
+- Added Unity docs category-selection guidance for schema v2 filing and failure-mode decisions.
+
+### Changed
+
+- Updated the `unity-docs` skill, schema guide, and resolution template to use schema v2 and avoid legacy `problem_type` in new docs.
+- Updated artifact-search guidance and filters to support schema v2 `docType`, `category`, and `failureMode` metadata while retaining legacy `problemType` filtering for unmigrated docs.
+
 ## 0.2.1 - 2026-06-26
 
 ### Added

@@ -58,6 +58,7 @@ Prompt filenames map to Pi slash commands:
 - `/cg-compound` - document solved problems and learnings
 - `/cg-changelog` - draft changelogs from available work sources
 - `/cg-groom-docs` - improve markdown docs/todos metadata, tags, links, and searchability
+- `/cg-migrate-unity-docs-schema` - migrate Unity solution docs from legacy `problem_type` buckets to schema v2 classification
 
 No compatibility aliases are provided for old workflow command names or earlier draft prefix conventions.
 
@@ -85,11 +86,24 @@ Workflows degrade gracefully when optional companion packages are unavailable.
 - package-owned agent definitions under `agents/`
 - package maintenance notes under `docs/`, including artifact search, markdown authoring guidance, output format contracts, and removed-agent return paths
 - registration extensions under `extensions/`, including package reference reading, package-agent registration, and project artifact search
+- maintenance/migration scripts under `scripts/`, including Unity solution-doc schema migration
 
 ## Testing
 
 ```bash
 npm test
+```
+
+Preview a Unity solution-doc schema migration:
+
+```bash
+npm run migrate:unity-docs-schema -- --solutions-root <path-to-docs/solutions>
+```
+
+Apply after reviewing the dry run:
+
+```bash
+npm run migrate:unity-docs-schema -- --solutions-root <path-to-docs/solutions> --apply
 ```
 
 ## License

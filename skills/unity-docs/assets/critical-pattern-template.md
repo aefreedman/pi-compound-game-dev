@@ -32,7 +32,7 @@ void Start()
 
 **Placement/Context:** [When this applies - e.g., "In MonoBehaviour lifecycle methods", "When accessing components"]
 
-**Documented in:** `docs/solutions/[category]/[filename].md`
+**Documented in:** `docs/solutions/[category-folder]/[filename].md`
 
 ---
 

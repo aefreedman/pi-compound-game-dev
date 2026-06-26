@@ -53,20 +53,28 @@ create a new doc, update existing, or link.
 
 Format: `[sanitized-symptom]-[module]-[YYYYMMDD].md`
 
-### Step 5: Validate YAML Schema (Blocking)
+### Step 5: Classify and Validate YAML Schema (Blocking)
+
+Load `skills/unity-docs/references/category-selection.md` when choosing schema v2 classification fields.
 
 Validate against:
 
 - `skills/unity-docs/schema.yaml`
 - `skills/unity-docs/references/yaml-schema.md`
 
-Do not proceed if validation fails.
+Required schema v2 classification:
+
+- `doc_type`: what kind of knowledge this is
+- `category`: filing/ownership bucket
+- `failure_mode`: observable failure shape
+
+Do not use legacy `problem_type` in new docs. Do not proceed if validation fails.
 
 ### Step 6: Create Documentation
 
 Use `skills/unity-docs/assets/resolution-template.md` via `cg_read_reference` and write to the physical path:
 
-- `${DOCS_ROOT}/solutions/<category>/<filename>.md`
+- `${DOCS_ROOT}/solutions/<category-folder>/<filename>.md`
 
 ### Step 7: Critical Pattern Recommendation
 
@@ -88,8 +96,9 @@ If it does not meet that bar, state that no critical-pattern elevation is recomm
 1. YAML schema -> `skills/unity-docs/schema.yaml`
 2. YAML guide -> `skills/unity-docs/references/yaml-schema.md`
 3. Resolution template -> `skills/unity-docs/assets/resolution-template.md`
-4. Artifact root resolution -> `references/_shared/artifact-root-resolution.md`
-5. Artifact path contract -> `references/_shared/artifact-path-contract.md`
+4. Category selection -> `skills/unity-docs/references/category-selection.md`
+5. Artifact root resolution -> `references/_shared/artifact-root-resolution.md`
+6. Artifact path contract -> `references/_shared/artifact-path-contract.md`
 
 On-demand:
 

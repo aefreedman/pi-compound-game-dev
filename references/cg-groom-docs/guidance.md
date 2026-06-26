@@ -78,7 +78,7 @@ Add related docs when a search result depends on another artifact. Prefer explic
 ```markdown
 ## Related Issues
 
-- See also: docs/solutions/ui-bugs/example.md
+- See also: docs/solutions/ui/example.md
 - Related plan: docs/plans/YYYY-MM-DD-feature-example-plan.md
 - Follow-up todo: todos/123-pending-p2-example.md
 ```
@@ -97,12 +97,23 @@ Check filename/frontmatter consistency:
 
 Check solution docs for:
 
-- specific `module`, `problem_type`, `component`, `severity`
+- specific schema v2 `doc_type`, `category`, `failure_mode`, `module`, `component`, and `severity`
 - focused `tags`
+- no legacy `problem_type` in migrated Unity solution docs
 - observable symptoms
 - root cause and prevention guidance
 - exact error text or API names where relevant
 - related issues/plans/todos
+
+### Unity Solution Schema Interaction
+
+When grooming Unity solution docs:
+
+- Use `skills/unity-docs/references/yaml-schema.md` and `skills/unity-docs/references/category-selection.md` via `cg_read_reference` if exact schema v2 values matter.
+- Do not add legacy `problem_type` to new or edited schema v2 docs.
+- Do not manually bulk-convert legacy `problem_type` docs as part of ordinary grooming. Use `/cg-migrate-unity-docs-schema` or `scripts/migrate-unity-docs-schema.ts` so moves, reports, and manual-review items are handled consistently.
+- If editing a single legacy doc for another reason, either leave its legacy classification untouched and recommend migration, or convert that one doc to schema v2 only when the classification is obvious and the user approved metadata cleanup.
+- After a bulk migration, use grooming for follow-up cleanup: verify related links, improve tags/aliases, inspect manual-review docs, and run `cg_search_artifacts` with `rebuild=true` if search results appear stale.
 
 ## Edit Safety
 

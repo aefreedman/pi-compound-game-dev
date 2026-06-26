@@ -103,6 +103,9 @@ type SearchParams = {
   tags?: string | string[];
   module?: string | string[];
   component?: string | string[];
+  docType?: string | string[];
+  category?: string | string[];
+  failureMode?: string | string[];
   problemType?: string | string[];
   severity?: string | string[];
   rankProfile?: RankProfile;
@@ -790,6 +793,9 @@ function passesFilters(entry: ArtifactEntry, params: SearchParams): boolean {
   if (!hasAnyFieldValue(entry, "tags", normalizeList(params.tags))) return false;
   if (!hasAnyFieldValue(entry, "module", normalizeList(params.module))) return false;
   if (!hasAnyFieldValue(entry, "component", normalizeList(params.component))) return false;
+  if (!hasAnyFieldValue(entry, "doc_type", normalizeList(params.docType))) return false;
+  if (!hasAnyFieldValue(entry, "category", normalizeList(params.category))) return false;
+  if (!hasAnyFieldValue(entry, "failure_mode", normalizeList(params.failureMode))) return false;
   if (!hasAnyFieldValue(entry, "problem_type", normalizeList(params.problemType))) return false;
   if (!hasAnyFieldValue(entry, "severity", normalizeList(params.severity))) return false;
 
@@ -899,7 +905,7 @@ function suggestedRgCommand(params: SearchParams): string | undefined {
 }
 
 function formatFrontmatterSummary(frontmatter: Record<string, unknown>): string {
-  const fields = ["status", "priority", "module", "problem_type", "component", "severity", "tags"];
+  const fields = ["status", "priority", "module", "doc_type", "category", "failure_mode", "problem_type", "component", "severity", "tags"];
   const parts = fields.flatMap((field) => {
     const values = toStringArray(frontmatter[field]);
     return values.length ? [`${field}: ${values.join(", ")}`] : [];
@@ -1020,6 +1026,9 @@ export default function registerArtifactSearch(pi: ExtensionAPI) {
       tags: Type.Optional(stringOrArray),
       module: Type.Optional(stringOrArray),
       component: Type.Optional(stringOrArray),
+      docType: Type.Optional(stringOrArray),
+      category: Type.Optional(stringOrArray),
+      failureMode: Type.Optional(stringOrArray),
       problemType: Type.Optional(stringOrArray),
       severity: Type.Optional(stringOrArray),
       rankProfile: Type.Optional(rankProfileSchema),
@@ -1080,7 +1089,7 @@ export default function registerArtifactSearch(pi: ExtensionAPI) {
                 todoStatusBoosts: TODO_STATUS_BOOSTS,
                 todoPriorityBoosts: TODO_PRIORITY_BOOSTS,
               },
-              filters: ["scopes", "status", "priority", "tags", "module", "component", "problemType", "severity", "includeCompletedTodos"],
+              filters: ["scopes", "status", "priority", "tags", "module", "component", "docType", "category", "failureMode", "problemType", "severity", "includeCompletedTodos"],
               index: ["workspaceRoot", "docsRoot", "todosRoot", "indexPath", "rebuild", "freshnessMode", "freshnessTtlMs"],
               concurrency: {
                 lockTimeoutMs: INDEX_LOCK_TIMEOUT_MS,
