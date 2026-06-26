@@ -33,6 +33,7 @@ Precedence rules:
 10. Use `category: platform` only when platform behavior is the primary owner. If platform only describes where the issue occurred, put it in `platform` metadata instead.
 11. Use `category: testing_validation` for test harnesses, screenshot validation, QA/playtest validation, or verification tooling.
 12. Use `category: tooling_vcs` for project-local tooling, scripts, Plastic/Git/VCS workflow support, or repository operations.
+13. Use `category: critical_patterns` only for the promoted required-reading pattern index, normally `docs/solutions/patterns/critical-patterns.md`. Individual solution docs that recommend promotion should keep their owning category.
 
 ## Choose `failure_mode`
 
@@ -88,4 +89,16 @@ category: tooling_vcs
 failure_mode: workflow_friction
 component: version_control
 root_cause: tooling_error
+```
+
+```yaml
+# Critical patterns aggregate file
+schema_version: 2
+doc_type: pattern
+category: critical_patterns
+failure_mode: workflow_friction
+module: Cross-Cutting Unity Patterns
+component: tooling
+root_cause: missing_validation
+resolution_type: documentation_update
 ```

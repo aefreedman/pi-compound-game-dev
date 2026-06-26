@@ -8,7 +8,7 @@ This is schema version 2. It separates document kind, filing category, and obser
 
 - **schema_version** (number): Must be `2`.
 - **doc_type** (enum): One of [solution, pattern, workflow, documentation_gap].
-- **category** (enum): One of [build_ci, editor_workflow, asset_pipeline, packages_integrations, project_configuration, serialization_data, prefabs_scenes, gameplay_code, physics_navigation, rendering_shaders, ui, animation_timeline, audio, input, performance, platform, testing_validation, tooling_vcs].
+- **category** (enum): One of [build_ci, editor_workflow, asset_pipeline, packages_integrations, project_configuration, serialization_data, prefabs_scenes, gameplay_code, physics_navigation, rendering_shaders, ui, animation_timeline, audio, input, performance, platform, testing_validation, tooling_vcs, critical_patterns].
 - **failure_mode** (enum): One of [compile_error, build_failure, test_failure, editor_crash, editor_hang, runtime_exception, runtime_crash, incorrect_behavior, visual_artifact, asset_import_failure, performance_regression, missing_reference, data_loss_or_corruption, version_incompatibility, workflow_friction, documentation_gap].
 - **module** (string): Unity subsystem or module name (e.g., "Physics", "Rendering", "UI").
 - **date** (string): ISO 8601 date (YYYY-MM-DD).
@@ -109,6 +109,7 @@ Documentation is filed in `${DOCS_ROOT}/solutions/<category-folder>/` based on `
 - **platform** → `docs/solutions/platform/`
 - **testing_validation** → `docs/solutions/testing-validation/`
 - **tooling_vcs** → `docs/solutions/tooling-vcs/`
+- **critical_patterns** → `docs/solutions/patterns/`
 
 ## Migration from Schema v1
 

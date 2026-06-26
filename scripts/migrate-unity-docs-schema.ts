@@ -22,6 +22,7 @@ const CATEGORIES = [
   "platform",
   "testing_validation",
   "tooling_vcs",
+  "critical_patterns",
 ] as const;
 const FAILURE_MODES = [
   "compile_error",
@@ -118,6 +119,7 @@ const CATEGORY_DIRS: Record<Category, string> = {
   platform: "platform",
   testing_validation: "testing-validation",
   tooling_vcs: "tooling-vcs",
+  critical_patterns: "patterns",
 };
 
 const FIELD_ORDER = [
@@ -138,6 +140,55 @@ const FIELD_ORDER = [
   "related_components",
   "tags",
 ];
+
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function isCriticalPatternsIndex(relPath: string): boolean {
+  return relPath.replace(/\\/g, "/").toLowerCase() === "patterns/critical-patterns.md";
+}
+
+function initializeCriticalPatternsFrontmatter(body: string): Frontmatter {
+  const rawLines = [
+    "schema_version: 2",
+    "doc_type: pattern",
+    "category: critical_patterns",
+    "failure_mode: workflow_friction",
+    "module: Cross-Cutting Unity Patterns",
+    `date: ${todayIso()}`,
+    "component: tooling",
+    "symptoms:",
+    "  - \"High-impact Unity pitfalls need a central required-reading index\"",
+    "root_cause: missing_validation",
+    "resolution_type: documentation_update",
+    "severity: high",
+    "tags: [critical-patterns, required-reading, unity-docs]",
+  ];
+  const raw = rawLines.join("\n");
+  const entries = new Map<string, string>();
+  const order: string[] = [];
+  let currentKey: string | undefined;
+  let currentLines: string[] = [];
+  const flush = () => {
+    if (!currentKey) return;
+    entries.set(currentKey, currentLines.join("\n"));
+    order.push(currentKey);
+  };
+  for (const line of rawLines) {
+    const keyMatch = line.match(/^([A-Za-z0-9_]+):/);
+    if (keyMatch && !line.startsWith(" ")) {
+      flush();
+      currentKey = keyMatch[1];
+      currentLines = [line];
+    } else if (currentKey) {
+      currentLines.push(line);
+    }
+  }
+  flush();
+  return { raw, body, entries, order };
+}
+
 
 function usage(): string {
   return `Migrate Unity solution-doc YAML frontmatter from schema v1 problem_type buckets to schema v2 doc_type/category/failure_mode.\n\nUsage:\n  npx tsx scripts/migrate-unity-docs-schema.ts --solutions-root <docs/solutions> [--dry-run]\n  npx tsx scripts/migrate-unity-docs-schema.ts --solutions-root <docs/solutions> --apply\n\nOptions:\n  --solutions-root <path>   Directory containing solution markdown files. Alias: --root.\n  --dry-run                 Preview changes only. Default.\n  --apply                   Write migrated files and move them to category folders.\n  --mapping <path>          Optional JSON mapping with problemTypeMap and/or pathOverrides.\n  --write-report <path>     Write a JSON migration report.\n  --no-move                 Update frontmatter but leave files in place.\n  --include-manual-review   Apply files that were flagged for manual review. Default is to leave them untouched.\n  --verbose                 Print per-file decisions.\n  --help                    Show this help.\n\nMapping JSON example:\n{\n  "pathOverrides": {\n    "best-practices/my-doc.md": {"category": "ui", "doc_type": "pattern"}\n  },\n  "problemTypeMap": {\n    "custom_type": {"doc_type": "solution", "category": "tooling_vcs", "failure_mode": "workflow_friction"}\n  }\n}\n`;
@@ -381,13 +432,18 @@ function planMigration(root: string, config: MappingConfig, shouldMove: boolean)
   for (const file of files) {
     const originalRelativePath = normalizeRel(path.relative(root, file));
     const content = fs.readFileSync(file, "utf8");
-    const frontmatter = parseFrontmatter(content);
+    const parsedFrontmatter = parseFrontmatter(content);
     const reasons: string[] = [];
     const manualReview: string[] = [];
-    if (!frontmatter) {
+    const resolvedFrontmatter = parsedFrontmatter ?? (isCriticalPatternsIndex(originalRelativePath) ? initializeCriticalPatternsFrontmatter(content) : undefined);
+    if (!resolvedFrontmatter) {
       plans.push({ originalPath: file, newPath: file, originalRelativePath, newRelativePath: originalRelativePath, content, moved: false, changed: false, skipped: true, reasons, manualReview: ["No YAML frontmatter found."] });
       continue;
     }
+    if (!parsedFrontmatter && isCriticalPatternsIndex(originalRelativePath)) {
+      reasons.push("Added schema v2 frontmatter to critical patterns index.");
+    }
+    const frontmatter = resolvedFrontmatter;
     const classification = classify(frontmatter, originalRelativePath, config, reasons, manualReview);
     if (!classification) {
       plans.push({ originalPath: file, newPath: file, originalRelativePath, newRelativePath: originalRelativePath, content, frontmatter, moved: false, changed: false, skipped: true, reasons, manualReview });

@@ -114,6 +114,7 @@ When grooming Unity solution docs:
 - Do not manually bulk-convert legacy `problem_type` docs as part of ordinary grooming. Use `/cg-migrate-unity-docs-schema` or `scripts/migrate-unity-docs-schema.ts` so moves, reports, and manual-review items are handled consistently.
 - If editing a single legacy doc for another reason, either leave its legacy classification untouched and recommend migration, or convert that one doc to schema v2 only when the classification is obvious and the user approved metadata cleanup.
 - After a bulk migration, use grooming for follow-up cleanup: verify related links, improve tags/aliases, inspect manual-review docs, and run `cg_search_artifacts` with `rebuild=true` if search results appear stale.
+- Treat `docs/solutions/patterns/critical-patterns.md` as a schema v2 `doc_type: pattern`, `category: critical_patterns` aggregate file, not as a frontmatter-free exception.
 
 ## Edit Safety
 

@@ -1,46 +1,45 @@
 # Critical Pattern Template
 
-Use this template when adding a pattern to `docs/solutions/patterns/critical-patterns.md`:
+Use this when adding an entry to `docs/solutions/patterns/critical-patterns.md`.
 
+If the file does not exist yet, create it with this schema v2 frontmatter:
+
+```yaml
 ---
-
-## N. [Pattern Name] (ALWAYS REQUIRED)
-
-### ❌ WRONG ([Will cause X error])
-```csharp
-// Example showing wrong approach in Unity C#
-void Start()
-{
-    _rigidbody.velocity = Vector3.zero; // Null reference if component missing
-}
+schema_version: 2
+doc_type: pattern
+category: critical_patterns
+failure_mode: workflow_friction
+module: Cross-Cutting Unity Patterns
+date: [YYYY-MM-DD]
+component: tooling
+symptoms:
+  - "High-impact Unity pitfalls need a central required-reading index"
+root_cause: missing_validation
+resolution_type: documentation_update
+severity: high
+tags: [critical-patterns, required-reading, unity-docs]
+---
 ```
 
-### ✅ CORRECT
+## N. [Pattern Name]
+
+**Rule:** [State the required practice in one sentence.]
+
+**Applies when:** [Scope/context where this pattern matters.]
+
+**Avoid:**
+
 ```csharp
-// Example showing correct approach
-void Start()
-{
-    _rigidbody = GetComponent<Rigidbody>();
-    if (_rigidbody != null)
-    {
-        _rigidbody.velocity = Vector3.zero;
-    }
-}
+// Minimal example of the risky approach.
 ```
 
-**Why:** [Technical explanation of why this is required in Unity]
+**Use:**
 
-**Placement/Context:** [When this applies - e.g., "In MonoBehaviour lifecycle methods", "When accessing components"]
+```csharp
+// Minimal example of the required approach.
+```
+
+**Reason:** [Why this prevents the failure.]
 
 **Documented in:** `docs/solutions/[category-folder]/[filename].md`
-
----
-
-**Instructions:**
-1. Replace N with the next pattern number
-2. Replace [Pattern Name] with descriptive title
-3. Fill in WRONG example with Unity C# code that causes the problem
-4. Fill in CORRECT example with the solution
-5. Explain the technical reason in "Why"
-6. Clarify when this pattern applies in "Placement/Context"
-7. Link to the full troubleshooting doc where this was originally solved

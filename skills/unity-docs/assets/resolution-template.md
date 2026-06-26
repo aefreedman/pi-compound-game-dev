@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 doc_type: [solution|pattern|workflow|documentation_gap]
-category: [build_ci|editor_workflow|asset_pipeline|packages_integrations|project_configuration|serialization_data|prefabs_scenes|gameplay_code|physics_navigation|rendering_shaders|ui|animation_timeline|audio|input|performance|platform|testing_validation|tooling_vcs]
+category: [build_ci|editor_workflow|asset_pipeline|packages_integrations|project_configuration|serialization_data|prefabs_scenes|gameplay_code|physics_navigation|rendering_shaders|ui|animation_timeline|audio|input|performance|platform|testing_validation|tooling_vcs|critical_patterns]
 failure_mode: [compile_error|build_failure|test_failure|editor_crash|editor_hang|runtime_exception|runtime_crash|incorrect_behavior|visual_artifact|asset_import_failure|performance_regression|missing_reference|data_loss_or_corruption|version_incompatibility|workflow_friction|documentation_gap]
 module: [Unity subsystem name or specific module]
 date: [YYYY-MM-DD]

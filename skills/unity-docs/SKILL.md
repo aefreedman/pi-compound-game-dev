@@ -87,7 +87,7 @@ Recommend elevation only when the documented solution is likely to prevent repea
 - a non-obvious engine/editor/package interaction that future work is likely to hit again
 - a project convention that should become required reading before touching a subsystem
 
-If the doc meets that bar, tell the user why and recommend creating a critical pattern entry using `skills/unity-docs/assets/critical-pattern-template.md` via `cg_read_reference`. Do not auto-promote without explicit confirmation.
+If the doc meets that bar, tell the user why and recommend creating a critical pattern entry using `skills/unity-docs/assets/critical-pattern-template.md` via `cg_read_reference`. Do not auto-promote without explicit confirmation. When creating or editing `docs/solutions/patterns/critical-patterns.md`, ensure the aggregate file has schema v2 frontmatter with `doc_type: pattern` and `category: critical_patterns`.
 
 If it does not meet that bar, state that no critical-pattern elevation is recommended and why.
 

@@ -39,6 +39,7 @@ required_fields:
       - platform                # Platform-specific behavior where platform is the owner
       - testing_validation      # Tests, validation tools, screenshots, QA/playtest verification
       - tooling_vcs             # Local tools, scripts, Plastic/Git/VCS workflow support
+      - critical_patterns       # Required-reading promoted pattern index under docs/solutions/patterns/
     description: "Primary retrieval and filing category. This maps to docs/solutions/<category-folder>/ and should identify the owning area."
 
   failure_mode:
