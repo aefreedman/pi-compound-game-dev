@@ -226,7 +226,7 @@ Search documented solutions for relevant institutional knowledge.
 If you delegate this review to `cg-learnings-researcher`, pass it a brief like:
 
 ```text
-Search docs/solutions/ for documented learnings relevant to this review:
+Search docs/solutions/ for documented learnings relevant to this review. Use cg_search_artifacts when available, then raw rg for exact symbol/error/body verification before reading final markdown sources:
 
 Changed files:
 $CHANGED_FILES
