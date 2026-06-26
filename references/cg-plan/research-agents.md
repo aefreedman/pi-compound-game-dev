@@ -52,7 +52,7 @@ Return:
 If you delegate to `cg-learnings-researcher`, pass it a brief like:
 
 ```text
-Search for documented solutions and learnings related to this feature:
+Search for documented solutions and learnings related to this feature. Use `cg_search_artifacts` when available; otherwise fall back to rg/Grep-first filtering. For broad feature research, combine a structured/scoped indexed pass, a `matchMode="any"` indexed recall pass, and raw `rg` verification for exact symbols/error text before reading final markdown sources.
 
 Feature: {feature_description}
 

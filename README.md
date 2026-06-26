@@ -37,6 +37,12 @@ Projects using this package should document their game-development stack expecta
 
 The `cg-*` workflows read that local guidance when present and ask targeted questions when the stack is unclear.
 
+## Project artifact search
+
+The package registers `cg_search_artifacts`, a tool for structured search across project-local `docs/` and `todos/` markdown files. Markdown remains the source of truth; the tool automatically refreshes a generated project index at `${WORKSPACE_ROOT}/.compound-game-dev/artifact-index.json` before searching so supporting files do not silently become stale. The index intentionally avoids `.pi/` so Pi runtime/config cleanup does not remove search data.
+
+Use it to search plans, solution docs, and file-based todos with filters such as scope, tags, module, status, priority, severity, and ranking profile. For research, pair indexed structured searches with raw `rg` verification before citing source markdown. Projects should usually add `.compound-game-dev/` to version-control ignore rules. See `docs/artifact-search.md` for controls, hybrid workflow guidance, and ranking behavior.
+
 ## Commands
 
 Prompt filenames map to Pi slash commands:
@@ -51,6 +57,7 @@ Prompt filenames map to Pi slash commands:
 - `/cg-triage` - triage pending todo files
 - `/cg-compound` - document solved problems and learnings
 - `/cg-changelog` - draft changelogs from available work sources
+- `/cg-groom-docs` - improve markdown docs/todos metadata, tags, links, and searchability
 
 No compatibility aliases are provided for old workflow command names or earlier draft prefix conventions.
 
@@ -76,8 +83,8 @@ Workflows degrade gracefully when optional companion packages are unavailable.
 - prompt reference material under `references/`
 - helper skills under `skills/`
 - package-owned agent definitions under `agents/`
-- package maintenance notes under `docs/`, including output format contracts and removed-agent return paths
-- registration extensions under `extensions/`
+- package maintenance notes under `docs/`, including artifact search, markdown authoring guidance, output format contracts, and removed-agent return paths
+- registration extensions under `extensions/`, including package reference reading, package-agent registration, and project artifact search
 
 ## Testing
 

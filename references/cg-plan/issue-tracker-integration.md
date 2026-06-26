@@ -112,6 +112,15 @@ if ISSUE_TRACKER == "codecks":
 
 ### None (File-Based Tracking)
 
+When `cg_search_artifacts` is available, prefer it for project-local docs/todos search because it auto-refreshes a generated project index and can rank structured markdown frontmatter:
+
+```text
+cg_search_artifacts query=KEYWORD scopes=["solutions","plans"] limit=10
+cg_search_artifacts query=KEYWORD scopes=["todos"] includeCompletedTodos=false limit=10
+```
+
+Shell fallback:
+
 ```bash
 if [ "$ISSUE_TRACKER" = "none" ] || [ "$ISSUE_TRACKER" = "" ]; then
   echo "📚 Searching local documentation (no issue tracker configured)..."
@@ -120,27 +129,29 @@ if [ "$ISSUE_TRACKER" = "none" ] || [ "$ISSUE_TRACKER" = "" ]; then
   if [ -d "${DOCS_ROOT}/solutions" ]; then
     echo ""
     echo "Related solutions:"
-    grep -r "$KEYWORD" "${DOCS_ROOT}/solutions/" --include="*.md" -l | head -10
+    rg -il --glob "*.md" "$KEYWORD" "${DOCS_ROOT}/solutions/" | head -10
   fi
   
   # Search plans
   if [ -d "${DOCS_ROOT}/plans" ]; then
     echo ""
     echo "Related plans:"
-    grep -r "$KEYWORD" "${DOCS_ROOT}/plans/" --include="*.md" -l | head -10
+    rg -il --glob "*.md" "$KEYWORD" "${DOCS_ROOT}/plans/" | head -10
   fi
   
   # Search planning artifacts
   if [ -d "${DOCS_ROOT}/planning artifacts" ]; then
     echo ""
     echo "Related planning artifacts:"
-    grep -r "$KEYWORD" "${DOCS_ROOT}/planning artifacts/" --include="*.md" -l | head -10
+    rg -il --glob "*.md" "$KEYWORD" "${DOCS_ROOT}/planning artifacts/" | head -10
   fi
   
   echo ""
   echo "File-based tracking works without external issue tracker"
 fi
 ```
+
+If `rg` is unavailable, use equivalent `grep -r --include='*.md'` commands.
 
 **Features:**
 - Search across local documentation directories

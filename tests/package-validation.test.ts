@@ -3,12 +3,16 @@ import { strict as assert } from "node:assert";
 
 const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
   name?: string;
+  version?: string;
   pi?: { extensions?: string[]; prompts?: string[]; skills?: string[] };
   peerDependencies?: Record<string, string>;
 };
 const readmeText = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const extensionText = readFileSync(new URL("../extensions/register-subagents.ts", import.meta.url), "utf8");
 const referenceReaderText = readFileSync(new URL("../extensions/read-reference.ts", import.meta.url), "utf8");
+const artifactSearchText = readFileSync(new URL("../extensions/artifact-search.ts", import.meta.url), "utf8");
+const changelogText = readFileSync(new URL("../CHANGELOG.md", import.meta.url), "utf8");
+const artifactSearchDocText = readFileSync(new URL("../docs/artifact-search.md", import.meta.url), "utf8");
 const qualityChecklistText = readFileSync(new URL("../references/cg-work/quality-checklist.md", import.meta.url), "utf8");
 const changelogPromptText = readFileSync(new URL("../prompts/cg-changelog.md", import.meta.url), "utf8");
 const changelogPlasticText = readFileSync(new URL("../references/cg-changelog/plastic-workflow.md", import.meta.url), "utf8");
@@ -17,12 +21,29 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
+assert.equal(pkg.version, "0.2.0");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
 assert(referenceReaderText.includes("cg_read_reference"), "Expected package reference reader tool registration.");
 assert(referenceReaderText.includes("renderResult"), "Expected package reference reader to provide expandable result rendering.");
 assert(referenceReaderText.includes("app.tools.expand"), "Expected package reference reader rendering to include the standard expand key hint.");
+assert(artifactSearchText.includes("cg_search_artifacts"), "Expected project artifact search tool registration.");
+assert(artifactSearchText.includes("buildOrRefreshIndex"), "Expected artifact search to refresh its generated project index.");
+assert(artifactSearchText.includes("FIELD_WEIGHTS"), "Expected artifact search to expose ranking controls.");
+assert(artifactSearchText.includes(".compound-game-dev") && !artifactSearchText.includes(".pi\", \"compound-game-dev"), "Expected artifact index default to avoid the .pi runtime/config directory.");
+assert(artifactSearchText.includes("normalizeTodoStatus") && artifactSearchText.includes('normalized === "completed"'), "Expected artifact search to normalize legacy completed todo status.");
+assert(artifactSearchText.includes("inMemoryIndexCache") && artifactSearchText.includes("cached.size === indexStat.size"), "Expected artifact search to cache the parsed index in memory safely.");
+assert(artifactSearchText.includes("inProcessIndexQueues") && artifactSearchText.includes("acquireIndexLock") && artifactSearchText.includes(".lock"), "Expected artifact search to serialize concurrent index refreshes.");
+assert(artifactSearchText.includes("requiredTerms") && artifactSearchText.includes("optionalTerms") && artifactSearchText.includes("searchFields") && artifactSearchText.includes("minTermMatches") && artifactSearchText.includes("countMatchedTerms") && artifactSearchText.includes("totalMatches"), "Expected artifact search to support broad-query noise controls and uncapped match counts.");
+assert(artifactSearchText.includes("normalizeSearchText") && artifactSearchText.includes("replace(/[-_/]+/g"), "Expected artifact search to normalize common query separators.");
+assert(artifactSearchText.includes("buildSearchText") && artifactSearchText.includes("suggestedRgCommand") && artifactSearchText.includes("groupResultsByKind") && artifactSearchText.includes("attachRelatedArtifacts"), "Expected artifact search to include normalized index text, rg suggestions, grouping, and related artifacts.");
+assert(artifactSearchText.includes("freshnessMode") && artifactSearchText.includes("freshnessTtlMs") && artifactSearchText.includes("dirtyIndexPaths") && artifactSearchText.includes("bodyPreview"), "Expected artifact search to support fast-path freshness and avoid full-body indexing by default.");
+assert(artifactSearchText.includes("preparedResultCount") && artifactSearchText.includes("returnedResultCount"), "Expected artifact search details to distinguish prepared and returned result counts.");
+assert(changelogText.includes("0.2.0") && changelogText.includes("cg_search_artifacts"), "Expected changelog entry for artifact search.");
+assert(artifactSearchDocText.includes(".compound-game-dev/") && artifactSearchDocText.includes("Do not ignore `docs/` or `todos/`"), "Expected artifact search docs to recommend ignoring only the generated cache directory.");
+assert(artifactSearchDocText.includes("Concurrent Search Safety") && artifactSearchDocText.includes("artifact-index.json.lock"), "Expected artifact search docs to describe lock behavior.");
+assert(artifactSearchDocText.includes("Hybrid Search Workflow") && artifactSearchDocText.includes('matchMode: "any"') && artifactSearchDocText.includes("Raw docs verification"), "Expected artifact search docs to describe hybrid indexed/raw search workflow.");
 assert(qualityChecklistText.includes("Do not issue multiple `unity_launch_batchmode` calls"), "Expected Unity validation guidance to forbid parallel batchmode runs for one project.");
 assert(qualityChecklistText.includes("do not pass `-quit` with `-runTests`"), "Expected Unity Test Framework guidance to avoid -quit with -runTests.");
 assert(!changelogPlasticText.includes("--orderby"), "Plastic changelog docs must not use unsupported cm find --orderby syntax.");
@@ -48,6 +69,7 @@ for (const prompt of [
   "cg-triage.md",
   "cg-compound.md",
   "cg-changelog.md",
+  "cg-groom-docs.md",
 ]) {
   assert(existsSync(new URL(`../prompts/${prompt}`, import.meta.url)), `Expected prompt ${prompt}`);
 }
@@ -84,7 +106,7 @@ assert(existsSync(new URL("../references/_shared/vcs-detection.md", import.meta.
 assert(!existsSync(new URL("../prompt-support", import.meta.url)), "Did not expect obsolete prompt-support directory.");
 assert(!existsSync(new URL("../references/cg-plan/post-generation-options.md", import.meta.url)), "Did not expect cg-plan post-generation options.");
 assert(!existsSync(new URL("../skills/unity-docs/references/post-documentation-menu.md", import.meta.url)), "Did not expect unity-docs post-documentation menu.");
-for (const supportDir of ["cg-plan", "cg-work", "cg-review", "cg-resolve-todo-parallel", "cg-triage", "cg-compound", "cg-changelog"]) {
+for (const supportDir of ["cg-plan", "cg-work", "cg-review", "cg-resolve-todo-parallel", "cg-triage", "cg-compound", "cg-changelog", "cg-groom-docs"]) {
   assert(existsSync(new URL(`../references/${supportDir}`, import.meta.url)), `Expected prompt reference directory ${supportDir}`);
   assert(!existsSync(new URL(`../references/${supportDir}/references`, import.meta.url)), `Did not expect nested references directory in ${supportDir}`);
 }
@@ -140,9 +162,12 @@ for (const removedSkill of [
 assert(readmeText.includes("Compound Game Dev"), "Expected public package name in README.");
 assert(readmeText.includes("AGENTS.md"), "Expected README to mention project stack guidance.");
 assert(readmeText.includes("/cg-plan"), "Expected README to document cg commands.");
+assert(readmeText.includes("/cg-groom-docs"), "Expected README to document docs grooming command.");
 assert(extensionText.includes("@aefree/pi-compound-game-dev"), "Expected extension fallback package name to be updated.");
 assert(existsSync(new URL("../docs/removed-agents.md", import.meta.url)), "Expected removed-agent documentation.");
 assert(existsSync(new URL("../docs/output-format-contracts.md", import.meta.url)), "Expected output format contract documentation.");
+assert(existsSync(new URL("../docs/artifact-search.md", import.meta.url)), "Expected artifact search documentation.");
+assert(existsSync(new URL("../docs/markdown-artifact-authoring.md", import.meta.url)), "Expected markdown artifact authoring documentation.");
 assert(!existsSync(new URL("../references/cg-review/ultra-thinking.md", import.meta.url)), "Did not expect review ultra-thinking reference.");
 
 for (const expectedAgent of [
