@@ -41,12 +41,16 @@ references/_shared/artifact-path-contract.md.
 
 Load references/cg-plan/research-agents.md and references/_shared/repo-research-efficiency.md.
 
-Run the root fast pass from references/_shared/repo-research-efficiency.md before delegation: read local guidance, detect VCS, discover ignore files, identify likely source/content roots, and run a few focused searches from the feature terms. If the fast pass detects a Unity project, load references/_shared/unity-repo-research.md and apply it conditionally; otherwise stay engine/tool agnostic.
+Run the root fast pass from references/_shared/repo-research-efficiency.md before choosing a research route: read local guidance, detect VCS, discover ignore files, identify likely source/content roots, and run a few focused searches from the feature terms. If the fast pass detects a Unity project, load references/_shared/unity-repo-research.md and apply it conditionally; otherwise stay engine/tool agnostic.
 
-Then run bounded local research in parallel:
+Then choose the fastest honest research route:
 
-- cg-repo-researcher with the fast-pass findings, candidate roots/terms, VCS type, ignore-file instructions, and desired depth
-- cg-learnings-researcher
+- Research directly with root-agent tools when the next step is a linear investigation: 1-2 obvious roots/files, a single subsystem/question, up to roughly 6-8 targeted search/read operations, and only a few files to inspect.
+- Use deterministic repository search/excerpt tools when available for mechanical candidate discovery over known roots/terms; treat them as batched `rg` plus snippets/ranking, not as synthesis.
+- Use `cg-repo-researcher` only when the research burden is large enough to gain speed from parallelism: 2+ independent slices, likely 10+ serial search/read operations or several minutes of attention, and each slice can be bounded to about 45 seconds or less.
+- When using repo researchers, prefer 2-4 parallel calls for separate roots/subsystems/questions. Each brief must include one narrow question, 1-2 candidate roots, 3-6 terms/symbols, VCS/ignore instructions, desired depth, and the ~45 second target.
+- Do not ask a repo researcher to understand the whole feature or synthesize the plan; the root agent owns synthesis.
+- Search `${DOCS_ROOT}/solutions/` directly with `cg_search_artifacts` or targeted `rg` by default; use `cg-learnings-researcher` only for broad docs exploration that is large enough to benefit from running in parallel with code research.
 
 ### Step 1.5: Supplemental Research and Docs Cross-Check (Conditional)
 
