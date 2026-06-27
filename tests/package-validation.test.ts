@@ -21,7 +21,7 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
-assert.equal(pkg.version, "0.3.0");
+assert.equal(pkg.version, "0.3.1");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
@@ -42,6 +42,7 @@ assert(artifactSearchText.includes("buildSearchText") && artifactSearchText.incl
 assert(artifactSearchText.includes("freshnessMode") && artifactSearchText.includes("freshnessTtlMs") && artifactSearchText.includes("dirtyIndexPaths") && artifactSearchText.includes("bodyPreview"), "Expected artifact search to support fast-path freshness and avoid full-body indexing by default.");
 assert(artifactSearchText.includes("outputMode") && artifactSearchText.includes("formatCompactFrontmatterSummary") && artifactSearchText.includes('params.outputMode === "detailed"'), "Expected artifact search to support compact agent-facing output with a detailed fallback.");
 assert(artifactSearchText.includes("preparedResultCount") && artifactSearchText.includes("returnedResultCount"), "Expected artifact search details to distinguish prepared and returned result counts.");
+assert(changelogText.includes("0.3.1") && changelogText.includes("outputMode"), "Expected changelog entry for compact artifact search output.");
 assert(changelogText.includes("0.3.0") && changelogText.includes("migrate-unity-docs-schema"), "Expected changelog entry for Unity docs schema migration.");
 assert(changelogText.includes("0.2.0") && changelogText.includes("cg_search_artifacts"), "Expected changelog entry for artifact search.");
 assert(artifactSearchDocText.includes(".compound-game-dev/") && artifactSearchDocText.includes("Do not ignore `docs/` or `todos/`"), "Expected artifact search docs to recommend ignoring only the generated cache directory.");
