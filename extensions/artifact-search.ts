@@ -49,6 +49,7 @@ type Scope = "all" | "docs" | "solutions" | "plans" | "todos";
 type RankProfile = "balanced" | "frontmatter" | "recency" | "todos";
 type MatchMode = "all" | "any" | "phrase";
 type FreshnessMode = "auto" | "strict" | "memory";
+type OutputMode = "compact" | "detailed";
 type SearchField = "path" | "title" | "tags" | "frontmatter" | "headings" | "body";
 type SearchText = Record<SearchField | "all", string>;
 
@@ -121,6 +122,7 @@ type SearchParams = {
   groupByKind?: boolean;
   freshnessMode?: FreshnessMode;
   freshnessTtlMs?: number;
+  outputMode?: OutputMode;
   rebuild?: boolean;
 };
 
@@ -804,7 +806,7 @@ function passesFilters(entry: ArtifactEntry, params: SearchParams): boolean {
 
 function makeSnippet(entry: ArtifactEntry, terms: string[], maxChars: number): string | undefined {
   if (terms.length === 0) return undefined;
-  const source = entry.body || entry.headings.join("\n") || entry.title || entry.path;
+  const source = entry.body ?? entry.bodyPreview ?? (entry.headings.join("\n") || entry.title || entry.path);
   const lower = source.toLowerCase();
   const hit = terms.map((term) => lower.indexOf(term)).filter((index) => index >= 0).sort((a, b) => a - b)[0] ?? -1;
   if (hit < 0) return undefined;
@@ -913,17 +915,45 @@ function formatFrontmatterSummary(frontmatter: Record<string, unknown>): string 
   return parts.join("; ");
 }
 
+function compactValues(values: string[], limit = 5): string {
+  const visible = values.slice(0, limit).join(", ");
+  return values.length > limit ? `${visible}, +${values.length - limit}` : visible;
+}
+
+function formatCompactFrontmatterSummary(frontmatter: Record<string, unknown>): string {
+  const fieldLabels: Array<[string, string, number?]> = [
+    ["status", "status"],
+    ["priority", "prio"],
+    ["severity", "sev"],
+    ["module", "mod"],
+    ["component", "comp"],
+    ["tags", "tags", 5],
+  ];
+  const parts = fieldLabels.flatMap(([field, label, limit]) => {
+    const values = toStringArray(frontmatter[field]);
+    return values.length ? [`${label}=${compactValues(values, limit)}`] : [];
+  });
+  return parts.join("; ");
+}
+
+function formatIndexSummary(meta: { indexPath: string; refreshed: boolean; stats: { added: number; updated: number; removed: number; unchanged: number }; totalFiles: number }, detailed: boolean): string {
+  const state = meta.refreshed ? "refreshed" : "fresh";
+  const changes = `+${meta.stats.added}/~${meta.stats.updated}/-${meta.stats.removed}`;
+  if (!detailed) return `Index ${state}; files=${meta.totalFiles}; changes=${changes}.`;
+  return `Index: ${normalizePath(meta.indexPath)} (${state}; ${meta.totalFiles} files, ${changes})`;
+}
+
 function formatResults(searchResult: SearchIndexResult, params: SearchParams, meta: { indexPath: string; refreshed: boolean; stats: { added: number; updated: number; removed: number; unchanged: number }; totalFiles: number }): string {
   const limit = Math.max(1, Math.min(params.limit ?? DEFAULT_LIMIT, 100));
   const shown = searchResult.results.slice(0, limit);
+  const detailed = params.outputMode === "detailed";
   const lines: string[] = [];
-  lines.push(`Found ${searchResult.totalMatches} matching artifact${searchResult.totalMatches === 1 ? "" : "s"}; showing ${shown.length}.`);
-  lines.push(`Index: ${normalizePath(meta.indexPath)} (${meta.refreshed ? "refreshed" : "fresh"}; ${meta.totalFiles} files, +${meta.stats.added}/~${meta.stats.updated}/-${meta.stats.removed})`);
+  lines.push(`${searchResult.totalMatches} matching artifact${searchResult.totalMatches === 1 ? "" : "s"}; showing ${shown.length}. ${formatIndexSummary(meta, detailed)}`);
 
   if (!shown.length) return lines.join("\n");
   lines.push("");
 
-  const renderOne = (result: SearchResult, index: number) => {
+  const renderDetailed = (result: SearchResult, index: number) => {
     lines.push(`${index + 1}. ${result.path}${result.title ? ` — ${result.title}` : ""}`);
     lines.push(`   kind: ${result.kind}; score: ${result.score.toFixed(1)}`);
     const summary = formatFrontmatterSummary(result.frontmatter);
@@ -933,6 +963,16 @@ function formatResults(searchResult: SearchIndexResult, params: SearchParams, me
     if (result.related?.length) lines.push(`   related: ${result.related.map((item) => `${item.path} (${item.relation})`).join("; ")}`);
   };
 
+  const renderCompact = (result: SearchResult, index: number) => {
+    const summary = formatCompactFrontmatterSummary(result.frontmatter);
+    const title = result.title ? ` — ${result.title}` : "";
+    const metaText = summary ? ` | ${summary}` : "";
+    lines.push(`${index + 1}. [${result.kind} ${result.score.toFixed(0)}] ${result.path}${title}${metaText}`);
+    if (params.explain && result.reasons.length) lines.push(`   why: ${result.reasons.slice(0, 4).join("; ")}`);
+    if (result.related?.length) lines.push(`   related: ${result.related.map((item) => `${item.path} (${item.relation})`).join("; ")}`);
+  };
+
+  const renderOne = detailed ? renderDetailed : renderCompact;
   if (params.groupByKind) {
     let resultIndex = 0;
     for (const [kind, group] of Object.entries(groupResultsByKind(shown))) {
@@ -946,7 +986,7 @@ function formatResults(searchResult: SearchIndexResult, params: SearchParams, me
   const suggestedRg = suggestedRgCommand(params);
   if (suggestedRg) {
     lines.push("");
-    lines.push(`Suggested rg verification: ${suggestedRg}`);
+    lines.push(`${detailed ? "Suggested rg verification" : "Verify"}: ${suggestedRg}`);
   }
 
   return lines.join("\n");
@@ -1043,6 +1083,7 @@ export default function registerArtifactSearch(pi: ExtensionAPI) {
       groupByKind: Type.Optional(Type.Boolean({ description: "Group displayed results by artifact kind while preserving score order within each group." })),
       freshnessMode: Type.Optional(Type.Union([Type.Literal("auto"), Type.Literal("strict"), Type.Literal("memory")], { description: "Freshness strategy: auto uses dirty tracking and a TTL fast path, strict scans markdown every time, memory trusts the loaded index." })),
       freshnessTtlMs: Type.Optional(Type.Number({ description: "Auto-mode in-memory freshness TTL in milliseconds. Defaults to 30000." })),
+      outputMode: Type.Optional(Type.Union([Type.Literal("compact"), Type.Literal("detailed")], { description: "Controls agent-facing result text. compact is default and omits snippets/index paths; detailed restores verbose snippets and full metadata." })),
       explain: Type.Optional(Type.Boolean({ description: "Include score/ranking reasons for each result." })),
       rebuild: Type.Optional(Type.Boolean({ description: "Force rebuilding the generated index before searching." })),
     }),
@@ -1090,7 +1131,7 @@ export default function registerArtifactSearch(pi: ExtensionAPI) {
                 todoPriorityBoosts: TODO_PRIORITY_BOOSTS,
               },
               filters: ["scopes", "status", "priority", "tags", "module", "component", "docType", "category", "failureMode", "problemType", "severity", "includeCompletedTodos"],
-              index: ["workspaceRoot", "docsRoot", "todosRoot", "indexPath", "rebuild", "freshnessMode", "freshnessTtlMs"],
+              index: ["workspaceRoot", "docsRoot", "todosRoot", "indexPath", "rebuild", "freshnessMode", "freshnessTtlMs", "outputMode"],
               concurrency: {
                 lockTimeoutMs: INDEX_LOCK_TIMEOUT_MS,
                 lockStaleMs: INDEX_LOCK_STALE_MS,

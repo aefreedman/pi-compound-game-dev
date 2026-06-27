@@ -45,6 +45,7 @@
 - Add `requiredTerms`, `optionalTerms`, `searchFields`, and `minTermMatches` for broad artifact searches, de-duplicate query terms before scoring, normalize common query separators, and report uncapped total, prepared, and returned result counts separately.
 - Store normalized per-field metadata/search text plus body previews in the generated index instead of full markdown bodies, add suggested raw `rg` verification commands, support result grouping by kind, and support directly linked/linking related artifacts when markdown contains explicit project-relative links.
 - Add `freshnessMode` and `freshnessTtlMs` so repeated searches can use a dirty-tracked in-memory fast path instead of scanning every markdown file.
+- Make artifact search agent-facing output compact by default, with `outputMode: "detailed"` available for verbose snippets and full metadata.
 
 ### Changed
 

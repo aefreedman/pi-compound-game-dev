@@ -112,6 +112,8 @@ Query matching normalizes common separators, so `ui-toolkit`, `ui_toolkit`, `ui/
 
 Search results include a suggested raw `rg` verification command when query terms are present. Use it as a starting point for exact source-text validation; refine the pattern for API names, file paths, or error strings when needed.
 
+By default, agent-facing output uses `outputMode: "compact"`: one line per result, no snippets, and no full generated index path. Use `outputMode: "detailed"` when you need verbose snippets, full frontmatter fields, and the index path in the text response. Structured result details still include paths, snippets, metadata, and index path for programmatic consumers.
+
 - `includeBody` - include body preview text in query matching; defaults to `true`. Full body text is intentionally not stored in the index by default; use raw `rg` for full-body verification.
 - `searchFields` - explicit fields to search/score: `path`, `title`, `tags`, `frontmatter`, `headings`, `body`. Use `searchFields: ["title","tags","frontmatter","path"]` for low-noise metadata discovery, then raw `rg` or a body-inclusive index pass for detailed verification.
 - `includeRelated` - include directly linked/linking artifacts when markdown references point to other `docs/...md` or `todos/...md` files.
@@ -122,6 +124,7 @@ Search results include a suggested raw `rg` verification command when query term
 - `limit` - maximum displayed results; defaults to `20`.
 - `maxSnippetChars` - approximate maximum snippet characters; defaults to `220`.
 - `explain` - include scoring reasons for each result.
+- `outputMode` - `compact` or `detailed`; compact is the default to reduce agent token use.
 - `freshnessMode` - `auto`, `strict`, or `memory`; controls whether searches can use the in-memory fast path.
 - `freshnessTtlMs` - auto-mode TTL for skipping full markdown scans after a recent validated refresh.
 
