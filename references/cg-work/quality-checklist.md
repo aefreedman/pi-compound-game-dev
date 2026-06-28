@@ -10,6 +10,20 @@ Before implementing rename/replacement work, confirm whether the current task is
 
 For Unity UI Toolkit work, prefer UXML for structure, USS for styling/layout/interaction states, and C# for behavior/data binding. If significant UI styling or durable layout is being written directly in C#, pause and check whether it belongs in USS/UXML instead.
 
+When implementing a plan, keep the work framed as the target design. Do not preserve old concepts, old plan comparisons, or "not the old system" language in code/docs unless it is needed for explicit migration or historical traceability.
+
+## Authored Content and Data Validation
+
+For Unity authored-content changes (assets, catalogs, layouts, progression graphs, content mappings, save/config data), prefer validation that can fail at edit/design time before runtime playthroughs:
+
+- Add or run EditMode tests for asset references, invariants, and load/traversal rules.
+- Add or run editor validators when designers or agents need visible errors before entering Play Mode.
+- Validate missing assets, invalid references, duplicate IDs, unreachable graph/content states, and malformed data close to the authoring surface.
+
+Do not rely only on "start the mission/scene and see what breaks" when the issue can be detected from authored data. Runtime/manual validation is still useful, but it should not be the first practical failure signal for deterministic content errors.
+
+For tests over designer-authored data, distinguish stable contracts from mutable content. Avoid permanent magic-number assertions over changeable designer values; if a migration temporarily freezes exact data to guard refactor safety, remove or relax those assertions after the stable schema/invariants are protected.
+
 ## Unity Process Safety
 
 Unity allows only one process per project folder. For a single Unity project, run batchmode compile checks and Unity Test Framework test runs serially. Do not issue multiple `unity_launch_batchmode` calls for the same project in the same parallel tool turn.
@@ -17,6 +31,14 @@ Unity allows only one process per project folder. For a single Unity project, ru
 Before the first Unity batchmode compile or Unity Test Framework run in a session, load the `unity-batchmode-tests` skill when the `pi-unity` package is available. It contains the current packaged-tool workflow, lockfile guidance, and test-result/log-file conventions.
 
 For Unity Test Framework runs, do not pass `-quit` with `-runTests`; the test runner controls process exit. Use absolute `-testResults` and `-logFile` paths when practical.
+
+## Windows Command Safety
+
+When using shell/Python helpers on Windows projects, keep commands portable and UTF-8 safe:
+
+- Prefer Pi `read` for file inspection and `rg` for search before ad hoc Python parsing.
+- Avoid passing wildcard path segments such as `Packages/com.example*` as literal search roots; prefer searching a concrete root with `-g` include/exclude globs.
+- If Python must print non-ASCII text, set UTF-8 output explicitly or write UTF-8 files instead of relying on the console code page.
 
 ## Core Quality Checks (Always Run)
 

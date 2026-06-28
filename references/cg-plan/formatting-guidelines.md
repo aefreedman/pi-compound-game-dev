@@ -18,6 +18,24 @@ When a feature appears to replace an existing workflow, name the intended compat
 
 Do not add compatibility layers, adapters, old-name prose, migration checks, or legacy aliases unless the user requests them or evidence shows shipped data requires them.
 
+## Direct Plan Framing
+
+Write the plan as the intended design, not primarily as a comparison against an old plan, old system, or rejected alternative. It is fine to mention replacement/removal work when relevant, but the main phases, acceptance criteria, and validation should describe the target behavior directly.
+
+## Authored Content Validation
+
+When a Unity plan changes designer-authored assets, catalogs, layouts, progression data, or other content/data pipelines, include early validation that can run before a full runtime playthrough when practical:
+
+- EditMode tests for asset invariants and references.
+- Editor/design-time validators that surface errors in logs or inspector/tooling output.
+- Deterministic traversal or load checks for authored graphs, layouts, catalogs, and content mappings.
+
+Runtime/manual validation can still be required, but avoid making the first discoverable failure signal a late playthrough-only error when the data can be checked at edit time.
+
+## Test Stability for Designer Data
+
+Do not permanently encode mutable designer-authored values as test magic numbers unless those values are part of a stable contract. Temporary freeze tests can be useful during migrations/refactors, but the plan should remove or relax them once the stable schema/invariant is protected.
+
 ## Unity UI Toolkit Plans
 
 For persistent Unity UI Toolkit work, prefer plans that separate:

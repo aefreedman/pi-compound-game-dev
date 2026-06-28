@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.4 - 2026-06-28
+
+### Changed
+
+- Added planning/work guidance for Unity authored-content design-time validation and avoiding permanent magic-number tests over mutable designer-authored data.
+- Added plan-formatting guidance to frame plans as the target design rather than primarily as comparisons against old systems.
+- Added Windows command-safety guidance for UTF-8-safe helper scripts and robust `rg` glob usage.
+
 ## 0.3.3 - 2026-06-27
 
 ### Changed
