@@ -21,7 +21,7 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
-assert.equal(pkg.version, "0.3.1");
+assert.equal(pkg.version, "0.3.3");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
@@ -42,6 +42,8 @@ assert(artifactSearchText.includes("buildSearchText") && artifactSearchText.incl
 assert(artifactSearchText.includes("freshnessMode") && artifactSearchText.includes("freshnessTtlMs") && artifactSearchText.includes("dirtyIndexPaths") && artifactSearchText.includes("bodyPreview"), "Expected artifact search to support fast-path freshness and avoid full-body indexing by default.");
 assert(artifactSearchText.includes("outputMode") && artifactSearchText.includes("formatCompactFrontmatterSummary") && artifactSearchText.includes('params.outputMode === "detailed"'), "Expected artifact search to support compact agent-facing output with a detailed fallback.");
 assert(artifactSearchText.includes("preparedResultCount") && artifactSearchText.includes("returnedResultCount"), "Expected artifact search details to distinguish prepared and returned result counts.");
+assert(changelogText.includes("0.3.3") && changelogText.includes("full replacement"), "Expected changelog entry for replacement-vs-compatibility guidance.");
+assert(changelogText.includes("0.3.2") && changelogText.includes("unity-batchmode-tests"), "Expected changelog entry for Unity batchmode skill-loading guidance.");
 assert(changelogText.includes("0.3.1") && changelogText.includes("outputMode"), "Expected changelog entry for compact artifact search output.");
 assert(changelogText.includes("0.3.0") && changelogText.includes("migrate-unity-docs-schema"), "Expected changelog entry for Unity docs schema migration.");
 assert(changelogText.includes("0.2.0") && changelogText.includes("cg_search_artifacts"), "Expected changelog entry for artifact search.");
@@ -49,6 +51,9 @@ assert(artifactSearchDocText.includes(".compound-game-dev/") && artifactSearchDo
 assert(artifactSearchDocText.includes("Concurrent Search Safety") && artifactSearchDocText.includes("artifact-index.json.lock"), "Expected artifact search docs to describe lock behavior.");
 assert(artifactSearchDocText.includes("Hybrid Search Workflow") && artifactSearchDocText.includes('matchMode: "any"') && artifactSearchDocText.includes("Raw docs verification"), "Expected artifact search docs to describe hybrid indexed/raw search workflow.");
 assert(qualityChecklistText.includes("Do not issue multiple `unity_launch_batchmode` calls"), "Expected Unity validation guidance to forbid parallel batchmode runs for one project.");
+assert(qualityChecklistText.includes("load the `unity-batchmode-tests` skill"), "Expected Unity validation guidance to load the Unity batchmode skill before first run.");
+assert(qualityChecklistText.includes("full replacement") && qualityChecklistText.includes("backward-compatible support"), "Expected scope discipline guidance for replacement vs compatibility.");
+assert(qualityChecklistText.includes("UXML") && qualityChecklistText.includes("USS") && qualityChecklistText.includes("C#"), "Expected Unity UI Toolkit structure/style guidance.");
 assert(qualityChecklistText.includes("do not pass `-quit` with `-runTests`"), "Expected Unity Test Framework guidance to avoid -quit with -runTests.");
 assert(!changelogPlasticText.includes("--orderby"), "Plastic changelog docs must not use unsupported cm find --orderby syntax.");
 assert(!changelogPlasticText.includes("--limit"), "Plastic changelog docs must not use unsupported cm find --limit syntax.");

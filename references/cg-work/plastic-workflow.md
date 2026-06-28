@@ -18,7 +18,7 @@ This file contains Plastic-specific operations for setting up, executing, and sh
 
 **Load the `using-plastic` skill** for Plastic operations.
 
-Agent workflow preference: use `plastic_*` tools first (`plastic_status`, `plastic_branchCreate`, `plastic_switchBranch`, `plastic_checkin`, `plastic_diff`, etc.); keep `cm ...` snippets as manual fallback.
+Agent workflow preference: use `plastic_*` tools first (`plastic_status`, `plastic_branchCreate`, `plastic_switchBranch`, `plastic_checkin`, `plastic_mergeToBranch`, etc.); keep `cm ...` snippets as manual fallback.
 
 Note: examples target current Plastic CLI syntax; legacy variants may differ.
 
@@ -29,12 +29,18 @@ Note: examples target current Plastic CLI syntax; legacy variants may differ.
 1. Setup: Detect conventions, create feature branch
 2. Execute: Make incremental checkins as logical units complete
 3. Final: Create final checkin with attribution
-4. Ship: Create code review (CLI or GUI)
+4. Ship: Create code review (CLI or GUI) and merge finished branch to the target branch when requested
 
 **Key differences from Git:**
 - No worktrees (use shelving instead)
 - Changes auto-sync on checkin (no push needed)
 - Code review creation may require GUI
+
+---
+
+## Closeout Merge Helper
+
+When the user asks to merge a finished feature branch into `/dev` or another target branch, prefer `plastic_mergeToBranch` when available. It performs the safe target-switch, optional update, non-interactive merge, merge-state check, and merge checkin flow in one guarded operation. Use manual `plastic_switchBranch` / `plastic_update` / `plastic_merge` / `plastic_status` / `plastic_checkin` only if the helper is unavailable or the workflow needs custom intervention.
 
 ---
 

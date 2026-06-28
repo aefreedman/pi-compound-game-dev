@@ -7,6 +7,27 @@
 - Include acceptance criteria that are testable.
 - Add diagrams where they clarify architecture (mermaid).
 
+## Scope Assumptions
+
+When a feature appears to replace an existing workflow, name the intended compatibility stance explicitly instead of assuming it:
+
+- **Full replacement**: remove/rename old concepts in current docs, prose, data, code, and cards.
+- **Migration/conversion**: convert old data/assets to the new workflow and keep one canonical path afterward.
+- **Backward-compatible support**: maintain old and new paths deliberately.
+- **Historical alias/reference only**: keep old names only where the user explicitly asks for historical traceability.
+
+Do not add compatibility layers, adapters, old-name prose, migration checks, or legacy aliases unless the user requests them or evidence shows shipped data requires them.
+
+## Unity UI Toolkit Plans
+
+For persistent Unity UI Toolkit work, prefer plans that separate:
+
+- UXML for durable visual structure/templates.
+- USS for styling, layout, typography, and interaction-state visuals.
+- C# for behavior, data binding, generated content, and editor/runtime integration.
+
+Avoid plans that encode all visual structure and styling in C# unless the UI is truly generated/dynamic or the project pattern requires it.
+
 ## Compact File References
 
 Keep evidence useful without repeating long paths.

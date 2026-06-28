@@ -4,9 +4,17 @@ This file contains quality assurance steps to run before shipping work.
 
 ---
 
+## Scope Discipline
+
+Before implementing rename/replacement work, confirm whether the current task is full replacement, migration/conversion to one canonical workflow, backward-compatible support, or historical alias preservation. Do not keep old names, add adapters, or create compatibility paths unless the plan/user explicitly calls for them.
+
+For Unity UI Toolkit work, prefer UXML for structure, USS for styling/layout/interaction states, and C# for behavior/data binding. If significant UI styling or durable layout is being written directly in C#, pause and check whether it belongs in USS/UXML instead.
+
 ## Unity Process Safety
 
 Unity allows only one process per project folder. For a single Unity project, run batchmode compile checks and Unity Test Framework test runs serially. Do not issue multiple `unity_launch_batchmode` calls for the same project in the same parallel tool turn.
+
+Before the first Unity batchmode compile or Unity Test Framework run in a session, load the `unity-batchmode-tests` skill when the `pi-unity` package is available. It contains the current packaged-tool workflow, lockfile guidance, and test-result/log-file conventions.
 
 For Unity Test Framework runs, do not pass `-quit` with `-runTests`; the test runner controls process exit. Use absolute `-testResults` and `-logFile` paths when practical.
 

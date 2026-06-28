@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.3 - 2026-06-27
+
+### Changed
+
+- Added planning/work guidance to distinguish full replacement, migration/conversion, backward-compatible support, and historical alias preservation before adding compatibility behavior.
+- Added Unity UI Toolkit guidance to prefer UXML for structure, USS for styling, and C# for behavior/data binding.
+
+## 0.3.2 - 2026-06-27
+
+### Changed
+
+- Updated work-execution quality guidance to load the `unity-batchmode-tests` skill before Unity batchmode/test validation.
+- Updated Plastic workflow guidance to prefer the packaged `plastic_mergeToBranch` helper for requested closeout merges.
+
 ## 0.3.1 - 2026-06-27
 
 ### Added
