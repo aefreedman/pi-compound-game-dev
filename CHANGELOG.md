@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.5 - 2026-06-29
+
+### Changed
+
+- Added work-execution guidance to resolve documented project-local Python utility environments from the coordination/project root and verify non-stdlib imports before use.
+
 ## 0.3.4 - 2026-06-28
 
 ### Changed

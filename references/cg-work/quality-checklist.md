@@ -38,6 +38,8 @@ When using shell/Python helpers on Windows projects, keep commands portable and 
 
 - Prefer Pi `read` for file inspection and `rg` for search before ad hoc Python parsing.
 - Avoid passing wildcard path segments such as `Packages/com.example*` as literal search roots; prefer searching a concrete root with `-g` include/exclude globs.
+- If the project documents a local agent Python utility environment, resolve that executable from the coordination/project root before use; do not assume `.pi-python-tools/...` exists relative to a workspace subfolder.
+- Before relying on non-stdlib imports, run a tiny import check with the chosen Python executable so missing packages fail early and clearly.
 - If Python must print non-ASCII text, set UTF-8 output explicitly or write UTF-8 files instead of relying on the console code page.
 
 ## Core Quality Checks (Always Run)
