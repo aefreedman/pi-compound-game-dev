@@ -1,7 +1,7 @@
 {
   "name": "@aefree/pi-compound-game-dev",
   "private": true,
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Compound Game Dev workflows for Pi.",
   "license": "MIT",
   "type": "module",

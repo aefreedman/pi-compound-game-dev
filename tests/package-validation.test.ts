@@ -21,7 +21,7 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
-assert.equal(pkg.version, "0.3.5");
+assert.equal(pkg.version, "0.3.6");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
@@ -42,6 +42,7 @@ assert(artifactSearchText.includes("buildSearchText") && artifactSearchText.incl
 assert(artifactSearchText.includes("freshnessMode") && artifactSearchText.includes("freshnessTtlMs") && artifactSearchText.includes("dirtyIndexPaths") && artifactSearchText.includes("bodyPreview"), "Expected artifact search to support fast-path freshness and avoid full-body indexing by default.");
 assert(artifactSearchText.includes("outputMode") && artifactSearchText.includes("formatCompactFrontmatterSummary") && artifactSearchText.includes('params.outputMode === "detailed"'), "Expected artifact search to support compact agent-facing output with a detailed fallback.");
 assert(artifactSearchText.includes("preparedResultCount") && artifactSearchText.includes("returnedResultCount"), "Expected artifact search details to distinguish prepared and returned result counts.");
+assert(changelogText.includes("0.3.6") && changelogText.includes("Unity YAML asset editing"), "Expected changelog entry for large Unity YAML asset guidance.");
 assert(changelogText.includes("0.3.5") && changelogText.includes("Python utility environments"), "Expected changelog entry for Python utility environment guidance.");
 assert(changelogText.includes("0.3.4") && changelogText.includes("design-time validation"), "Expected changelog entry for authored-content validation guidance.");
 assert(changelogText.includes("0.3.3") && changelogText.includes("full replacement"), "Expected changelog entry for replacement-vs-compatibility guidance.");
@@ -59,6 +60,8 @@ assert(qualityChecklistText.includes("UXML") && qualityChecklistText.includes("U
 assert(qualityChecklistText.includes("edit/design time") && qualityChecklistText.includes("magic-number"), "Expected authored-content validation and mutable designer-data test guidance.");
 assert(qualityChecklistText.includes("Windows Command Safety") && qualityChecklistText.includes("UTF-8"), "Expected Windows command safety guidance.");
 assert(qualityChecklistText.includes("local agent Python utility environment") && qualityChecklistText.includes("non-stdlib imports"), "Expected Python utility environment discovery guidance.");
+assert(readFileSync(new URL("../prompts/cg-work.md", import.meta.url), "utf8").includes("references/cg-work/unity-yaml-assets.md"), "Expected cg-work prompt to load Unity YAML asset editing guidance for serialized assets.");
+assert(readFileSync(new URL("../references/cg-work/unity-yaml-assets.md", import.meta.url), "utf8").includes("heredocs") && readFileSync(new URL("../references/cg-work/unity-yaml-assets.md", import.meta.url), "utf8").includes("fileID"), "Expected Unity YAML asset guidance to cover heredoc avoidance and Unity serialization identifiers.");
 assert(qualityChecklistText.includes("do not pass `-quit` with `-runTests`"), "Expected Unity Test Framework guidance to avoid -quit with -runTests.");
 assert(!changelogPlasticText.includes("--orderby"), "Plastic changelog docs must not use unsupported cm find --orderby syntax.");
 assert(!changelogPlasticText.includes("--limit"), "Plastic changelog docs must not use unsupported cm find --limit syntax.");

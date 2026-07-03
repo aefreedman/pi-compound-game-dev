@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.6 - 2026-07-02
+
+### Added
+
+- Added work-execution guidance for large Unity YAML asset editing, including file-based script workflows instead of fragile inline shell heredocs.
+
 ## 0.3.5 - 2026-06-29
 
 ### Changed

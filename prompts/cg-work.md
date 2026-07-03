@@ -42,6 +42,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 
 - Always create a branch. Use the configured issue tracker to inform the name. Do not work directly on /dev or /main
 - Follow plan steps and existing patterns.
+- For tasks that create or edit Unity serialized text assets (`.unity`, `.prefab`, `.asset`, `.mat`, `.controller`, `.meta`, etc.), load and follow references/cg-work/unity-yaml-assets.md before generating or transforming large YAML-like content.
 - Update and check off plan checkboxes.
 - Create incremental, atomic VCS writes based on active workflow and branch type.
   - Git: commits on sub-branches by default; top-level branches require explicit user instruction.
