@@ -1,20 +1,32 @@
 # Unity Testing (Optional)
 
-## Detect Unity Projects
+## Detect Applicability
 
-Indicators:
-- `Assets/`, `ProjectSettings/`, `Packages/manifest.json`
-- `*.unity` scene files
-- Unity C# projects (`Assembly-CSharp.csproj`)
+Unity indicators include `Assets/`, `ProjectSettings/`, `Packages/manifest.json`, Unity scene/asset files, or Unity-generated C# project files.
 
-## Offer Tests
+Offer only test modes relevant to the changed scope:
 
-Prompt after summary:
-
-1. Run Edit Mode tests
-2. Run Play Mode tests
-3. Run both
+1. EditMode
+2. PlayMode
+3. Both, run serially for the same project folder
 4. Skip
 
-If user accepts, spawn a subagent to run Unity Test Framework
-and create P1 todos for any failing tests.
+## Execution
+
+Run accepted Unity validation before final synthesis and summary so observed evidence can be classified correctly.
+
+Prefer the root session loading the `unity-batchmode-tests` skill and using Pi Unity status/test tools. Do not spawn an unspecified worker merely to run tests. If a separate bounded worker is genuinely useful, only the root may delegate it, with the exact project copy, test mode/filter, absolute result/log paths, no edit/VCS/nested-delegation authority, and serialized access to that project folder.
+
+Never run multiple Unity processes against one project folder. Inspect project status before launch and do not delete lockfiles automatically.
+
+## Interpreting Results
+
+A failed test command is evidence, not automatically a P1 defect. Distinguish:
+
+- product regression caused by the reviewed change
+- pre-existing test failure
+- test-harness/infrastructure failure
+- compile/import failure
+- blocked launch or unavailable project copy
+
+Assign severity from demonstrated impact and confidence. Create a review finding/todo only when evidence supports a concrete actionable issue; otherwise record the validation limitation or blocker in the summary. Preserve test result and concise log evidence.

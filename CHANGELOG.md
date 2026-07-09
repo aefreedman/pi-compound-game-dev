@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added macOS CI coverage for package tests and packed-artifact validation.
+
+### Changed
+
+- Aligned planning, review, work-quality, loop, and parallel todo-resolution guidance with the revised agent applicability, authority, output, and stop contracts.
+- Routed package-owned agents with `agentScope: "both"`, made resolver completion status-aware and collision-safe, and made Unity test findings evidence-based rather than automatically P1.
+
 ## 0.4.0 - 2026-07-09
 
 ### Changed

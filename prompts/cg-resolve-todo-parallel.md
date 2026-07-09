@@ -14,17 +14,24 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
 - For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
 
+## Orchestration and Authority
+
+- Only the root/orchestrator session may invoke subagents. Delegated workers must perform their bounded task directly or return a parent handoff; they must not launch this workflow or nested specialists.
+- Invoke package-owned `cg-pr-comment-resolver` workers with `agentScope: "both"` and project-agent confirmation enabled.
+- Resolver workers may make only explicitly authorized workspace edits. They may not commit/check in, push, mutate todo lifecycle/status, or change review threads; the root owns those operations.
+
 ## Workflow
 
 1. Resolve artifact roots.
 2. Detect VCS (load references/_shared/vcs-detection.md).
 3. Collect ready todos from `${TODOS_ROOT}` and filter protected artifacts.
-4. Analyze dependencies and group by level.
-5. Resolve todos in parallel batches. For Unity projects, do not run Unity batchmode/test validation in parallel against the same project folder; coordinate those validation runs serially from the root session.
-6. Commit/checkin changes using atomic commits.
-7. Mark todos complete and update work logs.
-8. Push/sync (Git/Plastic).
-9. Generate summary.
+4. Analyze dependencies and target-file overlap. Group only dependency-independent, file-disjoint work for parallel execution; serialize overlapping or unknown scopes.
+5. Delegate one todo per `cg-pr-comment-resolver` worker using the contract in the implementation reference. For Unity projects, coordinate same-project batchmode/test validation serially from the root session.
+6. Gate follow-up on resolver status. Only a validated `Resolved` result is eligible for completion; keep `Partial`, `Blocked`, and `Not Applied` items open with their reasons.
+7. Review each scoped diff, then commit/check in eligible changes atomically when authorized.
+8. Mark eligible todos complete and update work logs from observed evidence.
+9. Push/sync only when explicitly requested or required by the controlling project workflow.
+10. Generate summary.
 
 ## Reference Files (Load On Demand)
 

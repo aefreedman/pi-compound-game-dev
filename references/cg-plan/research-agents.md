@@ -57,12 +57,13 @@ Fast depth limits:
 - Return 2-4 evidence bullets or a scoped not-found result.
 - Report uncertainty instead of expanding to generated, dependency, cache, build, vendor, or whole-repo searches.
 
-Return only:
-- Slice question, roots searched, terms searched, commands run, VCS/ignore handling, depth used, and stop reason
-- Candidate files with why each is likely relevant
-- Evidence bullets with compact file:line references and optional 1-3 line excerpts when useful
-- Scoped not-found/uncertain notes
-- Next reads for the root agent, if any
+Return the exact required sections:
+- `Slice` — question, depth, roots/terms, ignore handling, commands, and scope limits
+- `Evidence` — compact observed `file:line` evidence
+- `Not Found or Uncertain` — scoped negative evidence, contradictions, blockers, or `None within scoped evidence`
+- `Stop Reason` — exactly one of `found-enough | scoped-not-found | blocked | scope-too-broad | budget-reached`
+
+Candidate files and conditional next reads may appear inside those sections, but do not replace a required heading.
 ```
 
 ---
@@ -78,23 +79,23 @@ Delegate to `cg-learnings-researcher` only when the docs search itself has enoug
 If you delegate to `cg-learnings-researcher`, pass it a bounded brief like:
 
 ```text
-Search for documented solutions and learnings related to this feature. Use `cg_search_artifacts` when available; otherwise fall back to rg/Grep-first filtering. For broad feature research, combine a structured/scoped indexed pass, a `matchMode="any"` indexed recall pass, and raw `rg` verification for exact symbols/error text before reading final markdown sources.
+Run a bounded, read-only institutional-learnings search. Do not edit docs/indexes, synthesize the feature plan, or invoke nested subagents.
 
-Feature: {feature_description}
+Question: {one concrete feature, failure, or implementation question}
+WORKSPACE_ROOT: {workspace_root}
+DOCS_ROOT / solutions root: {resolved paths}
+Relevant modules/components/symptoms: {terms}
+Known searches and files already checked: {evidence}
+Budget: default agent budget unless explicitly narrowed
 
-Research focus:
-- ${DOCS_ROOT}/solutions/: Any documented problems/solutions that apply?
-- Gotchas: Known issues or pitfalls to avoid
-- Patterns: Recommended approaches from past experience
-- Lessons learned: What worked or didn't work in similar situations
-- Related problems: Similar features or fixes documented
+Use one structured indexed pass and, only when needed, one broad recall pass. Use raw rg only for exact symbols/errors/body verification. Read every cited source markdown file before reporting it.
 
-Return:
-- Relevant solution documents with file paths
-- Key insights from past problems
-- Gotchas to avoid (with examples)
-- Recommended patterns from institutional knowledge
-- Cross-references to related solutions
+Return the exact required sections:
+- `Search Scope`
+- `Evidence`
+- `Relevant Learnings` with applicability confidence
+- `Not Found or Uncertain`
+- `Stop Reason` using `found-enough | scoped-not-found | blocked | scope-too-broad | budget-reached`
 ```
 
 ---
@@ -234,10 +235,11 @@ After all research completes, consolidate findings:
 Do not treat repo-researcher summaries as final planning conclusions. The root agent should read or verify the most important evidence before relying on it.
 
 ### From cg-learnings-researcher:
-- Relevant solution documents
-- Key insights and gotchas
-- Recommended patterns from institutional knowledge
-- Cross-references
+- Search scope, source files read, and exact negative searches
+- Verified relevant learnings with source paths and applicability confidence
+- Not-found/uncertain evidence and explicit stop reason
+
+Do not treat learnings as an implementation plan; the root verifies applicability and owns synthesis.
 
 ### From supplemental research or docs cross-checks (if performed):
 - Official engine/package/platform/tool documentation

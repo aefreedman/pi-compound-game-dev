@@ -39,6 +39,8 @@ references/_shared/artifact-path-contract.md.
 
 ### Step 1: Local Research (Always)
 
+Only the root/orchestrator session may invoke subagents. Delegated workers must complete their bounded direct task or return a parent handoff rather than launching this planning workflow or nested specialists.
+
 Load references/cg-plan/research-agents.md and references/_shared/repo-research-efficiency.md.
 
 Run the root fast pass from references/_shared/repo-research-efficiency.md before choosing a research route: read local guidance, detect VCS, discover ignore files, identify likely source/content roots, and run a few focused searches from the feature terms. If the fast pass detects a Unity project, load references/_shared/unity-repo-research.md and apply it conditionally; otherwise stay engine/tool agnostic.
@@ -67,9 +69,9 @@ Use criteria in references/cg-plan/research-agents.md. Make separate decisions f
 
 Use references/cg-plan/detail-level-templates.md.
 
-### Step 3: SpecFlow Analyzer
+### Step 3: SpecFlow Analysis
 
-Use references/cg-plan/specflow.md.
+Use references/cg-plan/specflow.md. Analyze directly for a small flow surface or delegate `cg-spec-flow-analyzer` with `agentScope: "both"`, bounded read-only inputs, and its exact output contract when an isolated pass is worthwhile.
 
 ### Step 4: Write the Plan
 

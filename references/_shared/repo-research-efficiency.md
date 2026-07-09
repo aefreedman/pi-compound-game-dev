@@ -148,20 +148,19 @@ Return a concise evidence handoff, not a processed plan:
 - Commands run: [commands]
 - VCS/ignore handling: [files/tools used]
 - Depth: fast|focused|deep
-- Stop reason: found-enough|scoped-not-found|scope-too-broad|time-budget
-
-### Candidate Files
-- [path] - [why this file is likely relevant; key lines if known]
+- Scope limits: [search/read budget]
 
 ### Evidence
+- Candidate: [path] - [why relevant; key lines]
 - [file:line,line-range] - [observed local pattern or fact]
   > [optional short excerpt]
 
-### Not Found / Uncertain
-- [what was searched and not found]
+### Not Found or Uncertain
+- [scoped negative evidence, contradiction, blocker, or "None within scoped evidence"]
+- Next read, only when unresolved: [path and reason]
 
-### Next Reads for Root Agent
-- [path] - [why the root agent may read it]
+### Stop Reason
+found-enough | scoped-not-found | blocked | scope-too-broad | budget-reached — [one-sentence reason]
 ```
 
 Prefer evidence shortlists over broad inventories. Include line numbers for claims that influence the plan. Avoid recommendations that require feature-level synthesis; the root agent will do that work.

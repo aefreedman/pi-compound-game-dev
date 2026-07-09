@@ -29,9 +29,9 @@ Use this template to generate the final summary report after findings have been 
 
 ### Review Agents Used
 
-List only selected specialists and record their routing outcome:
+List only selected specialists and preserve their actual contract outcome:
 
-- `{agent}` — ran | not applicable | blocked — {scope or reason}
+- `{agent}` — {verdict/result/status} — {reviewed scope or blocker reason}
 
 If `cg-pattern-specialist` ran, include the explicitly requested cross-codebase audit question. Record migration and deployment specialists only when their conditional criteria applied.
 
@@ -50,4 +50,4 @@ If `cg-pattern-specialist` ran, include the explicitly requested cross-codebase 
 - `[X]` / `[count]` - finding counts
 - `{finding}` - short kebab-case finding summary
 - `{description}` - concise finding description
-- `(ran: yes/no)` - whether conditional agents were executed
+- `{verdict/result/status}` - the selected agent's actual reported outcome

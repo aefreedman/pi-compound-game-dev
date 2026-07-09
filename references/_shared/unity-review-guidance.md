@@ -1,6 +1,6 @@
 # Unity Review Guidance
 
-Use this reference only when the changed files or project structure indicate a Unity project. Keep core agents engine-agnostic; pass these checks as conditional stack context instead of baking them into every review.
+Use this reference only when the changed files or project structure indicate a Unity project. Keep review agents engine-agnostic; pass these checks as conditional stack context instead of baking them into every review.
 
 ---
 

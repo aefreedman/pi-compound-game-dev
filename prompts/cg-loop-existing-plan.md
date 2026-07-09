@@ -13,7 +13,8 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package prompt and refer
 
 ## Input handling
 
-- Use `$ARGUMENTS` only for step 1.
+- Resolve and capture the existing plan artifact path from `$ARGUMENTS` before step 1.
+- Use that resolved plan path only for step 1.
 - All subsequent steps must use outputs/artifacts from the previous step.
 
 ## Execution rules
@@ -52,7 +53,7 @@ Default branch creation when currently on top-level branch:
 
 # Execution Stages
 
-1. Load `prompts/cg-work.md` with `cg_read_reference`, then run that local work-execution workflow using `$ARGUMENTS`.
+1. Load `prompts/cg-work.md` with `cg_read_reference`, then run that local work-execution workflow using the resolved existing plan artifact path.
    - Capture the produced review target (PR URL/number, branch, or equivalent).
    - Ensure the work is executed on the dedicated sub-branch for this run.
    - Use atomic commits.
@@ -60,14 +61,14 @@ Default branch creation when currently on top-level branch:
 2. Load `prompts/cg-review.md` with `cg_read_reference`, then run that local review workflow using step 1 output.
 
 3. Auto-triage newly-created todo files:
-   - Attempt to resolve all findings.
-   - Promote matching pending todos to ready automatically.
-   - Leave any un-resolvable todos pending.
+   - Evaluate every newly created finding for readiness; do not implement fixes during triage.
+   - Promote actionable pending todos to ready automatically.
+   - Leave ambiguous, blocked, duplicate, or unwarranted items pending with a reason.
 
 4. Load `prompts/cg-resolve-todo-parallel.md` with `cg_read_reference`, then run that local todo-resolution workflow on the ready todos from step 3.
    - Prefer resolving `p1` first, then `p2`, then `p3`.
    - Ensure fixes are committed/checkedin atomically before marking todos complete.
-   - Continue until all in-scope todos are resolved or marked blocked with reason.
+   - Continue until every in-scope todo is completed or remains open with a recorded `Partial`, `Blocked`, or `Not Applied` disposition and next step.
 
 ## Completion criteria
 
@@ -77,5 +78,5 @@ Default branch creation when currently on top-level branch:
   - work/review target used
   - branch used (and whether it was created in this run)
   - todos promoted to ready
-  - todos resolved and blocked (with reasons)
+  - todos resolved, partial, blocked, and not applied (with reasons)
   - commit/checkin mapping for resolved items

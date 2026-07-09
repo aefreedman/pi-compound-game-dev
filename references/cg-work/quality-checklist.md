@@ -42,9 +42,9 @@ When using shell/Python helpers on Windows projects, keep commands portable and 
 - Before relying on non-stdlib imports, run a tiny import check with the chosen Python executable so missing packages fail early and clearly.
 - If Python must print non-ASCII text, set UTF-8 output explicitly or write UTF-8 files instead of relying on the console code page.
 
-## Core Quality Checks (Always Run)
+## Core Quality Checks
 
-Run these checks before submitting any PR or code review:
+Run every check that applies to the detected project, changed scope, and documented project workflow. Record `not applicable` or `blocked` with evidence when a configured check does not exist or cannot run safely; never claim an unrun check passed.
 
 ### 0. Unity Batchmode Compile Validation (Unity Projects, Mandatory)
 
@@ -66,23 +66,20 @@ unity -batchmode -projectPath . \
 - Fix compile errors before running any additional quality checks
 - Do not ship until batchmode compile validation passes
 
-### 1. Run Full Test Suite
+### 1. Run Applicable Test Suites
 
 ```bash
-# Run the project's configured test command from AGENTS.md or project docs.
+# Run project-defined tests relevant to the changed scope from AGENTS.md or project docs.
 # For Unity projects, see the Unity Test Framework section below.
 # For packages/tools in this repo, use the package-local test command when present.
 ```
 
 **Verify:**
-- All tests pass
-- No new test failures
-- Code coverage maintained or improved
+- Applicable configured tests pass
+- No new in-scope test failures
+- Required coverage or evidence targets are met when the project defines them
 
-**If tests fail:**
-- Fix failures immediately
-- Don't proceed to linting until tests pass
-- Create new tests for new functionality
+If no relevant test suite exists, record that explicitly and rely on the project-approved validation path. If tests fail, classify whether the failure is caused by the change, pre-existing, or an infrastructure/harness problem before deciding whether to fix or block.
 
 ---
 
@@ -90,7 +87,7 @@ unity -batchmode -projectPath . \
 
 Check AGENTS.md for project-specific linting configuration:
 
-If you delegate linting to `cg-lint-specialist`, give it a brief focused on the changed files and fixing lint issues.
+If you delegate linting to `cg-lint-specialist`, use `agentScope: "both"` and default the brief to `check-only` for the changed files. Authorize `fix-authorized` mode only through an explicit follow-up with a bounded file allowlist. The lint agent never commits, checks in, or pushes; the root session owns any separately authorized VCS write.
 
 Use the project's native lint/format/static-analysis command. For Unity projects, this may be an editor validation step, Roslyn analyzer, formatting command, package-specific script, or build pipeline check documented by the project.
 
@@ -121,120 +118,22 @@ Use the project's native lint/format/static-analysis command. For Unity projects
 
 ---
 
-## Reviewer Agents (Optional - Use Selectively)
+## Reviewer Agents (Optional and Concern-Driven)
 
-**Don't use by default.** Use reviewer agents only when:
+Do not select reviewers solely by file count. A one-file credential or save-schema change may need specialist review, while a large generated/content-only change may not.
 
-- Large refactor affecting many files (10+)
-- Security-sensitive changes (authentication, permissions, data access)
-- Complex algorithms or business logic
-- User explicitly requests thorough review
+Use the applicability table and current briefs in `references/cg-review/agent-prompts.md`; use `references/cg-review/conditional-agents.md` for migration and deployment. Do not duplicate reviewer prompts here.
 
-**For most features:** tests + linting + following patterns is sufficient.
+When delegating:
 
----
+- only the root/orchestrator session invokes subagents
+- invoke package-owned agents with `agentScope: "both"` and project-agent confirmation enabled
+- provide exact changed files/roots, concern, known evidence, read-only authority, validation expectations, and a stop condition
+- select by concrete concern and specialist ownership
+- reserve `cg-pattern-specialist` for an explicitly requested cross-codebase consistency/duplication audit, not routine review
+- launch independent selected reviewers in parallel when practical, then synthesize verdicts, findings, confidence, evidence/validation limits, and out-of-scope handoffs
 
-### When to Use Which Reviewer
-
-#### cg-code-simplicity-reviewer
-
-**Use when:**
-- Large refactor with many abstractions
-- New architectural patterns introduced
-- Code feels "too clever" or over-engineered
-- Significant complexity added
-
-If you delegate to `cg-code-simplicity-reviewer`, pass it a brief like:
-
-```text
-Review changes for simplicity and clarity.
-
-Changed files: [list]
-
-Check for:
-- Over-engineering or premature abstraction
-- Unnecessary complexity
-- Code that could be simplified without losing functionality
-- Unclear variable/method names
-- Overly nested logic
-- Large methods that should be broken down
-
-Return findings with file:line references and simplified alternatives.
-```
-
----
-
-#### cg-security-reviewer
-
-**Use when:**
-- Secrets, credentials, signing keys, or service tokens may be exposed
-- Player data, telemetry, account, commerce, entitlement, or privacy-sensitive flows changed
-- Networked gameplay, backend communication, remote config, mods, plugins, or downloadable content changed
-- Platform SDK permissions, store privacy requirements, or release-build diagnostics changed
-- Web/service/API surfaces are touched by the game or tooling
-
-If you delegate to `cg-security-reviewer`, pass it a brief like:
-
-```text
-Analyze security implications of changes.
-
-Changed files: [list]
-
-Check for:
-- Secrets or credentials in code, assets, scenes, prefabs, configs, logs, or build output
-- Player data exposure, privacy, telemetry, account, commerce, or entitlement risks
-- Trust-boundary issues in network messages, remote config, mods, plugins, downloadable content, or asset bundles
-- Untrusted input or deserialization risks
-- Web/service checks only where relevant to changed backend, account, commerce, telemetry, launcher, or web-view surfaces
-
-Return findings with severity (P1 = critical, P2 = potential, P3 = hardening).
-```
-
----
-
-#### cg-architecture-specialist
-
-**Use when:**
-- New modules or components added
-- Significant refactoring
-- Cross-cutting concerns introduced
-- Architectural boundaries changed
-- New design patterns applied
-
-If you delegate to `cg-architecture-specialist`, pass it a brief like:
-
-```text
-Review architectural decisions in changes.
-
-Changed files: [list]
-
-Evaluate:
-- System design and component interactions
-- Separation of concerns and modularity
-- Dependency management and coupling
-- Layer violations or architectural boundaries
-- Scalability and maintainability implications
-- Technical debt introduction or reduction
-
-Return assessment with severity (P1/P2/P3) and recommendations.
-```
-
----
-
-### Running Reviewer Agents
-
-**Run reviewers in parallel** from the root/orchestrator session.
-
-For the real run:
-- delegate the selected reviewers together rather than sequentially
-- give each reviewer a focused brief for its concern area
-- wait for all reviewer results before deciding what to fix
-
-**After agents complete:**
-- Review findings
-- Address critical (P1) issues before shipping
-- Document P2/P3 issues as follow-up todos if needed
-- Present findings to user if significant concerns
+`No concrete findings`, `Not applicable`, and a recorded blocker are valid outcomes. Address or explicitly accept P1 findings before shipping; preserve unresolved P2/P3 items as scoped follow-ups when appropriate.
 
 ---
 
@@ -299,8 +198,8 @@ Before creating PR/code review, verify:
 - [ ] All clarifying questions asked and answered
 - [ ] All action items are complete and tracking checkboxes are up to date
 - [ ] Unity batchmode compile validation passed (Unity projects; required even if no tests exist)
-- [ ] Tests pass (run project's test command)
-- [ ] Linting passes (use `cg-lint-specialist` or the project's native linter commands)
+- [ ] Applicable project-defined tests pass, or `not applicable`/blocked evidence is recorded
+- [ ] Applicable lint/static checks pass, or `not applicable`/blocked evidence is recorded (`cg-lint-specialist` defaults to check-only)
 - [ ] Code follows existing patterns
 - [ ] Design references implemented correctly (if applicable)
 - [ ] Before/after screenshots captured and uploaded (for UI changes)
@@ -313,14 +212,7 @@ Before creating PR/code review, verify:
 
 ## When to Skip Reviewer Agents
 
-**Skip reviewer agents for:**
-- Simple bug fixes (< 3 files changed)
-- Documentation updates
-- Config changes
-- Test additions only
-- Trivial refactoring (renaming, moving files)
-
-**Reason:** Tests + linting + pattern matching catches most issues. Reviewer agents add significant time for marginal benefit on simple changes.
+Skip specialist review when the changed scope has no concrete concern owned by that specialist and project tests/manual validation provide sufficient evidence. Documentation, configuration, tests, and small changes can still warrant security, integrity, architecture, or agent-surface review when their actual behavior crosses those boundaries.
 
 ---
 
@@ -346,8 +238,8 @@ fi
 if ! [lint command]; then
   echo "⚠️ Linting errors found"
   echo ""
-  echo "Use the lint specialist or your native lint command to fix them:"
-  echo "  Run the lint specialist on the changed files, or fix them manually."
+  echo "Review check-only lint evidence first."
+  echo "  If fixes are desired, explicitly authorize a bounded fix pass or fix manually."
   echo ""
   echo "Or fix manually and re-run linting"
   exit 1
@@ -375,9 +267,9 @@ fi
 **Load this file when:** Running quality checks before shipping (Phase 3 of work execution).
 
 **Execution order:**
-1. Unity batchmode compile validation (Unity projects, always)
-2. Run tests (always)
-3. Run linting (always)
-4. Manual verification (always)
-5. Reviewer agents (conditional - only for complex/risky changes)
-6. Final checklist (always)
+1. Unity batchmode compile validation (Unity projects, mandatory when safe to launch)
+2. Run applicable project-defined tests
+3. Run applicable lint/static checks
+4. Perform applicable manual verification
+5. Run concern-driven reviewer agents when warranted
+6. Complete the final checklist with pass, not-applicable, or blocked evidence

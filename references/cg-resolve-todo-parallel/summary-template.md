@@ -1,46 +1,54 @@
 ```markdown
-## Todo Resolution Complete
+## Todo Resolution Summary
 
-**VCS:** [Git / PlasticSCM]
-**Resolved:** [TODO_COUNT] todos
+**VCS:** [Git / PlasticSCM / None]
+**Branch/workspace:** [identifier]
+**Todos considered:** [count]
+
+### Resolver Outcomes
+
+| Todo | Resolver status | Scope | Validation | Todo state | VCS write |
+|------|-----------------|-------|------------|------------|-----------|
+| #001 | Resolved | [files/symbols] | [evidence] | complete | [commit/changeset or none] |
+| #002 | Partial | [files/symbols] | [missing/failed evidence] | remains open | none |
+| #003 | Blocked | [scope] | [blocker] | remains open | none |
+| #004 | Not Applied | [scope] | [reason] | pending/closed by root decision | none |
 
 ### Completed Todos
 
-**P1 Critical:**
-- #001: [description] - [file changes]
+- #001: [description] — [changed files] — [validation]
 
-**P2 Important:**
-- #002: [description] - [file changes]
+### Open or Unapplied Todos
 
-**P3 Nice-to-Have:**
-- #003: [description] - [file changes]
+- #002 — Partial — [remaining work and next step]
+- #003 — Blocked — [blocker and owner/input needed]
+- #004 — Not Applied — [reason and root/user disposition]
 
 ### VCS Writes
 
-- [commit/changeset ID]: [message]
-- [commit/changeset ID]: [message]
+- [commit/changeset ID]: [todo and message]
+- Remote publication: pushed/synced | local only | not applicable | failed ([reason])
 
 ### Todo File Updates
 
-- Status/frontmatter updated for completed todos
-- Acceptance checklists updated
-- Work log entries appended with implementation and validation notes
-- Files renamed to `*-complete-*` after content updates
+- [todo]: [frontmatter/checklist/work-log/rename evidence]
+- Confirm that only validated `Resolved` todos were completed.
 
 ### Validation
 
-- [validation command or manual check]: [result]
-- [validation command or manual check]: [result]
+- `[command or manual check]` — [result and affected todo(s)]
+- [exclusive Unity/project validation was serialized, when applicable]
 
-### Status Constraints
+### Safety and Remaining Constraints
 
-- Any unresolved P1 todo still blocks merge/release unless explicitly accepted by the user/project owner.
-- Any skipped or unresolved P2 todo should be listed in the handoff with the reason it remains open.
+- Unexpected/pre-existing workspace changes: [preserved details or none]
+- Unresolved P1/P2 items: [list and release impact]
+- External/review-thread actions: [explicitly authorized result or none]
 
 ### Statistics
 
-- Total execution time: [duration]
 - Parallel batches: [count]
+- Serialized overlap groups: [count]
+- Resolved / Partial / Blocked / Not Applied: [counts]
 - Files modified: [count]
-- Lines changed: +[additions] -[deletions]
 ```

@@ -48,7 +48,11 @@ Use the applicability table and briefs in references/cg-review/agent-prompts.md.
 
 Use criteria and prompts in references/cg-review/conditional-agents.md.
 
-### Step 5: Synthesize Findings and Create Todos
+### Step 5: Optional Unity Testing
+
+When Unity validation is applicable and accepted, follow references/cg-review/unity-testing.md before final synthesis. Prefer root-owned Pi Unity tooling and serialize access to each project folder.
+
+### Step 6: Synthesize Findings and Create Todos
 
 Load:
 
@@ -57,15 +61,11 @@ Load:
 - references/_shared/artifact-root-resolution.md
 - references/_shared/artifact-path-contract.md
 
-Create todos using the file-todos skill.
+Create todos using the file-todos skill for accepted actionable findings.
 
-### Step 6: Generate Summary Report
+### Step 7: Generate Summary Report
 
 Use references/cg-review/assets/summary-template.md.
-
-### Step 7: Optional Unity Testing
-
-See references/cg-review/unity-testing.md.
 
 ## Error Handling
 
@@ -76,7 +76,7 @@ See references/cg-review/error-handling.md.
 1. VCS detection -> references/_shared/vcs-detection.md
 2. Git workflow -> references/cg-review/git-workflow.md
 3. Plastic workflow -> references/cg-review/plastic-workflow.md
-4. Core agents -> references/cg-review/agent-prompts.md
+4. Review-agent routing -> references/cg-review/agent-prompts.md
 5. Conditional agents -> references/cg-review/conditional-agents.md
 6. Synthesis/todos -> references/cg-review/synthesis-and-todos.md
 7. Summary -> references/cg-review/assets/summary-template.md
@@ -94,6 +94,6 @@ On-demand:
 
 - VCS detected and target checked out.
 - Context collected for agents.
-- Agents completed (core + conditional).
-- Findings synthesized and todos created.
-- Summary report generated.
+- All selected agents completed or have a recorded blocker; conditional agents ran only when applicable.
+- Accepted findings and optional Unity evidence were synthesized, and actionable todos were created.
+- Summary report generated with actual agent outcomes and validation limits.

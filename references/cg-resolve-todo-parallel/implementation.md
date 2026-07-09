@@ -1,49 +1,76 @@
-# Implementation Flow (Reference)
+# Implementation Flow
 
-## Step 0: Detect VCS
+## Step 0: Detect VCS and Establish Authority
 
-Load detection logic from ../_shared/vcs-detection.md.
+Load `references/_shared/vcs-detection.md`. Confirm the root session is on a safe writable branch/workspace and record whether commit/checkin and push/sync are authorized.
+
+Only the root/orchestrator invokes subagents. Resolver workers never perform VCS writes, todo lifecycle mutations, review-thread actions, or nested delegation.
 
 ## Step 1: Collect Ready Todos
 
-- Resolve roots first, then list `${TODOS_ROOT}/*-ready-*.md`.
-- Filter protected artifacts using ../_shared/protected-artifacts.md.
-- If user provided an ID or pattern, filter to matches.
+- Resolve `WORKSPACE_ROOT`, `DOCS_ROOT`, and `TODOS_ROOT`.
+- List `${TODOS_ROOT}/*-ready-*.md`.
+- Filter protected artifacts using `references/_shared/protected-artifacts.md`.
+- If the user supplied an ID or pattern, filter to matches.
 
-## Step 2: Dependency Analysis
+## Step 2: Dependency and Collision Analysis
 
-- Parse `dependencies:` from each todo.
+- Parse `dependencies:` and likely target files/symbols from each todo.
 - Group by dependency level.
-- Execute level-by-level in parallel.
+- Within each level, run in parallel only when target files are disjoint and validation does not require the same exclusive resource.
+- Serialize overlapping or unknown edit scopes.
+- Unity agents may prepare disjoint changes in parallel, but the root must serialize batchmode compile/test validation for one project folder.
 
-## Step 3: Resolve in Parallel Batches
+## Step 3: Delegate Bounded Resolutions
 
-- Launch one agent per todo in the same level.
-- Provide todo content and acceptance criteria.
-- Include resolved `WORKSPACE_ROOT` and `TODOS_ROOT` in each agent prompt.
-- Agents should not mark complete.
-- Unity projects: agents may prepare code/test changes in parallel, but Unity batchmode compile/test validation for the same project folder must be coordinated serially from the root session. Do not launch multiple Unity processes for one project in parallel.
+Launch one `cg-pr-comment-resolver` per eligible todo from the root session using `agentScope: "both"` and project-agent confirmation.
 
-## Step 4: Commit/Checkin
+Each delegation packet must include:
 
-- Prefer atomic commits/checkins per resolved todo (one logical fix per change unit) when feasible.
-- Do not mix unrelated fixes in one commit/checkin.
-- Git: stage related files only, then commit per resolved fix; use a grouped commit only when changes are tightly coupled.
-- Plastic: checkin per resolved fix when feasible; use grouped checkin only when fixes cannot be separated safely.
+- the exact todo/finding and acceptance criteria
+- target files/symbols and explicit file allowlist
+- resolved `WORKSPACE_ROOT`, `DOCS_ROOT`, and `TODOS_ROOT`
+- known baseline and pre-existing workspace changes
+- explicit authority for minimal workspace edits
+- permitted validation and exclusive-resource constraints
+- explicit denial of branch, commit/checkin, push/sync, todo rename/status, and review-thread mutations
+- stop condition and required `Review Comment Resolution` output contract
 
-## Step 5: Mark Todos Complete
+The root inspects every worker result and scoped diff. Do not infer success from an edit alone.
 
-- Update todo file contents before any rename:
-  - Set frontmatter status fields to completed state.
-  - Mark acceptance checklist items with actual completion state.
-  - Add a work log entry summarizing implementation and validation.
-- Rename files to `*-complete-*` only after content updates are saved.
+## Step 4: Gate by Resolver Status
 
-## Step 6: Push/Sync
+- `Resolved`: eligible for root validation and completion only when the reported validation is sufficient and the scoped diff matches the todo.
+- `Partial`: preserve useful edits when safe, but keep the todo open and record remaining work/validation.
+- `Blocked`: keep open and record the blocker and suggested next step.
+- `Not Applied`: keep open, return to pending, or close as unwarranted only through a root/user decision supported by the reason.
 
-- Git: push branch.
-- Plastic: changes already synced on checkin.
+If an agent output omits required sections or evidence, treat it as `Partial` or `Blocked`, not `Resolved`.
 
-## Step 7: Summary
+## Step 5: Root Validation and Atomic VCS Writes
 
-Use ./summary-template.md.
+- Run or confirm the narrow validation required by each eligible todo.
+- Inspect status/diff and preserve unrelated work.
+- Commit/check in one logical resolved fix per change unit when feasible and authorized.
+- Do not mix unrelated fixes. If concurrent edits cannot be isolated, serialize or stop.
+
+## Step 6: Complete Eligible Todos
+
+Only after validated `Resolved` work and any required atomic VCS write:
+
+- update todo frontmatter to completed state
+- mark acceptance items according to observed evidence
+- append a work log with implementation, validation, resolver status, and commit/changeset ID when applicable
+- rename to `*-complete-*` after content updates are saved
+
+Keep all non-resolved todos open with status/reason recorded.
+
+## Step 7: Push or Sync
+
+- Git: push only when explicitly requested or required by the controlling workflow.
+- Plastic: a checkin is already server-visible; run any additional sync action only when explicitly required.
+- If remote publication is not authorized, report local commits/checkins awaiting the next action.
+
+## Step 8: Summary
+
+Use `references/cg-resolve-todo-parallel/summary-template.md`.

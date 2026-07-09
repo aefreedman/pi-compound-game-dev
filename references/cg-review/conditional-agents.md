@@ -63,7 +63,8 @@ Produce evidence-backed preflight, rollout, immediate verification, monitoring, 
 
 - Actual data transformation only: run `cg-data-migration-reviewer`.
 - Real release/rollout artifact only: run `cg-deployment-verifier`.
-- Both: run both in parallel with separate bounded briefs, then let deployment consume accepted migration controls during synthesis.
+- Both, independent: run in parallel only when deployment planning does not depend on migration conclusions.
+- Both, dependent: run migration first, synthesize accepted controls, then pass those controls into the deployment brief.
 - Neither: skip both.
 
 Use migration findings for transformation correctness and deployment findings for operational sequencing. Do not duplicate general data-integrity, security, architecture, or performance review inside either specialist.

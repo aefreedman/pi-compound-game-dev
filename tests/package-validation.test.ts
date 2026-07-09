@@ -14,6 +14,12 @@ const artifactSearchText = readFileSync(new URL("../extensions/artifact-search.t
 const changelogText = readFileSync(new URL("../CHANGELOG.md", import.meta.url), "utf8");
 const artifactSearchDocText = readFileSync(new URL("../docs/artifact-search.md", import.meta.url), "utf8");
 const qualityChecklistText = readFileSync(new URL("../references/cg-work/quality-checklist.md", import.meta.url), "utf8");
+const reviewAgentPromptsText = readFileSync(new URL("../references/cg-review/agent-prompts.md", import.meta.url), "utf8");
+const reviewConditionalAgentsText = readFileSync(new URL("../references/cg-review/conditional-agents.md", import.meta.url), "utf8");
+const reviewUnityTestingText = readFileSync(new URL("../references/cg-review/unity-testing.md", import.meta.url), "utf8");
+const resolveTodoImplementationText = readFileSync(new URL("../references/cg-resolve-todo-parallel/implementation.md", import.meta.url), "utf8");
+const planResearchAgentsText = readFileSync(new URL("../references/cg-plan/research-agents.md", import.meta.url), "utf8");
+const planSpecflowText = readFileSync(new URL("../references/cg-plan/specflow.md", import.meta.url), "utf8");
 const changelogPromptText = readFileSync(new URL("../prompts/cg-changelog.md", import.meta.url), "utf8");
 const changelogPlasticText = readFileSync(new URL("../references/cg-changelog/plastic-workflow.md", import.meta.url), "utf8");
 const changelogCodecksText = readFileSync(new URL("../references/cg-changelog/codecks-workflow.md", import.meta.url), "utf8");
@@ -60,6 +66,13 @@ assert(qualityChecklistText.includes("UXML") && qualityChecklistText.includes("U
 assert(qualityChecklistText.includes("edit/design time") && qualityChecklistText.includes("magic-number"), "Expected authored-content validation and mutable designer-data test guidance.");
 assert(qualityChecklistText.includes("Windows Command Safety") && qualityChecklistText.includes("UTF-8"), "Expected Windows command safety guidance.");
 assert(qualityChecklistText.includes("local agent Python utility environment") && qualityChecklistText.includes("non-stdlib imports"), "Expected Python utility environment discovery guidance.");
+assert(qualityChecklistText.includes("check-only") && qualityChecklistText.includes('agentScope: "both"'), "Expected lint/reviewer delegation to use safe current agent contracts.");
+assert(reviewAgentPromptsText.includes("explicitly request") && reviewAgentPromptsText.includes('agentScope: "both"'), "Expected concern-driven review routing and project-local agent discovery.");
+assert(reviewConditionalAgentsText.includes("Both, dependent") && reviewConditionalAgentsText.includes("run migration first"), "Expected dependency-aware migration/deployment routing.");
+assert(reviewUnityTestingText.includes("not automatically a P1") && !reviewUnityTestingText.includes("create P1 todos for any failing tests"), "Expected evidence-based Unity test failure classification.");
+assert(resolveTodoImplementationText.includes("cg-pr-comment-resolver") && resolveTodoImplementationText.includes('agentScope: "both"') && resolveTodoImplementationText.includes("Partial") && resolveTodoImplementationText.includes("Not Applied"), "Expected resolver routing to consume the current status and authority contract.");
+assert(planResearchAgentsText.includes("Not Found or Uncertain") && planResearchAgentsText.includes("budget-reached") && !planResearchAgentsText.includes("time-budget"), "Expected planning research briefs to match current stop/output contracts.");
+assert(planSpecflowText.includes('agentScope: "both"') && planSpecflowText.includes("Provisional Assumptions"), "Expected SpecFlow delegation to use current discovery and output contracts.");
 assert(readFileSync(new URL("../prompts/cg-work.md", import.meta.url), "utf8").includes("references/cg-work/unity-yaml-assets.md"), "Expected cg-work prompt to load Unity YAML asset editing guidance for serialized assets.");
 assert(readFileSync(new URL("../references/cg-work/unity-yaml-assets.md", import.meta.url), "utf8").includes("heredocs") && readFileSync(new URL("../references/cg-work/unity-yaml-assets.md", import.meta.url), "utf8").includes("fileID"), "Expected Unity YAML asset guidance to cover heredoc avoidance and Unity serialization identifiers.");
 assert(qualityChecklistText.includes("do not pass `-quit` with `-runTests`"), "Expected Unity Test Framework guidance to avoid -quit with -runTests.");
