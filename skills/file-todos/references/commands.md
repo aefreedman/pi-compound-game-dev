@@ -17,10 +17,16 @@ Shell fallback:
 rg -l --glob '*.md' '^dependencies: \[\]' "${TODOS_ROOT}"/*-ready-p1-*.md
 
 # List all pending items needing triage
-find "${TODOS_ROOT}" -maxdepth 1 -type f -name '*-pending-*.md'
+for todo in "${TODOS_ROOT}"/*-pending-*.md; do
+  [ -f "${todo}" ] || continue
+  printf '%s\n' "${todo}"
+done
 
 # Find next issue ID
-find "${TODOS_ROOT}" -maxdepth 1 -type f -name '*.md' -printf '%f\n' | grep -o '^[0-9]\+' | sort -n | tail -1 | awk '{printf "%03d", $1+1}'
+for todo in "${TODOS_ROOT}"/*.md; do
+  [ -f "${todo}" ] || continue
+  printf '%s\n' "${todo##*/}"
+done | grep -o '^[0-9]\+' | sort -n | tail -1 | awk '{printf "%03d", $1+1}'
 ```
 
 ## Searching
@@ -45,7 +51,10 @@ Shell fallback, preferably with `rg`:
 rg -il --glob '*.md' '^tags:.*security' "${TODOS_ROOT}"
 
 # Search by priority
-find "${TODOS_ROOT}" -maxdepth 1 -type f -name '*-p1-*.md'
+for todo in "${TODOS_ROOT}"/*-p1-*.md; do
+  [ -f "${todo}" ] || continue
+  printf '%s\n' "${todo}"
+done
 
 # Full-text search
 rg -i --glob '*.md' 'physics' "${TODOS_ROOT}"

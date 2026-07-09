@@ -42,7 +42,7 @@ Also collect lightweight stack/scope hints from changed file paths and local gui
 
 ### Step 3: Launch Parallel Review Agents
 
-Use prompts in references/cg-review/agent-prompts.md. Instruct agents to focus on changed files and directly related local patterns, not broad repository audits.
+Use the applicability table and briefs in references/cg-review/agent-prompts.md. Select only relevant specialists, focus each on changed files and directly related evidence, and reserve `cg-pattern-specialist` for explicitly requested cross-codebase audits. Invoke package-owned agents with `agentScope: "both"` so project-local installations remain discoverable; keep project-agent confirmation enabled.
 
 ### Step 4: Run Conditional Agents (If Needed)
 

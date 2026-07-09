@@ -10,6 +10,15 @@ This package removed several inherited Compound Engineering agents because they 
 | `framework-docs-researcher` | `agents/research/framework-docs-researcher.md` | Assumed web framework/gem workflows such as `bundle show`, Gemfile.lock, and generic framework/library docs. | `cg-engine-docs-researcher`: focuses on official Unity/Unreal/Godot/custom-engine docs, package versions, platform SDK notes, engine migration notes, and source links relevant to the current project stack. |
 | `performance-oracle` | `agents/review/performance-oracle.md` | Prioritized database indexes, CDN/cache layers, frontend bundle size, DOM work, API response targets, and Rails/ActiveRecord details. | `cg-performance-reviewer` or `cg-runtime-performance-specialist`: focuses on frame time, allocations/GC, Update/FixedUpdate hot paths, rendering, physics, asset loading, memory budgets, platform constraints, and profiling evidence. Web/service checks remain a subset for live-service, account, commerce, telemetry, or backend surfaces. |
 
+## Consolidated history agents
+
+The routable `cg-git-history-analyzer` and `cg-plastic-history-analyzer` definitions were retired in favor of the single `cg-vcs-history-analyzer` entry point. This avoids duplicate routing and contradictory procedures while preserving backend-specific guidance in:
+
+- `references/cg-vcs-history-analyzer/git-backend.md`
+- `references/cg-vcs-history-analyzer/plastic-backend.md`
+
+Use `cg-vcs-history-analyzer` for bounded file-history questions in either VCS. It detects the active workspace and loads only the relevant backend reference.
+
 ## What was removed overall
 
 The removed setup mostly covered broad web/software concerns:

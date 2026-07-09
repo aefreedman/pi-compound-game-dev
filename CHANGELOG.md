@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.0 - 2026-07-09
+
+### Changed
+
+- Consolidated Git and Plastic history research into one bounded `cg-vcs-history-analyzer` with backend-specific on-demand references.
+- Reworked research, review, and workflow agents around supported frontmatter, explicit tool/output contracts, evidence thresholds, bounded scope, and safer mutation authority.
+- Repurposed `cg-pattern-specialist` as an opt-in cross-codebase consistency audit rather than a routine overlapping PR reviewer.
+- Made lint checks read-only by default and made review-comment completion statuses conditional on observed edits and validation.
+- Updated review and planning routing guidance to select only applicable specialists and discover project-local package agents with `agentScope: "both"`.
+
+### Fixed
+
+- Guaranteed LF line endings for the packaged git-worktree Bash script so it runs correctly on macOS and Linux.
+- Replaced GNU-only file-todo `find` commands with portable top-level glob loops for macOS and POSIX shells.
+
 ## 0.3.6 - 2026-07-02
 
 ### Added

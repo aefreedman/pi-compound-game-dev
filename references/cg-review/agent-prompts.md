@@ -1,260 +1,130 @@
-# Standardized Agent Prompts
+# Review Agent Routing and Briefs
 
-This file contains the prompts for all review agents. Pass context variables (`$CHANGED_FILES`, `$PR_TITLE`, `$FOCUS_AREAS`, `$FILE_COUNT`) to each agent, plus stack/project hints gathered by the root agent.
+Use this reference to select only the review agents that match the change. Pass `$CHANGED_FILES`, `$PR_TITLE`, `$FOCUS_AREAS`, `$FILE_COUNT`, stack/project hints, and known evidence or constraints.
 
-Before launching review agents, the root/orchestrator should identify obvious stack hints from changed files and project guidance. If Unity is detected, load references/_shared/unity-review-guidance.md and pass the relevant checks as conditional context. Otherwise keep prompts engine/tool agnostic and use local project guidance for equivalent engine/package concerns.
+When invoking package-owned `cg-*` agents, use `agentScope: "both"` so agents remain discoverable when Compound Game Dev is installed project-locally. Keep project-agent confirmation enabled unless the user has already established a trusted equivalent workflow.
 
-Use relevant package/project tools where they fit the evidence source: `cg_search_artifacts` for docs/todos learnings, raw `rg` for changed source/content verification, VCS tools for history/diffs, and companion engine/package docs tools when available for authoritative API behavior.
+Before delegation, load applicable project guidance. If Unity is detected, load `references/_shared/unity-review-guidance.md` and pass only the checks relevant to each specialist. Do not ask every agent to rediscover the whole project.
 
----
+## Selection Table
 
-## Parallel Agents (Always Run)
+| Agent | Use when | Skip when |
+|---|---|---|
+| `cg-vcs-history-analyzer` | A bounded history question could explain changed code or a suspicious pattern | History is irrelevant, files are untracked, or no specific question exists |
+| `cg-architecture-specialist` | Code changes affect boundaries, dependencies, contracts, or lifecycle ownership | Text/content-only change with no structural consequence |
+| `cg-code-simplicity-reviewer` | Implementation code may contain avoidable complexity | Generated/content-only change or no concrete simpler path is plausible |
+| `cg-security-reviewer` | The change touches secrets, privacy, unsafe inputs, trust boundaries, accounts, services, mods, networking, commerce, or release security | No concrete security/privacy surface exists |
+| `cg-data-integrity-reviewer` | Persisted state, serialization, saves, stable references, schemas, or atomic writes change | No persisted or serialized state is affected |
+| `cg-agent-native-reviewer` | The product intentionally exposes an agent-facing capability or changes an existing agent surface | The product has no intended agent surface |
+| `cg-learnings-researcher` | A broad project solutions corpus may contain relevant prior incidents or patterns and parallel search is worthwhile | A few direct `cg_search_artifacts`/`rg` queries are sufficient |
+| `cg-pattern-specialist` | The user explicitly requests a bounded cross-module consistency or duplication audit | Routine changed-file/PR review |
 
-Run ALL of these agents at the same time, passing full context to each:
+Migration and deployment routing are defined in `references/cg-review/conditional-agents.md`.
 
-### 1. cg-vcs-history-analyzer
-
-Analyze file evolution and contributor patterns.
-
-If you delegate this review to `cg-vcs-history-analyzer`, pass it a brief like:
+## Brief: VCS History
 
 ```text
-Analyze file history for these changed files:
+Read-only history question: [specific question]
+Files (max 5):
 $CHANGED_FILES
+Known VCS/root: [if known]
+Relevant range: [if any]
 
-Focus on:
-- Recent change patterns and evolution
-- Key contributors and domain expertise
-- Recurring issues or bug fix patterns
-- Historical context relevant to this review
-
-Return:
-- Timeline of significant changes
-- Key contributors per file
-- Recurring patterns and themes
-- Insights and recommendations for review focus
+Inspect bounded history and selected diffs. Separate observations from inferences, report uncertainty, and stop when the question is answered.
 ```
 
----
-
-### 2. cg-pattern-specialist
-
-Check for design patterns, anti-patterns, naming.
-
-If you delegate this review to `cg-pattern-specialist`, pass it a brief like:
+## Brief: Architecture
 
 ```text
-Analyze patterns and anti-patterns in these changed files:
-$CHANGED_FILES
-
-Review focus: $FOCUS_AREAS
-
-Check for:
-- Design patterns and anti-patterns in the changed files and directly related local patterns
-- Naming consistency against project/local conventions
-- Code duplication between changed files or nearby modules
-- Engine/package-specific issues only when the stack hints or changed files make them relevant; for Unity projects, apply references/_shared/unity-review-guidance.md
-- Architectural boundary violations
-
-Return findings with:
-- Severity: P1 (critical - blocks merge), P2 (important - should fix), P3 (nice-to-have)
-- File references with line numbers (e.g., PlayerController.cs:123)
-- Specific code examples
-- Actionable recommendations
-```
-
----
-
-### 3. cg-architecture-specialist
-
-Evaluate architectural decisions and system design.
-
-If you delegate this review to `cg-architecture-specialist`, pass it a brief like:
-
-```text
-Review architectural decisions in these changed files:
+Review structural consequences in:
 $CHANGED_FILES
 
 Title: $PR_TITLE
 Focus: $FOCUS_AREAS
+Relevant architecture/project guidance: [paths or summary]
 
-Evaluate:
-- System design and component interactions
-- Separation of concerns and modularity
-- Dependency management and coupling
-- Layer violations or architectural boundaries
-- Engine/package-specific architecture only when relevant; for Unity projects, apply references/_shared/unity-review-guidance.md
-- Scalability and maintainability implications
-- Technical debt introduction or reduction
-
-Return:
-- Architectural assessment with severity (P1/P2/P3)
-- Component interaction diagrams (text-based)
-- Boundary violations with file:line references
-- Recommendations for architectural improvements
+Review only boundaries, dependency direction, contracts, and lifecycle/resource ownership. Require concrete mechanisms and route local simplicity, performance, persistence, migration, security, and deployment concerns to their owners.
 ```
 
----
-
-### 4. cg-security-reviewer
-
-Identify security vulnerabilities and risks.
-
-If you delegate this review to `cg-security-reviewer`, pass it a brief like:
+## Brief: Simplicity
 
 ```text
-Analyze security implications of changes in:
+Review accidental complexity in:
+$CHANGED_FILES
+
+Requirements and focus: $FOCUS_AREAS
+Relevant local examples/conventions: [paths or summary]
+
+Report only concrete simpler alternatives that preserve required behavior. Suppress generic naming/style cleanup and broad refactors.
+```
+
+## Brief: Security
+
+```text
+Review concrete security/privacy risk in:
 $CHANGED_FILES
 
 Title: $PR_TITLE
+Relevant trust surfaces: [accounts/networking/mods/services/files/platform/etc.]
 
-Check for:
-- Secrets or credentials in code, assets, scenes, prefabs, configs, logs, or build output
-- Player data exposure, privacy, telemetry, account, commerce, or entitlement risks
-- Trust-boundary issues in network messages, remote config, mods, plugins, downloadable content, or asset bundles
-- Untrusted input, unsafe deserialization, file path, URL, or command construction risks
-- Platform SDK permission, privacy, signing, or release-build diagnostic risks
-- Web/service checks only where relevant to changed backend, account, commerce, telemetry, launcher, or web-view surfaces
-
-Return findings with:
-- Severity: P1 (critical security issue), P2 (potential vulnerability), P3 (security hardening)
-- Concrete risk scenario and affected trust boundary
-- File:line references
-- Mitigation recommendations with code examples
+Establish protected assets, actor/access, reachable path, impact, controls, and confidence. Redact secrets and avoid live/destructive validation.
 ```
 
----
-
-### 5. cg-data-integrity-reviewer
-
-Verify data handling and state management.
-
-If you delegate this review to `cg-data-integrity-reviewer`, pass it a brief like:
+## Brief: Data Integrity
 
 ```text
-Review data integrity in these changed files:
+Review persisted-state correctness in:
 $CHANGED_FILES
 
-Title: $PR_TITLE
+Affected stores/readers/writers: [known context]
+Relevant save/schema/serialization guidance: [paths or summary]
 
-Check for:
-- State management consistency
-- Null/reference handling
-- Race conditions or timing issues
-- Data validation and constraints
-- Engine/package serialization, schema, and asset/reference integrity only when relevant; for Unity projects, apply references/_shared/unity-review-guidance.md
-- Save/load data consistency
-- Event ordering and initialization
-
-Return findings with:
-- Severity: P1 (data corruption risk), P2 (inconsistency risk), P3 (data quality improvement)
-- File:line references
-- Scenarios where data integrity could fail
-- Recommendations with validation code examples
+Focus on invariants, compatibility, defaults, stable references, atomicity, interruption, and corruption paths. Route concrete transformations to migration and privacy to security.
 ```
 
----
-
-### 6. cg-agent-native-reviewer
-
-Verify new features are accessible to AI agents.
-
-If you delegate this review to `cg-agent-native-reviewer`, pass it a brief like:
+## Brief: Agent-Native
 
 ```text
-Review AI agent accessibility for changes in:
+Review the intended agent-facing surface changed by:
 $CHANGED_FILES
 
+Intended user outcomes and agent capabilities: [known context]
+Authorization/context model: [known context]
+
+Assess intended capability coverage, context, shared-state visibility, safeguards, and observable outcomes. Do not require parity where no agent surface is intended or where an explicit safety/platform exception applies.
+```
+
+## Brief: Learnings
+
+```text
+Search project solution documentation for prior learnings relevant to this review.
+
+Changed files: $CHANGED_FILES
 Title: $PR_TITLE
 Focus: $FOCUS_AREAS
+Resolved docs/solutions roots: [paths]
+Known searches already run: [terms/results]
 
-Verify:
-- New features have CLI/API access (not just GUI)
-- Configuration is file-based or programmatically accessible
-- Commands have --help documentation
-- Error messages are actionable and parseable
-- Output formats support automation (JSON, structured text)
-- Workflows are agent-friendly (no interactive prompts that block)
-
-Return findings with:
-- Severity: P2 (feature not agent-accessible), P3 (could improve agent UX)
-- File:line references
-- Examples of agent friction points
-- Recommendations for agent-friendly interfaces
+Use bounded indexed search plus exact verification. Read source markdown before citation. Return evidence and applicability confidence, not a full implementation plan.
 ```
 
----
+## Brief: Pattern Audit
 
-### 7. cg-code-simplicity-reviewer
-
-Identify unnecessary complexity.
-
-If you delegate this review to `cg-code-simplicity-reviewer`, pass it a brief like:
+Use only for an explicitly requested broader audit.
 
 ```text
-Review code simplicity and clarity in:
-$CHANGED_FILES
+Audit this cross-codebase pattern question: [specific question]
+Bounded roots/modules: [paths]
+Exclusions and sample limits: [scope]
+Known baseline/convention: [guidance or representative paths]
 
-Focus: $FOCUS_AREAS
-
-Check for:
-- Over-engineering or premature abstraction
-- Unnecessary complexity
-- Code that could be simplified without losing functionality
-- Unclear variable/method names
-- Overly nested logic
-- Large methods that should be broken down
-- Duplicate or redundant code
-- Comments explaining what (instead of why)
-
-Return findings with:
-- Severity: P2 (significant complexity), P3 (simplification opportunity)
-- File:line references
-- Simplified alternatives with code examples
-- Rationale for simplification
+Compare multiple implementations, record searches and negative evidence, respect intentional variation, and avoid routine PR-review concerns owned by architecture or simplicity.
 ```
-
----
-
-### 8. cg-learnings-researcher
-
-Search documented solutions for relevant institutional knowledge.
-
-If you delegate this review to `cg-learnings-researcher`, pass it a brief like:
-
-```text
-Search docs/solutions/ for documented learnings relevant to this review. Use cg_search_artifacts when available, then raw rg for exact symbol/error/body verification before reading final markdown sources:
-
-Changed files:
-$CHANGED_FILES
-
-Title: $PR_TITLE
-Focus: $FOCUS_AREAS
-File count: $FILE_COUNT
-
-Research focus:
-- Prior solutions related to changed modules and patterns
-- Known gotchas, regressions, and anti-patterns to verify
-- Proven approaches that should guide review recommendations
-- Related incidents/fixes that may predict risk in this change
-
-Return:
-- Relevant docs/solutions file paths
-- Key insights and why they apply to this review
-- Specific checks reviewers should perform in changed files
-- Recommended safeguards or follow-up validation
-- "No relevant learnings found" if nothing applicable is documented
-```
-
----
 
 ## Execution Pattern
 
-Launch all 8 agents in parallel from the root/orchestrator session using one parallel delegation step.
-
-For the real run:
-- delegate all eight specialists together rather than one by one
-- pass the full review context (`$CHANGED_FILES`, `$PR_TITLE`, `$FOCUS_AREAS`, `$FILE_COUNT`) to each specialist
-- pass stack hints and any loaded conditional stack guidance, such as references/_shared/unity-review-guidance.md for Unity projects
-- tell agents to focus on changed files and directly related local patterns, not broad repository audits
-- wait for all results before proceeding to conditional agents and synthesis.
+1. Select only applicable agents from the table and conditional-agent criteria.
+2. Give every selected agent one bounded question, exact files/roots, known parent evidence, mutation authority (normally read-only), validation expectations, and a stop condition.
+3. Launch independent selected agents in one parallel delegation call when practical, using `agentScope: "both"`.
+4. Treat `Not applicable`, `No concrete findings`, and scoped negative evidence as valid results.
+5. Wait for selected results, run any truly conditional migration/deployment reviews, then synthesize without duplicating findings across owners.

@@ -21,7 +21,7 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
-assert.equal(pkg.version, "0.3.6");
+assert.equal(pkg.version, "0.4.0");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
@@ -189,12 +189,12 @@ assert(existsSync(new URL("../scripts/migrate-unity-docs-schema.ts", import.meta
 assert(existsSync(new URL("../skills/unity-docs/references/category-selection.md", import.meta.url)), "Expected Unity docs category-selection guidance.");
 assert(existsSync(new URL("../docs/markdown-artifact-authoring.md", import.meta.url)), "Expected markdown artifact authoring documentation.");
 assert(!existsSync(new URL("../references/cg-review/ultra-thinking.md", import.meta.url)), "Did not expect review ultra-thinking reference.");
+assert(existsSync(new URL("../references/cg-vcs-history-analyzer/git-backend.md", import.meta.url)), "Expected Git history backend guidance.");
+assert(existsSync(new URL("../references/cg-vcs-history-analyzer/plastic-backend.md", import.meta.url)), "Expected Plastic history backend guidance.");
 
 for (const expectedAgent of [
   "agents/research/cg-repo-researcher.md",
   "agents/research/cg-learnings-researcher.md",
-  "agents/research/cg-git-history-analyzer.md",
-  "agents/research/cg-plastic-history-analyzer.md",
   "agents/research/cg-vcs-history-analyzer.md",
   "agents/review/cg-pattern-specialist.md",
   "agents/review/cg-architecture-specialist.md",
@@ -227,6 +227,14 @@ for (const agentFile of agentFiles) {
   const nameMatch = text.match(/^name:\s*(.+)$/m);
   assert(nameMatch, `Expected agent frontmatter name in ${filename}`);
   assert(nameMatch[1].startsWith("cg-"), `Expected agent frontmatter name to use cg- prefix in ${filename}`);
+  assert(!/^mode:/m.test(text), `Did not expect unsupported mode frontmatter in ${filename}`);
+  assert(!/^reasoningEffort:/m.test(text), `Did not expect unsupported reasoningEffort frontmatter in ${filename}`);
+  assert(!/^tools:\s*$\n\s+[^-\s][^\n]*:/m.test(text), `Did not expect map-shaped tools frontmatter in ${filename}`);
+  assert(/^class:\s*(research|review|workflow|planning|implementation)$/m.test(text), `Expected supported class frontmatter in ${filename}`);
+  assert(/^tools:\s*\S+/m.test(text), `Expected an explicit tools allowlist in ${filename}`);
+  assert(/^output_format:\s*markdown_sections$/m.test(text), `Expected markdown output contract in ${filename}`);
+  assert(/^required_sections:\s*\S+/m.test(text), `Expected required sections in ${filename}`);
+  assert(/^strictness:\s*(low|medium|high)$/m.test(text), `Expected strictness frontmatter in ${filename}`);
 }
 
 for (const removedAgent of [
@@ -246,6 +254,8 @@ for (const removedAgent of [
   "agents/research/git-history-analyzer.md",
   "agents/research/plastic-history-analyzer.md",
   "agents/research/vcs-history-analyzer.md",
+  "agents/research/cg-git-history-analyzer.md",
+  "agents/research/cg-plastic-history-analyzer.md",
   "agents/workflow/lint.md",
   "agents/workflow/pr-comment-resolver.md",
   "agents/workflow/spec-flow-analyzer.md",

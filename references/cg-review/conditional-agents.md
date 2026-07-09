@@ -1,153 +1,69 @@
-# Conditional Agents
+# Conditional Migration and Deployment Agents
 
-These agents are run ONLY when the PR or code review matches specific criteria. Check the changed files list to determine if they apply.
+Run these agents only when their specialized artifact is needed. When invoking package-owned `cg-*` agents, use `agentScope: "both"` so project-local package agents remain discoverable.
 
----
+## `cg-data-migration-reviewer`
 
-## When to Run Migration Agents
+Use for an actual persisted-data transformation or compatibility transition, such as:
 
-Run migration agents when changes contain:
-- Save system data structures
-- Engine/package data schemas or asset/content serialization
-- Asset/content migration scripts or engine/package upgrade paths
-- Asset import settings, addressable/bundle/content-pipeline configurations, or equivalent project systems
-- Build settings, platform configs, or deployment pipelines
-- Title/description mentions: migration, asset upgrade, content upgrade, save data, build config
+- save/schema version migration
+- field, enum, key, ID, or GUID mapping
+- backfill or repair pass
+- dual-read/write compatibility window
+- asset/content conversion that transforms existing serialized state
 
----
+Do not run it merely because a serialized type or asset changed. General save/serialization/reference correctness belongs to `cg-data-integrity-reviewer` unless existing data must be transformed.
 
-## Decision Criteria
-
-**Check the following indicators:**
-
-1. **File patterns:**
-   - `*Migration.cs`, `*Migrator.cs`
-   - Engine asset/content data files such as `*.asset`, scene/level/map files, or project-specific serialized content
-   - Engine/project settings files
-   - Addressable/bundle/content-pipeline configuration directories or equivalents
-   - Build configuration files
-
-2. **Code patterns (grep for):**
-   - Serialization attribute or schema changes
-   - `SaveData`, `SaveSystem`, or project-specific persistence types
-   - Engine data asset schema modifications
-   - Asset database/import/content-pipeline operations
-   - Build pipeline or target/platform APIs
-
-3. **Title/description keywords:**
-   - "migration", "migrate"
-   - "asset upgrade", "schema change"
-   - "save data", "save format"
-   - "build config", "deployment"
-   - "addressables", "asset bundles"
-
----
-
-## Conditional Agent Definitions
-
-### 9. cg-data-migration-reviewer
-
-Validate data migration safety and compatibility.
-
-**Run when:** Changes affect save data, engine data schemas, asset/content serialization, or migration paths.
-
-If you delegate to `cg-data-migration-reviewer`, pass it a brief like:
+### Migration brief
 
 ```text
-Review data migration safety in:
+Read-only migration review for:
 $CHANGED_FILES
 
 Title: $PR_TITLE
+Source and target versions/formats: [known details]
+Representative evidence available: [schemas, fixtures, anonymized samples, tests]
+Reachability/reversibility/blast radius: [known details]
+Authorized external checks: [normally none]
 
-Validate:
-- Save data format migrations and versioning
-- Engine/package data schema changes and backward compatibility
-- Asset/content serialization changes
-- Migration script correctness (prevents ID swaps, data loss)
-- Rollback procedures and recovery paths
-- Player data impact assessment
-
-Check for:
-- Version numbering and migration paths
-- Data transformation correctness
-- Edge cases in existing player data
-- Missing migration steps
-- Orphaned data or broken references
-
-Return findings with:
-- Severity: P1 (data loss risk), P2 (compatibility issue), P3 (migration improvement)
-- File:line references
-- Test data scenarios (new players, existing players, edge cases)
-- Rollback procedure validation
+Verify mappings, unknown/default values, ordering, reruns, interruption, compatibility, reconciliation, and recovery proportionally to risk. Distinguish observed evidence from production verification still required. Do not execute the migration.
 ```
 
----
+## `cg-deployment-verifier`
 
-### 10. cg-deployment-verifier
+Use when a real release, rollout, build delivery, migration deployment, platform/configuration change, or content update needs an operational checklist.
 
-Create build verification and deployment checklist.
+Do not run it for routine code review without a planned rollout. It produces an artifact; it does not deploy or mark checks complete.
 
-**Run when:** Changes affect build configuration, platform settings, or deployment pipelines.
+Typical indicators include:
 
-If you delegate to `cg-deployment-verifier`, pass it a brief like:
+- build/platform configuration or signing changes
+- CI/release pipeline changes
+- addressable/bundle/content catalog rollout
+- migration release ordering
+- feature flag/config rollout
+- explicit launch, release, or deployment request
+
+### Deployment brief
 
 ```text
-Create deployment verification plan for:
+Create a read-only deployment verification artifact for:
 $CHANGED_FILES
 
-Title: $PR_TITLE
+Release unit/title: $PR_TITLE
+Targets/environments/platforms: [known details]
+Existing CI/runbooks/checks: [paths or summary]
+Accepted migration/security/integrity findings: [inputs]
+Known owners, baselines, and recovery capabilities: [details]
 
-Generate checklist for:
-- Pre-build verification steps
-- Build configuration validation (platform-specific)
-- Post-build testing procedures
-- Asset bundle validation (if applicable)
-- Platform-specific checks (iOS, Android, PC, Console)
-- Deployment smoke tests
-- Rollback procedures
-- Monitoring and alerting verification
-
-Return:
-- Executable checklist with pass/fail criteria
-- Platform-specific validation steps
-- Automated test scripts (where possible)
-- Rollback plan with specific steps
-- Monitoring dashboard recommendations
-
-Format as P1 (critical pre-deploy checks), P2 (important validations), P3 (nice-to-have verifications)
+Produce evidence-backed preflight, rollout, immediate verification, monitoring, and rollback/forward-recovery steps. Mark unknown commands, owners, thresholds, dashboards, access, or backups as TBD/blockers. Do not invent or execute them.
 ```
 
----
+## Routing Logic
 
-## Implementation
+- Actual data transformation only: run `cg-data-migration-reviewer`.
+- Real release/rollout artifact only: run `cg-deployment-verifier`.
+- Both: run both in parallel with separate bounded briefs, then let deployment consume accepted migration controls during synthesis.
+- Neither: skip both.
 
-### Detect Applicability
-
-Use any harness-appropriate detection step to decide whether migration or deployment specialists are needed. The key behavior is:
-
-- if migration indicators are present, run `cg-data-migration-reviewer`
-- if deployment indicators are present, run `cg-deployment-verifier`
-- if both apply, run both specialists
-- if neither applies, skip conditional specialists
-
-Root/orchestrator guidance:
-
-- If only migration indicators apply, run `cg-data-migration-reviewer` with the migration brief above.
-- If only deployment indicators apply, run `cg-deployment-verifier` with the deployment brief above.
-- If both apply, run both specialists in parallel from the root session.
-
----
-
-## What These Agents Check
-
-**cg-data-migration-reviewer:**
-- Verifies save format migrations match real player data (prevents ID swaps)
-- Checks versioning and backward compatibility
-- Validates data transformation correctness
-- Ensures rollback procedures exist
-
-**cg-deployment-verifier:**
-- Produces executable pre/post-build checklists with verification steps
-- Creates platform-specific validation procedures
-- Documents rollback procedures
-- Provides monitoring and alerting recommendations
+Use migration findings for transformation correctness and deployment findings for operational sequencing. Do not duplicate general data-integrity, security, architecture, or performance review inside either specialist.

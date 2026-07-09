@@ -29,19 +29,11 @@ Use this template to generate the final summary report after findings have been 
 
 ### Review Agents Used
 
-**Core Agents:**
-- cg-vcs-history-analyzer
-- cg-pattern-specialist
-- cg-architecture-specialist
-- cg-security-reviewer
-- cg-data-integrity-reviewer
-- cg-agent-native-reviewer
-- cg-code-simplicity-reviewer
-- cg-learnings-researcher
+List only selected specialists and record their routing outcome:
 
-**Conditional Agents:**
-- cg-data-migration-reviewer (ran: yes/no)
-- cg-deployment-verifier (ran: yes/no)
+- `{agent}` — ran | not applicable | blocked — {scope or reason}
+
+If `cg-pattern-specialist` ran, include the explicitly requested cross-codebase audit question. Record migration and deployment specialists only when their conditional criteria applied.
 
 ### Status Constraints
 

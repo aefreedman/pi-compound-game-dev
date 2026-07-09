@@ -72,7 +72,7 @@ Use `cg-repo-researcher` only when the root fast pass shows enough independent r
 - Serial research would likely take 10+ search/read operations or several minutes of attention.
 - Each slice can be bounded to about 45 seconds or less.
 
-When delegating repository research, split broad questions into parallel slices. Each `cg-repo-researcher` brief should provide:
+When delegating repository research, split broad questions into parallel slices. Invoke package-owned `cg-*` agents with `agentScope: "both"` so project-local installations remain discoverable, while retaining project-agent confirmation. Each `cg-repo-researcher` brief should provide:
 
 - One narrow research question.
 - Feature summary only as background, not as the research scope.
