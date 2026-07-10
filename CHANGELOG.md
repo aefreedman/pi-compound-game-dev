@@ -14,6 +14,10 @@
 - Updated package prompts to reuse unchanged references within the current uncompacted workflow phase instead of redundantly loading them.
 - Updated agentic workflows to rely on Pi-trusted project execution and the runtime's once-per-session fallback instead of requesting redundant project-agent confirmation.
 
+### Fixed
+
+- Keep the `cg_search_repo` implementation helper outside Pi's top-level extension discovery so it is imported by the tool factory without being loaded as an extension itself.
+
 ## 0.5.0 - 2026-07-09
 
 ### Added

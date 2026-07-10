@@ -16,8 +16,7 @@
   },
   "pi": {
     "extensions": [
-      "./extensions/*.ts",
-      "!./extensions/repo-search-core.ts"
+      "./extensions"
     ],
     "skills": [
       "./skills"

@@ -13,7 +13,7 @@ const extensionText = readFileSync(new URL("../extensions/register-subagents.ts"
 const referenceReaderText = readFileSync(new URL("../extensions/read-reference.ts", import.meta.url), "utf8");
 const artifactSearchText = readFileSync(new URL("../extensions/artifact-search.ts", import.meta.url), "utf8");
 const repoSearchText = readFileSync(new URL("../extensions/repo-search.ts", import.meta.url), "utf8");
-const repoSearchCoreText = readFileSync(new URL("../extensions/repo-search-core.ts", import.meta.url), "utf8");
+const repoSearchCoreText = readFileSync(new URL("../extensions/repo-search/core.ts", import.meta.url), "utf8");
 const repoSearchDocText = readFileSync(new URL("../docs/repo-search.md", import.meta.url), "utf8");
 const repoResearcherText = readFileSync(new URL("../agents/research/cg-repo-researcher.md", import.meta.url), "utf8");
 const changelogText = readFileSync(new URL("../CHANGELOG.md", import.meta.url), "utf8");
@@ -36,7 +36,15 @@ const changelogErrorHandlingText = readFileSync(new URL("../references/cg-change
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
 assert.equal(pkg.version, "0.6.0");
-assert(pkg.pi?.extensions?.includes("./extensions/*.ts") && pkg.pi?.extensions?.includes("!./extensions/repo-search-core.ts"), "Expected extension registration to load top-level factories while excluding the repository-search helper module.");
+assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
+assert(!pkg.pi?.extensions?.some((entry: string) => entry.includes("repo-search/core")), "Repository-search helper modules must not be registered as extension factories.");
+const topLevelExtensionFiles = readdirSync(new URL("../extensions", import.meta.url), { withFileTypes: true })
+  .filter((entry) => entry.isFile() && /\.[tj]s$/.test(entry.name));
+for (const entry of topLevelExtensionFiles) {
+  const source = readFileSync(new URL(`../extensions/${entry.name}`, import.meta.url), "utf8");
+  assert(source.includes("export default"), `Top-level Pi extension ${entry.name} must export a factory; move helper modules into a subdirectory.`);
+}
+assert(existsSync(new URL("../extensions/repo-search/core.ts", import.meta.url)), "Expected repository-search implementation helper below the top-level extension discovery directory.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
 assert(referenceReaderText.includes("cg_read_reference"), "Expected package reference reader tool registration.");

@@ -10,7 +10,7 @@ import {
   parseRipgrepMatchEvent,
   runRipgrepCell,
   type RepoSearchQuery,
-} from "../extensions/repo-search-core";
+} from "../extensions/repo-search/core";
 
 const literalQuery: RepoSearchQuery = { id: "literal", pattern: "Needle", literal: true };
 const args = buildRipgrepArgs({

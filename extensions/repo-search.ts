@@ -18,7 +18,7 @@ import {
   type RepoSearchCellResult,
   type RepoSearchQuery,
   UNITY_GENERATED_DIRECTORIES,
-} from "./repo-search-core";
+} from "./repo-search/core";
 
 const UNITY_MARKERS = ["Assets", "Packages/manifest.json", "ProjectSettings/ProjectVersion.txt"];
 const WALK_SKIP_DIRS = new Set([".git", ".plastic", "node_modules", ...UNITY_GENERATED_DIRECTORIES]);
