@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Isolated artifact indexes by resolved workspace/docs/todos roots so sibling workspaces cannot overwrite or fast-path into one another's cache.
+- Kept indexed result paths canonical as `docs/...` and `todos/...`, extended dirty tracking to active custom roots, and report likely doubled relative workspace roots instead of silently creating empty indexes.
+
 ## 0.6.0 - 2026-07-09
 
 ### Added

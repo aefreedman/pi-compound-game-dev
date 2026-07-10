@@ -39,7 +39,7 @@ The `cg-*` workflows read that local guidance when present and ask targeted ques
 
 ## Project artifact search
 
-The package registers `cg_search_artifacts`, a tool for structured search across project-local `docs/` and `todos/` markdown files. Markdown remains the source of truth; the tool automatically refreshes a generated project index at `${WORKSPACE_ROOT}/.compound-game-dev/artifact-index.json` before searching so supporting files do not silently become stale. The index intentionally avoids `.pi/` so Pi runtime/config cleanup does not remove search data.
+The package registers `cg_search_artifacts`, a tool for structured search across project-local `docs/` and `todos/` markdown files. Markdown remains the source of truth; the tool automatically refreshes a generated project index under `${WORKSPACE_ROOT}/.compound-game-dev/` before searching so supporting files do not silently become stale. Custom docs/todos roots receive distinct root-identity index filenames so sibling workspaces do not overwrite one another. The index intentionally avoids `.pi/` so Pi runtime/config cleanup does not remove search data.
 
 Use it to search plans, solution docs, and file-based todos with filters such as scope, tags, module, status, priority, severity, and ranking profile. For research, pair indexed structured searches with `cg_search_repo` verification before citing source markdown. Projects should usually add `.compound-game-dev/` to version-control ignore rules. See `docs/artifact-search.md` for controls, hybrid workflow guidance, and ranking behavior.
 

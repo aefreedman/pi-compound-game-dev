@@ -1,11 +1,12 @@
 import { mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { keyHint, type ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { Text } from "@mariozechner/pi-tui";
 import { Type } from "typebox";
 
-const INDEX_VERSION = 3;
+const INDEX_VERSION = 4;
 const DEFAULT_LIMIT = 20;
 const DEFAULT_SNIPPET_CHARS = 220;
 const DEFAULT_MAX_RESULTS_BEFORE_SNIPPETS = 100;
@@ -85,6 +86,7 @@ type CachedIndex = {
 };
 
 const dirtyIndexPaths = new Set<string>();
+const activeIndexRoots = new Map<string, { docsRoot: string; todosRoot: string }>();
 
 const inMemoryIndexCache = new Map<string, CachedIndex>();
 const inProcessIndexQueues = new Map<string, Promise<unknown>>();
@@ -177,10 +179,36 @@ function resolveRoot(raw: string | undefined, workspaceRoot: string, fallback: s
   return path.isAbsolute(raw) ? path.resolve(raw) : path.resolve(workspaceRoot, raw);
 }
 
-function resolveIndexPath(raw: string | undefined, workspaceRoot: string): string {
+function rootsMatch(index: ArtifactIndex | undefined, workspaceRoot: string, docsRoot: string, todosRoot: string): index is ArtifactIndex {
+  return Boolean(index
+    && index.version === INDEX_VERSION
+    && normalizeForCompare(index.workspaceRoot) === normalizeForCompare(workspaceRoot)
+    && index.docsRoot
+    && normalizeForCompare(index.docsRoot) === normalizeForCompare(docsRoot)
+    && index.todosRoot
+    && normalizeForCompare(index.todosRoot) === normalizeForCompare(todosRoot));
+}
+
+function defaultIndexFilename(workspaceRoot: string, docsRoot: string, todosRoot: string): string {
+  const defaultDocsRoot = path.resolve(workspaceRoot, "docs");
+  const defaultTodosRoot = path.resolve(workspaceRoot, "todos");
+  if (normalizeForCompare(docsRoot) === normalizeForCompare(defaultDocsRoot)
+    && normalizeForCompare(todosRoot) === normalizeForCompare(defaultTodosRoot)) return "artifact-index.json";
+
+  const identity = [workspaceRoot, docsRoot, todosRoot].map(normalizeForCompare).join("\n");
+  const hash = createHash("sha256").update(identity).digest("hex").slice(0, 10);
+  const docsParent = path.dirname(docsRoot);
+  const todosParent = path.dirname(todosRoot);
+  const label = normalizeForCompare(docsParent) === normalizeForCompare(todosParent)
+    ? path.basename(docsParent).replace(/[^A-Za-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase()
+    : "custom-roots";
+  return `artifact-index-${label || "custom-roots"}-${hash}.json`;
+}
+
+function resolveIndexPath(raw: string | undefined, workspaceRoot: string, docsRoot: string, todosRoot: string): string {
   const resolved = raw?.trim()
     ? (path.isAbsolute(raw) ? path.resolve(raw) : path.resolve(workspaceRoot, raw))
-    : path.resolve(workspaceRoot, ".compound-game-dev", "artifact-index.json");
+    : path.resolve(workspaceRoot, ".compound-game-dev", defaultIndexFilename(workspaceRoot, docsRoot, todosRoot));
 
   if (!isInside(workspaceRoot, resolved)) {
     throw new Error("indexPath must be inside workspaceRoot so the generated project index stays project-local.");
@@ -421,14 +449,14 @@ function extractArtifactLinks(content: string): string[] {
   return [...links].sort();
 }
 
-async function parseArtifact(filePath: string, workspaceRoot: string, rootPath: string, root: "docs" | "todos"): Promise<ArtifactEntry> {
+async function parseArtifact(filePath: string, rootPath: string, root: "docs" | "todos"): Promise<ArtifactEntry> {
   const [fileStat, text] = await Promise.all([stat(filePath), readFile(filePath, "utf8")]);
   const { frontmatter, content } = parseFrontmatter(text);
   const relativeToRoot = path.relative(rootPath, filePath);
   const title = extractTitle(content, frontmatter);
 
   const entry: ArtifactEntry = {
-    path: normalizePath(path.relative(workspaceRoot, filePath)),
+    path: normalizePath(path.join(root, path.relative(rootPath, filePath))),
     root,
     kind: detectKind(relativeToRoot, root),
     mtimeMs: fileStat.mtimeMs,
@@ -469,10 +497,6 @@ function cachedIndex(indexPath: string): CachedIndex | undefined {
   return inMemoryIndexCache.get(normalizeForCompare(indexPath));
 }
 
-function isUsableIndex(index: ArtifactIndex | undefined, workspaceRoot: string): index is ArtifactIndex {
-  return Boolean(index && index.version === INDEX_VERSION && normalizeForCompare(index.workspaceRoot) === normalizeForCompare(workspaceRoot));
-}
-
 function emptyRefreshStats(): RefreshStats {
   return { added: 0, updated: 0, removed: 0, unchanged: 0 };
 }
@@ -496,17 +520,34 @@ async function canUseFastPath(indexPath: string, index: ArtifactIndex, mode: Fre
   return Boolean(cached?.validatedAtMs && Date.now() - cached.validatedAtMs <= ttlMs && cached.index === index);
 }
 
+async function validateRootArguments(params: SearchParams, workspaceRoot: string, docsRoot: string, todosRoot: string): Promise<void> {
+  for (const [raw, resolved, fallback] of [[params.docsRoot, docsRoot, "docs"], [params.todosRoot, todosRoot, "todos"]] as const) {
+    if (!raw?.trim() || path.isAbsolute(raw)) continue;
+    const firstSegment = raw.replace(/\\/g, "/").split("/").filter(Boolean)[0]?.toLowerCase();
+    if (firstSegment !== path.basename(workspaceRoot).toLowerCase()) continue;
+    const expectedRoot = path.resolve(workspaceRoot, fallback);
+    if (!await pathExists(resolved) && await pathExists(expectedRoot)) {
+      throw new Error(`${fallback}Root resolves to ${normalizePath(resolved)}, but ${normalizePath(expectedRoot)} exists. When workspaceRoot already points at ${path.basename(workspaceRoot)}, omit ${fallback}Root or use ${fallback}.`);
+    }
+  }
+}
+
 async function buildOrRefreshIndex(params: SearchParams, ctxCwd: string): Promise<RefreshResult> {
-  const workspaceRoot = path.resolve(params.workspaceRoot ?? ctxCwd);
+  const rawWorkspaceRoot = params.workspaceRoot?.trim();
+  const workspaceRoot = rawWorkspaceRoot
+    ? (path.isAbsolute(rawWorkspaceRoot) ? path.resolve(rawWorkspaceRoot) : path.resolve(ctxCwd, rawWorkspaceRoot))
+    : path.resolve(ctxCwd);
   const docsRoot = resolveRoot(params.docsRoot, workspaceRoot, "docs");
   const todosRoot = resolveRoot(params.todosRoot, workspaceRoot, "todos");
-  const indexPath = resolveIndexPath(params.indexPath, workspaceRoot);
+  await validateRootArguments(params, workspaceRoot, docsRoot, todosRoot);
+  const indexPath = resolveIndexPath(params.indexPath, workspaceRoot, docsRoot, todosRoot);
+  activeIndexRoots.set(normalizeForCompare(indexPath), { docsRoot, todosRoot });
   const freshnessMode = params.freshnessMode ?? "auto";
   const ttlMs = Math.max(0, params.freshnessTtlMs ?? DEFAULT_FRESHNESS_TTL_MS);
 
   if (!params.rebuild && freshnessMode !== "strict") {
     const existing = await loadIndex(indexPath);
-    if (isUsableIndex(existing, workspaceRoot) && await canUseFastPath(indexPath, existing, freshnessMode, ttlMs)) {
+    if (rootsMatch(existing, workspaceRoot, docsRoot, todosRoot) && await canUseFastPath(indexPath, existing, freshnessMode, ttlMs)) {
       return { index: existing, indexPath, refreshed: false, fastPath: true, freshnessMode, stats: emptyRefreshStats() };
     }
   }
@@ -528,14 +569,14 @@ async function buildOrRefreshIndexLocked(
   for (const [rootPath, root] of [[docsRoot, "docs"], [todosRoot, "todos"]] as const) {
     for (const absolute of await listMarkdownFiles(rootPath)) {
       const fileStat = await stat(absolute);
-      currentFiles.set(normalizePath(path.relative(workspaceRoot, absolute)), { absolute, rootPath, root, mtimeMs: fileStat.mtimeMs, size: fileStat.size });
+      currentFiles.set(normalizePath(path.join(root, path.relative(rootPath, absolute))), { absolute, rootPath, root, mtimeMs: fileStat.mtimeMs, size: fileStat.size });
     }
   }
 
-  const existing = params.rebuild ? undefined : await loadIndex(indexPath);
-  const index: ArtifactIndex = existing && normalizeForCompare(existing.workspaceRoot) === normalizeForCompare(workspaceRoot)
-    ? existing
-    : { version: INDEX_VERSION, generatedAt: new Date(0).toISOString(), workspaceRoot: normalizePath(workspaceRoot), docsRoot: normalizePath(docsRoot), todosRoot: normalizePath(todosRoot), files: {} };
+  const loaded = params.rebuild ? undefined : await loadIndex(indexPath);
+  const existing = rootsMatch(loaded, workspaceRoot, docsRoot, todosRoot) ? loaded : undefined;
+  const index: ArtifactIndex = existing
+    ?? { version: INDEX_VERSION, generatedAt: new Date(0).toISOString(), workspaceRoot: normalizePath(workspaceRoot), docsRoot: normalizePath(docsRoot), todosRoot: normalizePath(todosRoot), files: {} };
 
   index.version = INDEX_VERSION;
   index.workspaceRoot = normalizePath(workspaceRoot);
@@ -551,13 +592,13 @@ async function buildOrRefreshIndexLocked(
   for (const [relative, current] of currentFiles) {
     const previous = index.files[relative];
     if (!previous) {
-      index.files[relative] = await parseArtifact(current.absolute, workspaceRoot, current.rootPath, current.root);
+      index.files[relative] = await parseArtifact(current.absolute, current.rootPath, current.root);
       added++;
       refreshed = true;
       continue;
     }
     if (previous.size !== current.size || Math.abs(previous.mtimeMs - current.mtimeMs) > 1) {
-      index.files[relative] = await parseArtifact(current.absolute, workspaceRoot, current.rootPath, current.root);
+      index.files[relative] = await parseArtifact(current.absolute, current.rootPath, current.root);
       updated++;
       refreshed = true;
     } else {
@@ -1004,33 +1045,41 @@ const searchFieldSchema = Type.Union([Type.Literal("path"), Type.Literal("title"
 const stringOrArray = Type.Union([Type.String(), Type.Array(Type.String())]);
 
 
-function markDefaultIndexDirtyForPath(workspaceRoot: string, rawPath: unknown): void {
+function markIndexesDirtyForPath(cwd: string, rawPath: unknown): void {
   if (typeof rawPath !== "string" || !rawPath.trim()) return;
-  const absolutePath = path.isAbsolute(rawPath) ? path.resolve(rawPath) : path.resolve(workspaceRoot, rawPath);
-  const docsRoot = path.resolve(workspaceRoot, "docs");
-  const todosRoot = path.resolve(workspaceRoot, "todos");
-  if (!isInside(docsRoot, absolutePath) && !isInside(todosRoot, absolutePath)) return;
-  dirtyIndexPaths.add(normalizeForCompare(resolveIndexPath(undefined, workspaceRoot)));
+  const absolutePath = path.isAbsolute(rawPath) ? path.resolve(rawPath) : path.resolve(cwd, rawPath);
+  for (const [indexPath, roots] of activeIndexRoots) {
+    if (isInside(roots.docsRoot, absolutePath) || isInside(roots.todosRoot, absolutePath)) dirtyIndexPaths.add(indexPath);
+  }
+
+  const docsRoot = path.resolve(cwd, "docs");
+  const todosRoot = path.resolve(cwd, "todos");
+  if (isInside(docsRoot, absolutePath) || isInside(todosRoot, absolutePath)) {
+    dirtyIndexPaths.add(normalizeForCompare(resolveIndexPath(undefined, cwd, docsRoot, todosRoot)));
+  }
 }
 
 function commandMayMutateArtifacts(command: unknown): boolean {
   if (typeof command !== "string") return false;
   const lower = command.toLowerCase();
   if (!/(docs|todos|\.md)/.test(lower)) return false;
-  return /(rm|del|erase|mv|move|cp|copy|ren|rename|mkdir|touch|tee|echo|python|node|perl|sed|powershell|pwsh)|>|>>/.test(lower);
+  return /\b(rm|del|erase|mv|move|cp|copy|ren|rename|mkdir|touch|tee|echo|python|node|perl|sed|powershell|pwsh)\b|>|>>/.test(lower);
 }
 
 function registerArtifactDirtyTracking(pi: ExtensionAPI) {
   pi.on("tool_result", async (event: any, ctx: any) => {
     if (event?.isError) return;
-    const workspaceRoot = path.resolve(ctx?.cwd ?? process.cwd());
+    const cwd = path.resolve(ctx?.cwd ?? process.cwd());
     const input = event?.input ?? {};
     if (event?.toolName === "write" || event?.toolName === "edit") {
-      markDefaultIndexDirtyForPath(workspaceRoot, input.path);
+      markIndexesDirtyForPath(cwd, input.path);
       return;
     }
     if (event?.toolName === "bash" && commandMayMutateArtifacts(input.command)) {
-      dirtyIndexPaths.add(normalizeForCompare(resolveIndexPath(undefined, workspaceRoot)));
+      for (const indexPath of activeIndexRoots.keys()) dirtyIndexPaths.add(indexPath);
+      const docsRoot = path.resolve(cwd, "docs");
+      const todosRoot = path.resolve(cwd, "todos");
+      dirtyIndexPaths.add(normalizeForCompare(resolveIndexPath(undefined, cwd, docsRoot, todosRoot)));
     }
   });
 }
@@ -1048,6 +1097,7 @@ export default function registerArtifactSearch(pi: ExtensionAPI) {
       "For exploratory feature research with cg_search_artifacts, prefer a structured/scoped pass plus a broad matchMode='any' pass; add minTermMatches when a broad query has many common terms.",
       "Use raw rg after cg_search_artifacts for exact API names, code symbols, paths, error text, and body-only verification; do not treat the index as a replacement for reading source markdown.",
       "cg_search_artifacts keeps markdown files as the source of truth and auto-refreshes its project-local index before searching; do not manually edit the generated index.",
+      "For sibling workspaces, set workspaceRoot to the selected child and normally omit docsRoot/todosRoot; relative docs/todos roots are resolved from workspaceRoot.",
       "When using cg_search_artifacts results, cite the returned markdown paths, not the generated index path.",
       "Use rg/grep as a fallback when cg_search_artifacts is unavailable, and as a companion verification tool when exact raw-text evidence matters.",
     ],
@@ -1059,7 +1109,7 @@ export default function registerArtifactSearch(pi: ExtensionAPI) {
       workspaceRoot: Type.Optional(Type.String({ description: "Project/workspace root. Defaults to the current pi cwd." })),
       docsRoot: Type.Optional(Type.String({ description: "Docs root, absolute or workspace-relative. Defaults to <workspaceRoot>/docs." })),
       todosRoot: Type.Optional(Type.String({ description: "Todos root, absolute or workspace-relative. Defaults to <workspaceRoot>/todos." })),
-      indexPath: Type.Optional(Type.String({ description: "Generated project-local index path. Defaults to <workspaceRoot>/.compound-game-dev/artifact-index.json and must stay inside workspaceRoot." })),
+      indexPath: Type.Optional(Type.String({ description: "Generated project-local index path. Defaults under <workspaceRoot>/.compound-game-dev/; custom docs/todos roots receive a stable identity suffix. Must stay inside workspaceRoot." })),
       scopes: Type.Optional(Type.Array(scopeSchema, { description: "Artifact scopes to search: all, docs, solutions, plans, todos." })),
       status: Type.Optional(stringOrArray),
       priority: Type.Optional(stringOrArray),

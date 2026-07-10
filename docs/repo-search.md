@@ -50,13 +50,13 @@ Set `includeUnityGenerated: true` only when those outputs are the requested rese
 Literal symbol search across project code:
 
 ```text
-cg_search_repo queries=[{"id":"resolver","pattern":"ShipLayoutResolver"}] roots=["ws1/nor-unity/Assets/02-Game-Dive/code"] globs=["*.cs"]
+cg_search_repo queries=[{"id":"resolver","pattern":"LayoutResolver"}] roots=["workspace-a/game-project/Assets/Code"] globs=["*.cs"]
 ```
 
 Several independently attributed searches:
 
 ```text
-cg_search_repo workspaceRoot="ws1" roots=["nor-unity/Assets"] queries=[{"id":"exact-error","pattern":"Mission layout start node invalid"},{"id":"api-family","pattern":"MissionLayout.*Validate","literal":false}] maxMatches=60
+cg_search_repo workspaceRoot="workspace-a" roots=["game-project/Assets"] queries=[{"id":"exact-error","pattern":"Layout start node invalid"},{"id":"api-family","pattern":"Layout.*Validate","literal":false}] maxMatches=60
 ```
 
 Generated-output investigation:

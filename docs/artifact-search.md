@@ -4,13 +4,21 @@ Compound Game Dev keeps `docs/` and `todos/` markdown files as the source of tru
 
 ## Index Location
 
-By default the generated index is written to:
+For the default `${WORKSPACE_ROOT}/docs` and `${WORKSPACE_ROOT}/todos` roots, the generated index is written to:
 
 ```text
 ${WORKSPACE_ROOT}/.compound-game-dev/artifact-index.json
 ```
 
-The index path must stay inside `WORKSPACE_ROOT`. Agents should cite the markdown files returned by search results, not the generated index.
+When callers select custom docs/todos roots beneath a coordination workspace, the generated filename includes a stable root-identity suffix. This prevents sibling workspaces from overwriting or reusing each other's index:
+
+```text
+${WORKSPACE_ROOT}/.compound-game-dev/artifact-index-<root-label>-<root-hash>.json
+```
+
+Index identity includes the resolved workspace, docs, and todos roots. The index path must stay inside `WORKSPACE_ROOT`. Agents should cite the canonical `docs/...` and `todos/...` markdown paths returned by search results, not the generated index.
+
+For sibling workspaces, prefer setting `workspaceRoot` to the selected child workspace and omitting `docsRoot`/`todosRoot`. If `workspaceRoot` already points to `workspace-c`, do not also pass `docsRoot: "workspace-c/docs"`; relative roots are resolved from `workspaceRoot`.
 
 The default deliberately uses `.compound-game-dev/` instead of `.pi/` because `.pi/` may be treated as disposable Pi runtime or configuration state by cleanup workflows.
 
@@ -40,7 +48,7 @@ Use `rebuild: true` to force a full rebuild.
 
 Within a running Pi extension session, `cg_search_artifacts` keeps the parsed index object in memory keyed by `indexPath`. The generated index stores normalized metadata/headings/search text and a short body preview, but not full markdown bodies by default; use raw `rg` for detailed body-text verification.
 
-Default freshness mode is `auto`: after a strict refresh validates the index, repeated searches can use the in-memory index for `freshnessTtlMs` milliseconds, provided no docs/todos write was observed and no lock file exists. The extension marks the default project index dirty when Pi `write`/`edit` tools modify files under `docs/` or `todos/`, and conservatively marks it dirty after suspicious shell commands that may mutate markdown artifacts.
+Default freshness mode is `auto`: after a strict refresh validates the index, repeated searches can use the in-memory index for `freshnessTtlMs` milliseconds, provided its workspace/docs/todos identity matches, no relevant write was observed, and no lock file exists. The extension tracks active custom-root indexes and marks matching indexes dirty when Pi `write`/`edit` tools modify their docs/todos files. Suspicious shell commands conservatively dirty active artifact indexes.
 
 Freshness controls:
 
@@ -61,7 +69,7 @@ The in-memory cache is intentionally session-local and disposable. Restarting Pi
 The lock directory is created next to the index:
 
 ```text
-${WORKSPACE_ROOT}/.compound-game-dev/artifact-index.json.lock/
+${WORKSPACE_ROOT}/.compound-game-dev/<artifact-index-name>.lock/
 ```
 
 Lock acquisition uses atomic directory creation. The tool waits up to 30 seconds for an active lock, checks every 100 ms, and treats locks older than 120 seconds as stale. The lock is released in a `finally` block after refresh completes or fails. After waiting for another process, the tool re-loads/re-checks the index under the lock before writing, preserving the normal freshness guarantees.
