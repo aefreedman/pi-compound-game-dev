@@ -35,7 +35,7 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
-assert.equal(pkg.version, "0.5.0");
+assert.equal(pkg.version, "0.6.0");
 assert(pkg.pi?.extensions?.includes("./extensions/*.ts") && pkg.pi?.extensions?.includes("!./extensions/repo-search-core.ts"), "Expected extension registration to load top-level factories while excluding the repository-search helper module.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
@@ -65,7 +65,7 @@ assert(repoSearchCoreText.includes("buildUnityGeneratedExclusions") && repoSearc
 assert(repoSearchDocText.includes("Windows and macOS") && repoSearchDocText.includes("query/root pair") && repoSearchDocText.includes("no_matches"), "Expected cross-platform repository-search documentation.");
 assert(repoResearcherText.includes("cg_search_repo") && repoResearcherText.includes("tools: read, bash, cg_search_repo"), "Expected repo researcher access to deterministic search.");
 assert(pkg.scripts?.test?.includes("repo-search.test.ts"), "Expected repository-search behavior tests in npm test.");
-assert(changelogText.includes("## Unreleased") && changelogText.includes("authoritative source-of-truth inputs") && changelogText.includes("uncompacted workflow phase"), "Expected unreleased workflow-guidance changelog entries.");
+assert(changelogText.includes("## 0.6.0 - 2026-07-09") && changelogText.includes("authoritative source-of-truth inputs") && changelogText.includes("uncompacted workflow phase"), "Expected 0.6.0 workflow-guidance changelog entries.");
 assert(changelogText.includes("cg_search_repo") && changelogText.includes("Windows CI"), "Expected unreleased cross-platform repository-search changelog entries.");
 assert(existsSync(new URL("../.github/workflows/macos.yml", import.meta.url)) && existsSync(new URL("../.github/workflows/windows.yml", import.meta.url)), "Expected macOS and Windows package validation workflows.");
 assert(changelogText.includes("0.3.6") && changelogText.includes("Unity YAML asset editing"), "Expected changelog entry for large Unity YAML asset guidance.");
