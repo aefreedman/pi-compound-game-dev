@@ -35,7 +35,7 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
-assert.equal(pkg.version, "0.6.0");
+assert.equal(pkg.version, "0.6.1");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(!pkg.pi?.extensions?.some((entry: string) => entry.includes("repo-search/core")), "Repository-search helper modules must not be registered as extension factories.");
 const topLevelExtensionFiles = readdirSync(new URL("../extensions", import.meta.url), { withFileTypes: true })
@@ -46,7 +46,7 @@ for (const entry of topLevelExtensionFiles) {
 }
 assert(existsSync(new URL("../extensions/repo-search/core.ts", import.meta.url)), "Expected repository-search implementation helper below the top-level extension discovery directory.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
-assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
+assert(pkg.peerDependencies?.["@earendil-works/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
 assert(referenceReaderText.includes("cg_read_reference"), "Expected package reference reader tool registration.");
 assert(referenceReaderText.includes("renderResult"), "Expected package reference reader to provide expandable result rendering.");
 assert(referenceReaderText.includes("app.tools.expand"), "Expected package reference reader rendering to include the standard expand key hint.");

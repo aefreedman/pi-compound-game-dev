@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.6.1 - 2026-07-10
+
+### Changed
+
+- Migrated Pi extension imports and peer dependencies to the `@earendil-works` package scope.
 
 ### Fixed
 
