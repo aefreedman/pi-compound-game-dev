@@ -20,6 +20,7 @@ const reviewUnityTestingText = readFileSync(new URL("../references/cg-review/uni
 const resolveTodoImplementationText = readFileSync(new URL("../references/cg-resolve-todo-parallel/implementation.md", import.meta.url), "utf8");
 const planResearchAgentsText = readFileSync(new URL("../references/cg-plan/research-agents.md", import.meta.url), "utf8");
 const planSpecflowText = readFileSync(new URL("../references/cg-plan/specflow.md", import.meta.url), "utf8");
+const subagentExecutionProfileText = readFileSync(new URL("../references/_shared/subagent-execution-profiles.md", import.meta.url), "utf8");
 const changelogPromptText = readFileSync(new URL("../prompts/cg-changelog.md", import.meta.url), "utf8");
 const changelogPlasticText = readFileSync(new URL("../references/cg-changelog/plastic-workflow.md", import.meta.url), "utf8");
 const changelogCodecksText = readFileSync(new URL("../references/cg-changelog/codecks-workflow.md", import.meta.url), "utf8");
@@ -73,6 +74,7 @@ assert(reviewUnityTestingText.includes("not automatically a P1") && !reviewUnity
 assert(resolveTodoImplementationText.includes("cg-pr-comment-resolver") && resolveTodoImplementationText.includes('agentScope: "both"') && resolveTodoImplementationText.includes("Partial") && resolveTodoImplementationText.includes("Not Applied"), "Expected resolver routing to consume the current status and authority contract.");
 assert(planResearchAgentsText.includes("Not Found or Uncertain") && planResearchAgentsText.includes("budget-reached") && !planResearchAgentsText.includes("time-budget"), "Expected planning research briefs to match current stop/output contracts.");
 assert(planSpecflowText.includes('agentScope: "both"') && planSpecflowText.includes("Provisional Assumptions"), "Expected SpecFlow delegation to use current discovery and output contracts.");
+assert(subagentExecutionProfileText.includes("inherit") && subagentExecutionProfileText.includes("off | minimal | low | medium | high | xhigh") && subagentExecutionProfileText.includes("exact available `provider/model`"), "Expected task-sensitive model/thinking selection guidance.");
 assert(readFileSync(new URL("../prompts/cg-work.md", import.meta.url), "utf8").includes("references/cg-work/unity-yaml-assets.md"), "Expected cg-work prompt to load Unity YAML asset editing guidance for serialized assets.");
 assert(readFileSync(new URL("../references/cg-work/unity-yaml-assets.md", import.meta.url), "utf8").includes("heredocs") && readFileSync(new URL("../references/cg-work/unity-yaml-assets.md", import.meta.url), "utf8").includes("fileID"), "Expected Unity YAML asset guidance to cover heredoc avoidance and Unity serialization identifiers.");
 assert(qualityChecklistText.includes("do not pass `-quit` with `-runTests`"), "Expected Unity Test Framework guidance to avoid -quit with -runTests.");

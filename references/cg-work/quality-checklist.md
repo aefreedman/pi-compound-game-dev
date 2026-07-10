@@ -87,7 +87,7 @@ If no relevant test suite exists, record that explicitly and rely on the project
 
 Check AGENTS.md for project-specific linting configuration:
 
-If you delegate linting to `cg-lint-specialist`, use `agentScope: "both"` and default the brief to `check-only` for the changed files. Authorize `fix-authorized` mode only through an explicit follow-up with a bounded file allowlist. The lint agent never commits, checks in, or pushes; the root session owns any separately authorized VCS write.
+If you delegate linting to `cg-lint-specialist`, use `agentScope: "both"`, follow references/_shared/subagent-execution-profiles.md, and default the brief to `check-only` for the changed files. Inherit the parent execution profile unless a cheap, easily verified lint slice clearly benefits from lower thinking. Authorize `fix-authorized` mode only through an explicit follow-up with a bounded file allowlist. The lint agent never commits, checks in, or pushes; the root session owns any separately authorized VCS write.
 
 Use the project's native lint/format/static-analysis command. For Unity projects, this may be an editor validation step, Roslyn analyzer, formatting command, package-specific script, or build pipeline check documented by the project.
 
@@ -128,6 +128,7 @@ When delegating:
 
 - only the root/orchestrator session invokes subagents
 - invoke package-owned agents with `agentScope: "both"` and project-agent confirmation enabled
+- follow references/_shared/subagent-execution-profiles.md, inheriting by default and choosing non-inherited model/thinking values per actual review slice
 - provide exact changed files/roots, concern, known evidence, read-only authority, validation expectations, and a stop condition
 - select by concrete concern and specialist ownership
 - reserve `cg-pattern-specialist` for an explicitly requested cross-codebase consistency/duplication audit, not routine review

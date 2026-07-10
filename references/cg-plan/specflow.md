@@ -2,7 +2,7 @@
 
 After structuring the plan outline, the root may analyze flows directly for a small feature or delegate to `cg-spec-flow-analyzer` when the player/editor/content/tool flows are broad enough to benefit from an isolated pass.
 
-Only the root/orchestrator invokes the agent. Use `agentScope: "both"` with project-agent confirmation so project-local package installations remain discoverable.
+Only the root/orchestrator invokes the agent. Use `agentScope: "both"` with project-agent confirmation so project-local package installations remain discoverable. Follow references/_shared/subagent-execution-profiles.md; inherit by default, then raise or lower thinking from the actual flow ambiguity and evidence burden.
 
 ## Delegation Packet
 

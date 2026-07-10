@@ -57,6 +57,7 @@ Run Unity batchmode and Unity Test Framework invocations serially per project fo
 Run tests, linting, and manual verification using:
 
 - references/cg-work/quality-checklist.md
+- references/_shared/subagent-execution-profiles.md when delegating applicable lint/review checks
 
 Ensure that all phases and todo items in the plan are complete.
 

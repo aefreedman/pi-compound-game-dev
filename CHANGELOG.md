@@ -10,6 +10,7 @@
 
 - Aligned planning, review, work-quality, loop, and parallel todo-resolution guidance with the revised agent applicability, authority, output, and stop contracts.
 - Routed package-owned agents with `agentScope: "both"`, made resolver completion status-aware and collision-safe, and made Unity test findings evidence-based rather than automatically P1.
+- Added task-sensitive subagent execution-profile guidance so coordinators inherit model/thinking settings by default and use explicit per-slice selections only when cost, latency, ambiguity, or risk warrants them.
 
 ## 0.4.0 - 2026-07-09
 

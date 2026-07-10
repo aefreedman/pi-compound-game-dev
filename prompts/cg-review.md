@@ -42,7 +42,7 @@ Also collect lightweight stack/scope hints from changed file paths and local gui
 
 ### Step 3: Launch Parallel Review Agents
 
-Use the applicability table and briefs in references/cg-review/agent-prompts.md. Select only relevant specialists, focus each on changed files and directly related evidence, and reserve `cg-pattern-specialist` for explicitly requested cross-codebase audits. Invoke package-owned agents with `agentScope: "both"` so project-local installations remain discoverable; keep project-agent confirmation enabled.
+Use the applicability table and briefs in references/cg-review/agent-prompts.md and the task-sensitive model/thinking guidance in references/_shared/subagent-execution-profiles.md. Select only relevant specialists, focus each on changed files and directly related evidence, and reserve `cg-pattern-specialist` for explicitly requested cross-codebase audits. Invoke package-owned agents with `agentScope: "both"` so project-local installations remain discoverable; keep project-agent confirmation enabled.
 
 ### Step 4: Run Conditional Agents (If Needed)
 
@@ -77,11 +77,12 @@ See references/cg-review/error-handling.md.
 2. Git workflow -> references/cg-review/git-workflow.md
 3. Plastic workflow -> references/cg-review/plastic-workflow.md
 4. Review-agent routing -> references/cg-review/agent-prompts.md
-5. Conditional agents -> references/cg-review/conditional-agents.md
-6. Synthesis/todos -> references/cg-review/synthesis-and-todos.md
-7. Summary -> references/cg-review/assets/summary-template.md
-8. Artifact root resolution -> references/_shared/artifact-root-resolution.md
-9. Artifact path contract -> references/_shared/artifact-path-contract.md
+5. Subagent execution profiles -> references/_shared/subagent-execution-profiles.md
+6. Conditional agents -> references/cg-review/conditional-agents.md
+7. Synthesis/todos -> references/cg-review/synthesis-and-todos.md
+8. Summary -> references/cg-review/assets/summary-template.md
+9. Artifact root resolution -> references/_shared/artifact-root-resolution.md
+10. Artifact path contract -> references/_shared/artifact-path-contract.md
 
 On-demand:
 

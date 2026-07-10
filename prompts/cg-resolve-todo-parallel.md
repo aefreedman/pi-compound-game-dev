@@ -17,7 +17,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 ## Orchestration and Authority
 
 - Only the root/orchestrator session may invoke subagents. Delegated workers must perform their bounded task directly or return a parent handoff; they must not launch this workflow or nested specialists.
-- Invoke package-owned `cg-pr-comment-resolver` workers with `agentScope: "both"` and project-agent confirmation enabled.
+- Invoke package-owned `cg-pr-comment-resolver` workers with `agentScope: "both"` and project-agent confirmation enabled. Apply references/_shared/subagent-execution-profiles.md when a resolver slice warrants a non-inherited model or thinking level.
 - Resolver workers may make only explicitly authorized workspace edits. They may not commit/check in, push, mutate todo lifecycle/status, or change review threads; the root owns those operations.
 
 ## Workflow
@@ -36,10 +36,11 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 ## Reference Files (Load On Demand)
 
 1. VCS detection -> references/_shared/vcs-detection.md
-2. Implementation flow -> references/cg-resolve-todo-parallel/implementation.md
-3. Guidance -> references/cg-resolve-todo-parallel/guidance.md
-4. Error handling -> references/cg-resolve-todo-parallel/error-handling.md
-5. Summary template -> references/cg-resolve-todo-parallel/summary-template.md
+2. Subagent execution profiles -> references/_shared/subagent-execution-profiles.md
+3. Implementation flow -> references/cg-resolve-todo-parallel/implementation.md
+4. Guidance -> references/cg-resolve-todo-parallel/guidance.md
+5. Error handling -> references/cg-resolve-todo-parallel/error-handling.md
+6. Summary template -> references/cg-resolve-todo-parallel/summary-template.md
 6. Artifact root resolution -> references/_shared/artifact-root-resolution.md
 7. Artifact path contract -> references/_shared/artifact-path-contract.md
 

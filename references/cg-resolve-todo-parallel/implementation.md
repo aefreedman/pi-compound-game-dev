@@ -23,7 +23,7 @@ Only the root/orchestrator invokes subagents. Resolver workers never perform VCS
 
 ## Step 3: Delegate Bounded Resolutions
 
-Launch one `cg-pr-comment-resolver` per eligible todo from the root session using `agentScope: "both"` and project-agent confirmation.
+Launch one `cg-pr-comment-resolver` per eligible todo from the root session using `agentScope: "both"` and project-agent confirmation. Follow references/_shared/subagent-execution-profiles.md: inherit by default, and select higher thinking only for resolution slices whose ambiguity or risk justifies it.
 
 Each delegation packet must include:
 

@@ -41,7 +41,7 @@ references/_shared/artifact-path-contract.md.
 
 Only the root/orchestrator session may invoke subagents. Delegated workers must complete their bounded direct task or return a parent handoff rather than launching this planning workflow or nested specialists.
 
-Load references/cg-plan/research-agents.md and references/_shared/repo-research-efficiency.md.
+Load references/cg-plan/research-agents.md, references/_shared/repo-research-efficiency.md, and references/_shared/subagent-execution-profiles.md.
 
 Run the root fast pass from references/_shared/repo-research-efficiency.md before choosing a research route: read local guidance, detect VCS, discover ignore files, identify likely source/content roots, and run a few focused searches from the feature terms. If the fast pass detects a Unity project, load references/_shared/unity-repo-research.md and apply it conditionally; otherwise stay engine/tool agnostic.
 
@@ -97,16 +97,17 @@ Use `issue_tracker: github|codecks|none` in AGENTS.md; treat missing/unknown val
 ## Reference Files (Load On Demand)
 
 1. Research agents -> references/cg-plan/research-agents.md
-2. Detail level selection -> references/cg-plan/detail-level-templates.md
-3. SpecFlow -> references/cg-plan/specflow.md
-4. Formatting -> references/cg-plan/formatting-guidelines.md
-5. Templates -> references/cg-plan/assets/plan-template-minimal.md,
+2. Subagent execution profiles -> references/_shared/subagent-execution-profiles.md
+3. Detail level selection -> references/cg-plan/detail-level-templates.md
+4. SpecFlow -> references/cg-plan/specflow.md
+5. Formatting -> references/cg-plan/formatting-guidelines.md
+6. Templates -> references/cg-plan/assets/plan-template-minimal.md,
    references/cg-plan/assets/plan-template-standard.md,
    references/cg-plan/assets/plan-template-comprehensive.md
-6. Issue creation -> references/cg-plan/issue-tracker-integration.md
-7. Artifact root resolution -> references/_shared/artifact-root-resolution.md
-8. Artifact path contract -> references/_shared/artifact-path-contract.md
-9. Repo research efficiency -> references/_shared/repo-research-efficiency.md
+7. Issue creation -> references/cg-plan/issue-tracker-integration.md
+8. Artifact root resolution -> references/_shared/artifact-root-resolution.md
+9. Artifact path contract -> references/_shared/artifact-path-contract.md
+10. Repo research efficiency -> references/_shared/repo-research-efficiency.md
 10. Unity repo research (conditional) -> references/_shared/unity-repo-research.md
 
 ## Ambiguity Handling
