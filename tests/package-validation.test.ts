@@ -5,15 +5,21 @@ const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url),
   name?: string;
   version?: string;
   pi?: { extensions?: string[]; prompts?: string[]; skills?: string[] };
+  scripts?: Record<string, string>;
   peerDependencies?: Record<string, string>;
 };
 const readmeText = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const extensionText = readFileSync(new URL("../extensions/register-subagents.ts", import.meta.url), "utf8");
 const referenceReaderText = readFileSync(new URL("../extensions/read-reference.ts", import.meta.url), "utf8");
 const artifactSearchText = readFileSync(new URL("../extensions/artifact-search.ts", import.meta.url), "utf8");
+const repoSearchText = readFileSync(new URL("../extensions/repo-search.ts", import.meta.url), "utf8");
+const repoSearchCoreText = readFileSync(new URL("../extensions/repo-search-core.ts", import.meta.url), "utf8");
+const repoSearchDocText = readFileSync(new URL("../docs/repo-search.md", import.meta.url), "utf8");
+const repoResearcherText = readFileSync(new URL("../agents/research/cg-repo-researcher.md", import.meta.url), "utf8");
 const changelogText = readFileSync(new URL("../CHANGELOG.md", import.meta.url), "utf8");
 const artifactSearchDocText = readFileSync(new URL("../docs/artifact-search.md", import.meta.url), "utf8");
 const qualityChecklistText = readFileSync(new URL("../references/cg-work/quality-checklist.md", import.meta.url), "utf8");
+const repoResearchEfficiencyText = readFileSync(new URL("../references/_shared/repo-research-efficiency.md", import.meta.url), "utf8");
 const reviewAgentPromptsText = readFileSync(new URL("../references/cg-review/agent-prompts.md", import.meta.url), "utf8");
 const reviewConditionalAgentsText = readFileSync(new URL("../references/cg-review/conditional-agents.md", import.meta.url), "utf8");
 const reviewUnityTestingText = readFileSync(new URL("../references/cg-review/unity-testing.md", import.meta.url), "utf8");
@@ -22,6 +28,7 @@ const planResearchAgentsText = readFileSync(new URL("../references/cg-plan/resea
 const planSpecflowText = readFileSync(new URL("../references/cg-plan/specflow.md", import.meta.url), "utf8");
 const subagentExecutionProfileText = readFileSync(new URL("../references/_shared/subagent-execution-profiles.md", import.meta.url), "utf8");
 const changelogPromptText = readFileSync(new URL("../prompts/cg-changelog.md", import.meta.url), "utf8");
+const workPromptText = readFileSync(new URL("../prompts/cg-work.md", import.meta.url), "utf8");
 const changelogPlasticText = readFileSync(new URL("../references/cg-changelog/plastic-workflow.md", import.meta.url), "utf8");
 const changelogCodecksText = readFileSync(new URL("../references/cg-changelog/codecks-workflow.md", import.meta.url), "utf8");
 const changelogSourceSelectionText = readFileSync(new URL("../references/cg-changelog/source-selection.md", import.meta.url), "utf8");
@@ -29,7 +36,7 @@ const changelogErrorHandlingText = readFileSync(new URL("../references/cg-change
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
 assert.equal(pkg.version, "0.5.0");
-assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
+assert(pkg.pi?.extensions?.includes("./extensions/*.ts") && pkg.pi?.extensions?.includes("!./extensions/repo-search-core.ts"), "Expected extension registration to load top-level factories while excluding the repository-search helper module.");
 assert(pkg.peerDependencies?.typebox === "*", "Expected typebox peer dependency for package reference reader.");
 assert(pkg.peerDependencies?.["@mariozechner/pi-tui"] === "*", "Expected pi-tui peer dependency for package reference reader rendering.");
 assert(referenceReaderText.includes("cg_read_reference"), "Expected package reference reader tool registration.");
@@ -49,6 +56,18 @@ assert(artifactSearchText.includes("buildSearchText") && artifactSearchText.incl
 assert(artifactSearchText.includes("freshnessMode") && artifactSearchText.includes("freshnessTtlMs") && artifactSearchText.includes("dirtyIndexPaths") && artifactSearchText.includes("bodyPreview"), "Expected artifact search to support fast-path freshness and avoid full-body indexing by default.");
 assert(artifactSearchText.includes("outputMode") && artifactSearchText.includes("formatCompactFrontmatterSummary") && artifactSearchText.includes('params.outputMode === "detailed"'), "Expected artifact search to support compact agent-facing output with a detailed fallback.");
 assert(artifactSearchText.includes("preparedResultCount") && artifactSearchText.includes("returnedResultCount"), "Expected artifact search details to distinguish prepared and returned result counts.");
+assert(repoSearchText.includes('name: "cg_search_repo"') && repoSearchText.includes("runRipgrepCell"), "Expected bounded repository-search tool registration.");
+assert(repoSearchCoreText.includes("spawn(input.command ?? \"rg\"") && repoSearchCoreText.includes("shell: false") && repoSearchCoreText.includes("--json"), "Expected cross-platform shell-free streamed ripgrep execution.");
+assert(repoSearchText.includes("ignore.conf") && repoSearchText.includes("cloaked.conf") && repoSearchText.includes("includeUnityGenerated"), "Expected Plastic ignore and Unity generated-folder policies.");
+assert(repoSearchText.includes("not_run_global_limit") && repoSearchText.includes("root_excluded_by_policy") && repoSearchText.includes("Complete Status Matrix"), "Expected explicit completion and negative-evidence states before excerpts.");
+assert(repoSearchText.includes("Caller globs") && repoSearchText.includes("callerGlobs"), "Expected caller-supplied globs in visible and structured search policy.");
+assert(repoSearchCoreText.includes("buildUnityGeneratedExclusions") && repoSearchCoreText.includes("!${excluded}/**") && !repoSearchCoreText.includes("!**/${excluded}/**"), "Expected Unity exclusions to target direct generated children rather than authored nested folders.");
+assert(repoSearchDocText.includes("Windows and macOS") && repoSearchDocText.includes("query/root pair") && repoSearchDocText.includes("no_matches"), "Expected cross-platform repository-search documentation.");
+assert(repoResearcherText.includes("cg_search_repo") && repoResearcherText.includes("tools: read, bash, cg_search_repo"), "Expected repo researcher access to deterministic search.");
+assert(pkg.scripts?.test?.includes("repo-search.test.ts"), "Expected repository-search behavior tests in npm test.");
+assert(changelogText.includes("## Unreleased") && changelogText.includes("authoritative source-of-truth inputs") && changelogText.includes("uncompacted workflow phase"), "Expected unreleased workflow-guidance changelog entries.");
+assert(changelogText.includes("cg_search_repo") && changelogText.includes("Windows CI"), "Expected unreleased cross-platform repository-search changelog entries.");
+assert(existsSync(new URL("../.github/workflows/macos.yml", import.meta.url)) && existsSync(new URL("../.github/workflows/windows.yml", import.meta.url)), "Expected macOS and Windows package validation workflows.");
 assert(changelogText.includes("0.3.6") && changelogText.includes("Unity YAML asset editing"), "Expected changelog entry for large Unity YAML asset guidance.");
 assert(changelogText.includes("0.3.5") && changelogText.includes("Python utility environments"), "Expected changelog entry for Python utility environment guidance.");
 assert(changelogText.includes("0.3.4") && changelogText.includes("design-time validation"), "Expected changelog entry for authored-content validation guidance.");
@@ -65,7 +84,13 @@ assert(qualityChecklistText.includes("load the `unity-batchmode-tests` skill"), 
 assert(qualityChecklistText.includes("full replacement") && qualityChecklistText.includes("backward-compatible support"), "Expected scope discipline guidance for replacement vs compatibility.");
 assert(qualityChecklistText.includes("UXML") && qualityChecklistText.includes("USS") && qualityChecklistText.includes("C#"), "Expected Unity UI Toolkit structure/style guidance.");
 assert(qualityChecklistText.includes("edit/design time") && qualityChecklistText.includes("magic-number"), "Expected authored-content validation and mutable designer-data test guidance.");
+assert(qualityChecklistText.includes("Artifact Authority and Source of Truth") && qualityChecklistText.includes("Evidence-only inputs") && qualityChecklistText.includes("silently changing an authoritative input"), "Expected source-of-truth mutation safeguards.");
+assert(repoResearchEfficiencyText.includes("authoritative/read-only source-of-truth inputs") && repoResearchEfficiencyText.includes("generated/derived artifacts") && repoResearchEfficiencyText.includes("exit status `1`"), "Expected research authority classification and negative-search guidance.");
+for (const authorityText of [qualityChecklistText, repoResearchEfficiencyText, workPromptText]) {
+  assert(authorityText.includes("controlling task") && authorityText.includes("applicable project guidance"), "Expected consistent authority-source authorization wording.");
+}
 assert(qualityChecklistText.includes("Windows Command Safety") && qualityChecklistText.includes("UTF-8"), "Expected Windows command safety guidance.");
+assert(qualityChecklistText.includes("naked PowerShell cmdlets") && qualityChecklistText.includes("forward slashes") && qualityChecklistText.includes("Do not use `/tmp`") && qualityChecklistText.includes("`rg` exit status `1`"), "Expected cross-shell, path, temp-file, and ripgrep safety guidance.");
 assert(qualityChecklistText.includes("local agent Python utility environment") && qualityChecklistText.includes("non-stdlib imports"), "Expected Python utility environment discovery guidance.");
 assert(qualityChecklistText.includes("check-only") && qualityChecklistText.includes('agentScope: "both"'), "Expected lint/reviewer delegation to use safe current agent contracts.");
 assert(reviewAgentPromptsText.includes("explicitly request") && reviewAgentPromptsText.includes('agentScope: "both"'), "Expected concern-driven review routing and project-local agent discovery.");
@@ -75,7 +100,8 @@ assert(resolveTodoImplementationText.includes("cg-pr-comment-resolver") && resol
 assert(planResearchAgentsText.includes("Not Found or Uncertain") && planResearchAgentsText.includes("budget-reached") && !planResearchAgentsText.includes("time-budget"), "Expected planning research briefs to match current stop/output contracts.");
 assert(planSpecflowText.includes('agentScope: "both"') && planSpecflowText.includes("Provisional Assumptions"), "Expected SpecFlow delegation to use current discovery and output contracts.");
 assert(subagentExecutionProfileText.includes("inherit") && subagentExecutionProfileText.includes("off | minimal | low | medium | high | xhigh") && subagentExecutionProfileText.includes("exact available `provider/model`"), "Expected task-sensitive model/thinking selection guidance.");
-assert(readFileSync(new URL("../prompts/cg-work.md", import.meta.url), "utf8").includes("references/cg-work/unity-yaml-assets.md"), "Expected cg-work prompt to load Unity YAML asset editing guidance for serialized assets.");
+assert(subagentExecutionProfileText.includes("Pi-trusted projects") && subagentExecutionProfileText.includes("does not authorize it"), "Expected trust-aware project-agent fallback guidance.");
+assert(workPromptText.includes("references/cg-work/unity-yaml-assets.md"), "Expected cg-work prompt to load Unity YAML asset editing guidance for serialized assets.");
 assert(readFileSync(new URL("../references/cg-work/unity-yaml-assets.md", import.meta.url), "utf8").includes("heredocs") && readFileSync(new URL("../references/cg-work/unity-yaml-assets.md", import.meta.url), "utf8").includes("fileID"), "Expected Unity YAML asset guidance to cover heredoc avoidance and Unity serialization identifiers.");
 assert(qualityChecklistText.includes("do not pass `-quit` with `-runTests`"), "Expected Unity Test Framework guidance to avoid -quit with -runTests.");
 assert(!changelogPlasticText.includes("--orderby"), "Plastic changelog docs must not use unsupported cm find --orderby syntax.");
@@ -115,6 +141,9 @@ for (const promptText of promptTexts) {
   assert(!promptText.includes("../prompts/"), "Prompt package prompt references must use cg_read_reference package-relative paths, not ../prompts paths.");
   if (promptText.includes("references/") || promptText.includes("prompts/")) {
     assert(promptText.includes("cg_read_reference"), "Prompts that reference package files must instruct use of cg_read_reference.");
+    for (const reuseClause of ["same unchanged section", "current uncompacted workflow phase", "Reuse loaded instructions", "reload after compaction", "different section or updated content"]) {
+      assert(promptText.includes(reuseClause), `Prompts that load package files must preserve the reference-reuse contract: ${reuseClause}`);
+    }
   }
 }
 

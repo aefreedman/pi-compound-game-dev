@@ -41,7 +41,11 @@ The `cg-*` workflows read that local guidance when present and ask targeted ques
 
 The package registers `cg_search_artifacts`, a tool for structured search across project-local `docs/` and `todos/` markdown files. Markdown remains the source of truth; the tool automatically refreshes a generated project index at `${WORKSPACE_ROOT}/.compound-game-dev/artifact-index.json` before searching so supporting files do not silently become stale. The index intentionally avoids `.pi/` so Pi runtime/config cleanup does not remove search data.
 
-Use it to search plans, solution docs, and file-based todos with filters such as scope, tags, module, status, priority, severity, and ranking profile. For research, pair indexed structured searches with raw `rg` verification before citing source markdown. Projects should usually add `.compound-game-dev/` to version-control ignore rules. See `docs/artifact-search.md` for controls, hybrid workflow guidance, and ranking behavior.
+Use it to search plans, solution docs, and file-based todos with filters such as scope, tags, module, status, priority, severity, and ranking profile. For research, pair indexed structured searches with `cg_search_repo` verification before citing source markdown. Projects should usually add `.compound-game-dev/` to version-control ignore rules. See `docs/artifact-search.md` for controls, hybrid workflow guidance, and ranking behavior.
+
+## Project repository search
+
+The package also registers `cg_search_repo` for deterministic exact search over project code, assets, and filesystem content. It runs ripgrep without a shell, attributes results to each query/root pair, discovers root-specific Plastic `ignore.conf`/`cloaked.conf` chains, excludes detected Unity generated folders by default, and caps per-file/global evidence. Completed `no_matches` cells are explicit scoped negative evidence; limited, excluded, not-run, timeout, and error cells remain visibly incomplete. Use `includeUnityGenerated: true` only when generated/cache/build output is the subject of the investigation. See `docs/repo-search.md`.
 
 ## Commands
 
@@ -85,7 +89,7 @@ Workflows degrade gracefully when optional companion packages are unavailable.
 - helper skills under `skills/`
 - package-owned agent definitions under `agents/`
 - package maintenance notes under `docs/`, including artifact search, markdown authoring guidance, output format contracts, and removed-agent return paths
-- registration extensions under `extensions/`, including package reference reading, package-agent registration, and project artifact search
+- registration extensions under `extensions/`, including package reference reading, package-agent registration, project artifact search, and bounded repository search
 - maintenance/migration scripts under `scripts/`, including Unity solution-doc schema migration
 
 ## Testing

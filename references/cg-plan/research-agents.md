@@ -6,7 +6,7 @@ When running from a coordination root, pass resolved `WORKSPACE_ROOT`,
 `DOCS_ROOT`, and `TODOS_ROOT` into each subagent prompt so searches stay in the
 correct workspace. Also pass root fast-pass findings from
 references/_shared/repo-research-efficiency.md so delegated research stays
-bounded. Invoke package-owned `cg-*` agents with `agentScope: "both"` so they remain discoverable when Compound Game Dev is installed project-locally; keep project-agent confirmation enabled. Follow references/_shared/subagent-execution-profiles.md: inherit by default, and choose a non-inherited model/thinking profile only when the actual research slice warrants it.
+bounded. Invoke package-owned `cg-*` agents with `agentScope: "both"` so they remain discoverable when Compound Game Dev is installed project-locally; rely on the runtime's Pi-trust-aware, once-per-session fallback confirmation. Follow references/_shared/subagent-execution-profiles.md: inherit by default, and choose a non-inherited model/thinking profile only when the actual research slice warrants it.
 
 ---
 

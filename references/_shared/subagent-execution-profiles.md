@@ -27,6 +27,17 @@ Before choosing a non-parent model, call `subagent_list` with `agentScope: "both
 
 These are heuristics, not automatic class mappings. Increase or decrease effort based on the actual slice, evidence quality, risk, and validation burden.
 
+## Project-Agent Trust
+
+Use `agentScope: "both"` when project-installed/package agents are intended. Rely on the runtime's trust-aware policy:
+
+- Pi-trusted projects run without an extra package prompt.
+- Otherwise, leave `confirmProjectAgents` unset or `true` to allow one fallback approval/denial per project and Pi session.
+- Setting `confirmProjectAgents: false` denies untrusted project-agent execution; it does not authorize it.
+- Untrusted non-interactive workflows must use saved Pi trust or an explicit Pi `--approve` launch.
+
+Do not add workflow-level repeated approval prompts. Project trust is an input-loading guard, not a sandbox or additional tool authority.
+
 ## Delegation Record
 
 When selecting a non-inherited profile, include a short reason in the root's orchestration notes or delegation packet. Use the returned selected model/thinking metadata, together with any Pi capability clamping noted by the run, when reporting cost or comparing agent performance.

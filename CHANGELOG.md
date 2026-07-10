@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added `cg_search_repo` for bounded cross-platform ripgrep searches with per-query/root attribution, root-specific Plastic ignore chains, Unity generated-folder exclusions, streamed global limits, and explicit negative-evidence statuses.
+- Added Windows CI alongside the existing macOS package validation workflow.
+
+### Changed
+
+- Added planning and work-execution guidance to classify authoritative source-of-truth inputs, implementation targets, generated artifacts, and evidence-only inputs before mutation.
+- Expanded Windows command safety guidance for Bash-versus-PowerShell usage, cross-tool temporary paths, forward-slash path handling, and expected ripgrep no-match results; updated the ready-P1 file-todo fallback to search a concrete root so an empty glob is not reported as a path error.
+- Updated package prompts to reuse unchanged references within the current uncompacted workflow phase instead of redundantly loading them.
+- Updated agentic workflows to rely on Pi-trusted project execution and the runtime's once-per-session fallback instead of requesting redundant project-agent confirmation.
+
 ## 0.5.0 - 2026-07-09
 
 ### Added

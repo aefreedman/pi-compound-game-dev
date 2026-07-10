@@ -12,6 +12,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 - Pass package-relative paths such as `references/cg-plan/research-agents.md`.
 - When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
 - Do NOT use `read` with `references/...`; file tools resolve relative to the current project cwd, not this package.
+- Do not call `cg_read_reference` again for the same unchanged section during the current uncompacted workflow phase. Reuse loaded instructions; reload after compaction only when they are no longer retained, or when a later stage explicitly needs a different section or updated content.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
 - For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
@@ -42,7 +43,7 @@ Also collect lightweight stack/scope hints from changed file paths and local gui
 
 ### Step 3: Launch Parallel Review Agents
 
-Use the applicability table and briefs in references/cg-review/agent-prompts.md and the task-sensitive model/thinking guidance in references/_shared/subagent-execution-profiles.md. Select only relevant specialists, focus each on changed files and directly related evidence, and reserve `cg-pattern-specialist` for explicitly requested cross-codebase audits. Invoke package-owned agents with `agentScope: "both"` so project-local installations remain discoverable; keep project-agent confirmation enabled.
+Use the applicability table and briefs in references/cg-review/agent-prompts.md and the task-sensitive model/thinking guidance in references/_shared/subagent-execution-profiles.md. Select only relevant specialists, focus each on changed files and directly related evidence, and reserve `cg-pattern-specialist` for explicitly requested cross-codebase audits. Invoke package-owned agents with `agentScope: "both"` so project-local installations remain discoverable; rely on the runtime's Pi-trust-aware, once-per-session fallback confirmation.
 
 ### Step 4: Run Conditional Agents (If Needed)
 

@@ -17,6 +17,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 - Pass package-relative paths such as `references/cg-plan/research-agents.md`.
 - When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
 - Do NOT use `read` with `references/...`; file tools resolve relative to the current project cwd, not this package.
+- Do not call `cg_read_reference` again for the same unchanged section during the current uncompacted workflow phase. Reuse loaded instructions; reload after compaction only when they are no longer retained, or when a later stage explicitly needs a different section or updated content.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
 - For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.

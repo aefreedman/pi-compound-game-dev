@@ -10,6 +10,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package prompt and refer
 - Pass package-relative paths such as `prompts/cg-work.md` or `references/_shared/vcs-detection.md`.
 - When an instruction says to load, use, read, or follow a package prompt/reference path, call `cg_read_reference` for that path.
 - Do NOT use `read` with `prompts/...` or `references/...`; file tools resolve relative to the current project cwd, not this package.
+- Do not call `cg_read_reference` again for the same unchanged section during the current uncompacted workflow phase. Reuse loaded instructions; reload after compaction only when they are no longer retained, or when a later stage explicitly needs a different section or updated content.
 
 ## Input handling
 

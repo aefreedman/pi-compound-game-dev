@@ -20,6 +20,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 - Pass package-relative paths such as `references/cg-plan/research-agents.md`.
 - When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
 - Do NOT use `read` with `references/...`; file tools resolve relative to the current project cwd, not this package.
+- Do not call `cg_read_reference` again for the same unchanged section during the current uncompacted workflow phase. Reuse loaded instructions; reload after compaction only when they are no longer retained, or when a later stage explicitly needs a different section or updated content.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
 - For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
@@ -29,11 +30,12 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 ### Phase 1: Quick Start
 
 1. Read the plan and clarify ambiguities.
-2. Detect VCS using references/_shared/vcs-detection.md.
-3. Load ONLY the VCS workflow that applies to the project. Do not load both.
+2. Classify authoritative/read-only source-of-truth inputs, implementation targets, generated/derived artifacts, and evidence-only inputs. Do not mutate an authority source merely to reconcile downstream implementation unless the controlling task (the user's request or accepted plan) or applicable project guidance explicitly authorizes that source update.
+3. Detect VCS using references/_shared/vcs-detection.md.
+4. Load ONLY the VCS workflow that applies to the project. Do not load both.
    - IF Git: references/cg-work/git-workflow.md
    - IF Plastic: references/cg-work/plastic-workflow.md
-4. Lock the selected VCS workflow for this run.
+5. Lock the selected VCS workflow for this run.
    - Set `ACTIVE_VCS_WORKFLOW` to `git` or `plastic`.
    - Do not load or apply instructions from the other VCS workflow.
    - If guidance conflicts, the active workflow file controls VCS write behavior.

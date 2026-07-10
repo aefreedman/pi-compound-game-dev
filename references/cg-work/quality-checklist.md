@@ -12,6 +12,17 @@ For Unity UI Toolkit work, prefer UXML for structure, USS for styling/layout/int
 
 When implementing a plan, keep the work framed as the target design. Do not preserve old concepts, old plan comparisons, or "not the old system" language in code/docs unless it is needed for explicit migration or historical traceability.
 
+## Artifact Authority and Source of Truth
+
+Before editing, classify relevant artifacts:
+
+- **Authoritative source-of-truth inputs** define designer/user/project intent and are read-only unless the controlling task (the user's request or accepted plan) or applicable project guidance explicitly authorizes changing them.
+- **Implementation targets** are the code, content, or configuration the task intends to change.
+- **Generated/derived artifacts** should be regenerated from their authority source rather than hand-edited when a supported generation path exists.
+- **Evidence-only inputs** support investigation or validation but are not mutation targets.
+
+Do not make tests pass or reconcile a mismatch by silently changing an authoritative input. Preserve it, identify the disagreeing implementation/generated artifact, and fix downstream unless the controlling task or applicable project guidance explicitly authorizes an authority-source update. If authority is unclear, stop that mutation and ask or report the ambiguity. When an authoritative input update is explicitly authorized, read back the intended change before editing and validate affected downstream artifacts afterward.
+
 ## Authored Content and Data Validation
 
 For Unity authored-content changes (assets, catalogs, layouts, progression graphs, content mappings, save/config data), prefer validation that can fail at edit/design time before runtime playthroughs:
@@ -37,7 +48,11 @@ For Unity Test Framework runs, do not pass `-quit` with `-runTests`; the test ru
 When using shell/Python helpers on Windows projects, keep commands portable and UTF-8 safe:
 
 - Prefer Pi `read` for file inspection and `rg` for search before ad hoc Python parsing.
+- The Pi `bash` tool runs Bash even on Windows. Do not send naked PowerShell cmdlets to it; use a deliberately quoted `powershell -NoProfile -Command ...` invocation only when PowerShell is required, or prefer package tools/Python.
+- Quote paths and prefer forward slashes or explicit absolute Windows paths in Bash commands so backslashes are not consumed as escapes.
+- Do not use `/tmp` for files that a later Pi file/image tool must open on Windows. Resolve an explicit absolute temp path (for example through Python `tempfile`) or use a project-documented ignored workspace temp directory, and pass that same path between tools.
 - Avoid passing wildcard path segments such as `Packages/com.example*` as literal search roots; prefer searching a concrete root with `-g` include/exclude globs.
+- Treat `rg` exit status `1` as an expected no-match result and status `2` or diagnostic output as a real search failure; preserve meaningful negative evidence instead of retrying blindly.
 - If the project documents a local agent Python utility environment, resolve that executable from the coordination/project root before use; do not assume `.pi-python-tools/...` exists relative to a workspace subfolder.
 - Before relying on non-stdlib imports, run a tiny import check with the chosen Python executable so missing packages fail early and clearly.
 - If Python must print non-ASCII text, set UTF-8 output explicitly or write UTF-8 files instead of relying on the console code page.
@@ -127,7 +142,7 @@ Use the applicability table and current briefs in `references/cg-review/agent-pr
 When delegating:
 
 - only the root/orchestrator session invokes subagents
-- invoke package-owned agents with `agentScope: "both"` and project-agent confirmation enabled
+- invoke package-owned agents with `agentScope: "both"` and rely on the runtime's Pi-trust-aware, once-per-session fallback confirmation
 - follow references/_shared/subagent-execution-profiles.md, inheriting by default and choosing non-inherited model/thinking values per actual review slice
 - provide exact changed files/roots, concern, known evidence, read-only authority, validation expectations, and a stop condition
 - select by concrete concern and specialist ownership

@@ -25,6 +25,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 - Pass package-relative paths such as `references/cg-plan/research-agents.md`.
 - When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
 - Do NOT use `read` with `references/...`; file tools resolve relative to the current project cwd, not this package.
+- Do not call `cg_read_reference` again for the same unchanged section during the current uncompacted workflow phase. Reuse loaded instructions; reload after compaction only when they are no longer retained, or when a later stage explicitly needs a different section or updated content.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
 - For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
@@ -43,12 +44,12 @@ Only the root/orchestrator session may invoke subagents. Delegated workers must 
 
 Load references/cg-plan/research-agents.md, references/_shared/repo-research-efficiency.md, and references/_shared/subagent-execution-profiles.md.
 
-Run the root fast pass from references/_shared/repo-research-efficiency.md before choosing a research route: read local guidance, detect VCS, discover ignore files, identify likely source/content roots, and run a few focused searches from the feature terms. If the fast pass detects a Unity project, load references/_shared/unity-repo-research.md and apply it conditionally; otherwise stay engine/tool agnostic.
+Run the root fast pass from references/_shared/repo-research-efficiency.md before choosing a research route: read local guidance, detect VCS, discover ignore files, identify likely source/content roots, classify authoritative/read-only inputs versus implementation and generated targets, and run a few focused searches from the feature terms. If the fast pass detects a Unity project, load references/_shared/unity-repo-research.md and apply it conditionally; otherwise stay engine/tool agnostic.
 
 Then choose the fastest honest research route:
 
 - Research directly with root-agent tools when the next step is a linear investigation: 1-2 obvious roots/files, a single subsystem/question, up to roughly 6-8 targeted search/read operations, and only a few files to inspect.
-- Use deterministic repository search/excerpt tools when available for mechanical candidate discovery over known roots/terms; treat them as batched `rg` plus snippets/ranking, not as synthesis.
+- Use `cg_search_repo` when available for mechanical candidate discovery over known roots/terms; treat it as bounded VCS-/Unity-aware `rg` evidence, not as synthesis. Only completed `no_matches` query/root cells are negative evidence.
 - Use `cg-repo-researcher` only when the research burden is large enough to gain speed from parallelism: 2+ independent slices, likely 10+ serial search/read operations or several minutes of attention, and each slice can be bounded to about 45 seconds or less.
 - When using repo researchers, prefer 2-4 parallel calls for separate roots/subsystems/questions. Each brief must include one narrow question, 1-2 candidate roots, 3-6 terms/symbols, VCS/ignore instructions, desired depth, and the ~45 second target.
 - Do not ask a repo researcher to understand the whole feature or synthesize the plan; the root agent owns synthesis.

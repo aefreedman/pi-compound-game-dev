@@ -10,6 +10,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 - Pass package-relative paths such as `references/cg-plan/research-agents.md`.
 - When an instruction says to load, use, or see a package reference path, call `cg_read_reference` for that path.
 - Do NOT use `read` with `references/...`; file tools resolve relative to the current project cwd, not this package.
+- Do not call `cg_read_reference` again for the same unchanged section during the current uncompacted workflow phase. Reuse loaded instructions; reload after compaction only when they are no longer retained, or when a later stage explicitly needs a different section or updated content.
 - Do NOT preemptively load all reference files.
 - Treat loaded references as mandatory instructions for the active task scope.
 - For long files, use `cg_read_reference` with `offset`/`limit` to load only needed sections.
@@ -17,7 +18,7 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 ## Orchestration and Authority
 
 - Only the root/orchestrator session may invoke subagents. Delegated workers must perform their bounded task directly or return a parent handoff; they must not launch this workflow or nested specialists.
-- Invoke package-owned `cg-pr-comment-resolver` workers with `agentScope: "both"` and project-agent confirmation enabled. Apply references/_shared/subagent-execution-profiles.md when a resolver slice warrants a non-inherited model or thinking level.
+- Invoke package-owned `cg-pr-comment-resolver` workers with `agentScope: "both"` and rely on the runtime's Pi-trust-aware, once-per-session fallback confirmation. Apply references/_shared/subagent-execution-profiles.md when a resolver slice warrants a non-inherited model or thinking level.
 - Resolver workers may make only explicitly authorized workspace edits. They may not commit/check in, push, mutate todo lifecycle/status, or change review threads; the root owns those operations.
 
 ## Workflow

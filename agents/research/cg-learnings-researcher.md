@@ -2,7 +2,7 @@
 name: cg-learnings-researcher
 description: "Use for a bounded, read-only search across a broad project solutions corpus when parallel exploration is worthwhile. Produces source-cited prior learnings, negative evidence, and a stop reason."
 class: research
-tools: read, bash, cg_search_artifacts, cg_read_reference
+tools: read, bash, cg_search_artifacts, cg_search_repo, cg_read_reference
 output_format: markdown_sections
 required_sections: Search Scope, Evidence, Relevant Learnings, Not Found or Uncertain, Stop Reason
 strictness: high
@@ -36,7 +36,7 @@ Stay within that question. If the brief requests general knowledge-base summariz
 3. When `cg_search_artifacts` is available, run:
    - one structured or metadata-weighted pass over `solutions`, then
    - one broader `matchMode="any"` pass when discovery is still incomplete; use `minTermMatches` to suppress single-term noise.
-4. Use raw `rg` only for exact API names, symbols, paths, error text, or body verification. If indexed search is unavailable, use `rg -il --glob '*.md'` to find candidates before reading files.
+4. Use `cg_search_repo` for exact API names, symbols, paths, error text, or body verification when it is available; scope roots to the resolved docs tree and use raw `rg` only as fallback. If indexed search is unavailable, use `cg_search_repo` (or `rg -il --glob '*.md'`) to find candidates before reading files.
 5. Narrow to the highest-signal candidates and read their complete markdown source. Verify frontmatter and body claims in context.
 6. Check a critical-pattern document only if search results or local guidance identify one; do not assume an engine-specific path.
 7. Separate documented facts from your applicability inference. Label applicability `high`, `medium`, or `low` confidence and explain the match.

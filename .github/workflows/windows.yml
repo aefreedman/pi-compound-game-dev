@@ -1,4 +1,4 @@
-name: macOS validation
+name: Windows validation
 
 on:
   push:
@@ -7,14 +7,14 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: windows-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: brew list ripgrep >/dev/null 2>&1 || brew install ripgrep
+      - run: choco install ripgrep -y --no-progress
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm test
       - run: npm pack --dry-run

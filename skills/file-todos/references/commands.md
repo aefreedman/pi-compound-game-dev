@@ -10,11 +10,11 @@ cg_search_artifacts scopes=["todos"] status="ready" priority="p1" query="depende
 cg_search_artifacts scopes=["todos"] status="pending" rankProfile="todos"
 ```
 
-Shell fallback:
+Shell fallback (Bash syntax; do not paste these commands as naked PowerShell cmdlets):
 
 ```bash
 # List highest priority unblocked work
-rg -l --glob '*.md' '^dependencies: \[\]' "${TODOS_ROOT}"/*-ready-p1-*.md
+rg -l --glob '*-ready-p1-*.md' '^dependencies: \[\]' "${TODOS_ROOT}"
 
 # List all pending items needing triage
 for todo in "${TODOS_ROOT}"/*-pending-*.md; do
@@ -60,4 +60,4 @@ done
 rg -i --glob '*.md' 'physics' "${TODOS_ROOT}"
 ```
 
-If `rg` is unavailable, use equivalent `grep -r --include='*.md'` commands.
+For these exploratory searches, `rg` exit status `1` means no matching todos and is a successful empty result; exit status `2` or diagnostic output is a real search failure. If `rg` is unavailable, use equivalent `grep -r --include='*.md'` commands.

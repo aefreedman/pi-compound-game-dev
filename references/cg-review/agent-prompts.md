@@ -2,7 +2,7 @@
 
 Use this reference to select only the review agents that match the change. Pass `$CHANGED_FILES`, `$PR_TITLE`, `$FOCUS_AREAS`, `$FILE_COUNT`, stack/project hints, and known evidence or constraints.
 
-When invoking package-owned `cg-*` agents, use `agentScope: "both"` so agents remain discoverable when Compound Game Dev is installed project-locally. Keep project-agent confirmation enabled unless the user has already established a trusted equivalent workflow. Apply references/_shared/subagent-execution-profiles.md per review slice: inherit by default, use low/medium for easily verified bounded checks, and reserve higher thinking for ambiguity or risk rather than agent title alone.
+When invoking package-owned `cg-*` agents, use `agentScope: "both"` so agents remain discoverable when Compound Game Dev is installed project-locally. Rely on the runtime's Pi-trust-aware policy: trusted projects run without another prompt, while untrusted interactive projects retain one fallback decision per session. Apply references/_shared/subagent-execution-profiles.md per review slice: inherit by default, use low/medium for easily verified bounded checks, and reserve higher thinking for ambiguity or risk rather than agent title alone.
 
 Before delegation, load applicable project guidance. If Unity is detected, load `references/_shared/unity-review-guidance.md` and pass only the checks relevant to each specialist. Do not ask every agent to rediscover the whole project.
 

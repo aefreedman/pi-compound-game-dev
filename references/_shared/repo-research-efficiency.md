@@ -14,8 +14,15 @@ The root/orchestrator agent should do a short fast pass before deciding whether 
    - Git: `.git/` exists and Plastic was not detected.
 3. Discover repo-local ignore files such as `ignore.conf`, `cloaked.conf`, `.gitignore`, or engine-specific ignore files.
 4. List top-level roots and likely source/content roots.
-5. Run one to three focused searches using terms from the feature request.
-6. Decide the research route using the rules below.
+5. Classify candidate artifacts by authority before proposing edits:
+   - authoritative/read-only source-of-truth inputs,
+   - implementation targets that the task may change,
+   - generated/derived artifacts that should be regenerated rather than hand-edited,
+   - evidence-only inputs used to understand or validate intent.
+6. Run one to three focused searches using terms from the feature request.
+7. Decide the research route using the rules below.
+
+Do not resolve a mismatch by changing an authoritative source-of-truth input unless the controlling task (the user's request or accepted plan) or applicable project guidance explicitly authorizes that input change. Preserve the authoritative input, identify the downstream implementation or generated artifact that disagrees, and report ambiguity when authority is unclear.
 
 The root agent remains responsible for the investigation. Subagent output is a parallel evidence source to verify and synthesize, not a substitute for the root agent reading the most relevant files.
 
@@ -51,9 +58,9 @@ Use root-agent tools directly when the next step is a linear investigation:
 
 Direct `rg`/read work is usually faster than spawning a subagent for small searches.
 
-### Use Deterministic Search/Excerpt Tools When Available
+### Use `cg_search_repo` for Deterministic Search/Excerpt Spikes
 
-If a package tool exists for repository search spikes, prefer it for mechanical candidate discovery. Such a tool is not better than `rg` at raw search; it is useful when it batches the repeated workflow around `rg`:
+When `cg_search_repo` is available, prefer it for mechanical candidate discovery over known roots/terms. It is not smarter than `rg`; it packages the repeated workflow around `rg`:
 
 - Applies VCS-aware ignore handling.
 - Runs several terms across scoped roots in one call.
@@ -61,7 +68,7 @@ If a package tool exists for repository search spikes, prefer it for mechanical 
 - Returns short line excerpts and line references.
 - Reports negative evidence and capped output.
 
-Use this kind of tool when roots/terms are already known and the host needs a structured evidence packet without LLM interpretation.
+Use `cg_search_repo` when roots/terms are already known and the host needs a structured evidence packet without LLM interpretation. It runs each query/root cell independently, so only `no_matches` cells count as scoped negative evidence. `partial_limit`, `root_excluded_by_policy`, `not_run_global_limit`, timeout, and error cells are incomplete and must not be summarized as absence. Use raw `rg` when `cg_search_repo` is unavailable or the required search shape is unsupported.
 
 ### Delegate Only for Parallel Research Burden
 
@@ -72,7 +79,7 @@ Use `cg-repo-researcher` only when the root fast pass shows enough independent r
 - Serial research would likely take 10+ search/read operations or several minutes of attention.
 - Each slice can be bounded to about 45 seconds or less.
 
-When delegating repository research, split broad questions into parallel slices. Invoke package-owned `cg-*` agents with `agentScope: "both"` so project-local installations remain discoverable, while retaining project-agent confirmation. Each `cg-repo-researcher` brief should provide:
+When delegating repository research, split broad questions into parallel slices. Invoke package-owned `cg-*` agents with `agentScope: "both"` so project-local installations remain discoverable, while relying on the runtime's Pi-trust-aware, once-per-session fallback confirmation. Each `cg-repo-researcher` brief should provide:
 
 - One narrow research question.
 - Feature summary only as background, not as the research scope.
@@ -101,10 +108,12 @@ Use the strongest available project/package tools for the source being searched:
 
 - Use `cg_search_artifacts` for project-local Markdown artifacts under `docs/` and `todos/` when it is available; it is faster and more structured than ad hoc Markdown scans.
 - Use raw `rg` for source code, assets/content files, exact symbols, exact errors, filenames, and body-text verification.
-- Use deterministic repo search/excerpt tools when available for batched `rg` + snippets + candidate ranking; keep final synthesis in the root agent.
+- Use `cg_search_repo` for bounded code/asset/filesystem searches with known roots and terms; keep final synthesis in the root agent.
 - Use VCS-specific tools for VCS facts: Plastic tools/`cm` in Plastic workspaces, Git tools/`git` in Git repositories.
 - Use `cg_read_reference` for Compound Game Dev package references rather than reading package files through project-relative paths.
 - Use companion engine/package documentation tools when present and relevant, but do not make them hard dependencies.
+
+For exploratory `rg` searches, exit status `1` means no matches and is negative evidence, not a command failure. Exit status `2` or explicit diagnostic output indicates a real search error. Keep the searched roots/terms in the handoff when negative evidence matters.
 
 ## Search Strategy
 

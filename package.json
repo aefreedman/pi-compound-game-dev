@@ -11,12 +11,13 @@
     "compound-game-dev"
   ],
   "scripts": {
-    "test": "npx --yes tsx tests/package-validation.test.ts && npx --yes tsx tests/shell-packaging.test.ts && npx --yes tsx tests/file-todos-portable-shell.test.ts",
+    "test": "npx --yes tsx tests/package-validation.test.ts && npx --yes tsx tests/repo-search.test.ts && npx --yes tsx tests/shell-packaging.test.ts && npx --yes tsx tests/file-todos-portable-shell.test.ts",
     "migrate:unity-docs-schema": "npx --yes tsx scripts/migrate-unity-docs-schema.ts"
   },
   "pi": {
     "extensions": [
-      "./extensions"
+      "./extensions/*.ts",
+      "!./extensions/repo-search-core.ts"
     ],
     "skills": [
       "./skills"

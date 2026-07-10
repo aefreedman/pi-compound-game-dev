@@ -72,7 +72,7 @@ Use the index and raw markdown search together instead of treating either one as
 
 1. **Index, structured pass** - use `cg_search_artifacts` with `scopes`, status/priority, schema v2 `docType`/`category`/`failureMode`, legacy `problemType`, tags, module, or severity filters to get high-signal candidates. For a metadata-first pass, set `includeBody: false` to reduce body-text noise.
 2. **Index, broad recall pass** - for exploratory feature descriptions, use `matchMode: "any"` with a focused synonym list. This catches gotchas that do not contain every term in the user request.
-3. **Raw docs verification** - use `rg` on final keywords, API names, code symbols, paths, and exact error text to catch body-only mentions and verify that the index did not miss important wording.
+3. **Raw docs verification** - use `cg_search_repo` on the resolved docs/todos roots for final keywords, API names, code symbols, paths, and exact error text. It applies bounded output and explicit negative-evidence semantics; use raw `rg` only when `cg_search_repo` is unavailable or the search shape is unsupported.
 4. **Read markdown source** - read the final candidate `.md` files directly before planning or citing evidence. The index is a discovery aid, not a substitute for source docs.
 
 Good default patterns:
@@ -88,7 +88,7 @@ cg_search_artifacts requiredTerms=["objective"] optionalTerms=["binding","locati
 cg_search_artifacts query="mission teardown lifecycle" scopes=["todos"] status="pending" priority="p1" rankProfile="todos" includeCompletedTodos=false explain=true
 
 # Raw verification after indexed discovery
-rg -i --glob '*.md' 'UnityEditor|player build|editor-only' "${DOCS_ROOT}" "${TODOS_ROOT}"
+cg_search_repo workspaceRoot="${WORKSPACE_ROOT}" roots=["${DOCS_ROOT}","${TODOS_ROOT}"] queries=[{"id":"editor-only","pattern":"UnityEditor|player build|editor-only","literal":false}] globs=["*.md"]
 ```
 
 Avoid using one broad `matchMode: "all"` query as the only research step for a natural-language feature. It is intentionally precise and may miss useful docs that contain only some of the terms. Conversely, very broad `matchMode: "any"` queries can surface single-term noise; add `requiredTerms` and/or `minTermMatches` when the query has many common terms.
