@@ -37,11 +37,14 @@ For tests over designer-authored data, distinguish stable contracts from mutable
 
 ## Unity Process Safety
 
-Unity allows only one process per project folder. For a single Unity project, run batchmode compile checks and Unity Test Framework test runs serially. Do not issue multiple `unity_launch_batchmode` calls for the same project in the same parallel tool turn.
+Unity allows only one process per project folder. Resolve the exact project copy before validation and call `unity_project_status` when `pi-unity` is available.
 
-Before the first Unity batchmode compile or Unity Test Framework run in a session, load the `unity-batchmode-tests` skill when the `pi-unity` package is available. It contains the current packaged-tool workflow, lockfile guidance, and test-result/log-file conventions.
+- If that exact copy is already open with a reachable Pipeline instance advertising the required command, prefer connected compilation/tests so the active Editor does not need to close.
+- If the Editor is closed, connected execution is unavailable, isolated CI evidence is intended, or NUnit XML/log artifacts are required, use `unity_run_test_batch`, `unity_launch_batchmode`, or the standalone `unity test`/`unity run` route.
+- Do not issue multiple Unity mutation/test calls for one project in the same parallel tool turn.
+- Never silently launch batchmode after an uncertain connected dispatch that may still be running.
 
-For Unity Test Framework runs, do not pass `-quit` with `-runTests`; the test runner controls process exit. Use absolute `-testResults` and `-logFile` paths when practical.
+Load the applicable `pi-unity` workflow skill before the first Unity compile/test run. For raw Editor Test Framework fallbacks, do not pass `-quit` with `-runTests`; use absolute `-testResults` and `-logFile` paths.
 
 ## Windows Command Safety
 
@@ -61,25 +64,23 @@ When using shell/Python helpers on Windows projects, keep commands portable and 
 
 Run every check that applies to the detected project, changed scope, and documented project workflow. Record `not applicable` or `blocked` with evidence when a configured check does not exist or cannot run safely; never claim an unrun check passed.
 
-### 0. Unity Batchmode Compile Validation (Unity Projects, Mandatory)
+### 0. Unity Compile Validation (Unity Projects, Mandatory)
 
-Run this validation for Unity projects even if no EditMode/PlayMode tests exist.
+Run compile validation for Unity projects even if no EditMode/PlayMode tests exist. Choose one safe route for the exact project copy:
 
-```bash
-# Validate project compiles in Unity batchmode
-unity -batchmode -projectPath . \
-  -quit \
-  -logFile -
-```
+1. **Connected Editor:** when Pipeline is reachable and advertises `recompile`, invoke it and poll `recompile_status` through any domain reload until `completed` or `up_to_date`.
+2. **Packaged isolated fallback:** when the Editor is closed, use `unity_launch_batchmode` with the project path and compile/log arguments required by project guidance.
+3. **Portable fallback:** use `unity run "<ProjectPath>" -- -quit -logFile "<absolute-log-path>"`; use a resolved direct Editor executable only when Unity CLI is unavailable or incompatible.
 
 **Verify:**
-- Unity batchmode exits successfully
-- No compile errors in output
-- Compilation validation completed even when test suites are absent
+- The exact project copy was targeted.
+- Connected compilation reached a terminal success state with no compiler errors, or the isolated process exited successfully with bounded log evidence.
+- Unknown, disconnected, malformed, or incomplete status is not reported as passing.
+- Compilation validation completed even when test suites are absent.
 
 **If compile validation fails:**
-- Fix compile errors before running any additional quality checks
-- Do not ship until batchmode compile validation passes
+- Fix compile errors before running additional quality checks.
+- Do not ship until compile validation passes through a project-approved route.
 
 ### 1. Run Applicable Test Suites
 
@@ -155,45 +156,29 @@ When delegating:
 
 ## Unity Test Framework (Unity Projects)
 
-For Unity projects, run Unity Test Framework tests:
+Complete mandatory compile validation from Core Quality Checks step 0, then run the project-required tests through one explicit route.
 
-Before running tests, complete mandatory batchmode compile validation from Core Quality Checks step 0.
+### Connected Pipeline tests
 
-### EditMode Tests
-
-```bash
-# Via Unity CLI (batch mode)
-unity -runTests -batchmode -projectPath . \
-  -testPlatform EditMode \
-  -testResults EditModeResults.xml \
-  -logFile -
-
-# Check results
-if [ -f EditModeResults.xml ]; then
-  echo "✅ EditMode tests complete"
-  # Parse results for failures
-else
-  echo "⚠️ EditMode tests failed to run"
-fi
-```
-
-### PlayMode Tests
+Use only when the exact running project copy is reachable and advertises `run_tests`/`test_status`:
 
 ```bash
-# Via Unity CLI (batch mode)
-unity -runTests -batchmode -projectPath . \
-  -testPlatform PlayMode \
-  -testResults PlayModeResults.xml \
-  -logFile -
-
-# Check results
-if [ -f PlayModeResults.xml ]; then
-  echo "✅ PlayMode tests complete"
-  # Parse results for failures
-else
-  echo "⚠️ PlayMode tests failed to run"
-fi
+unity command --project-path "<ProjectPath>" run_tests --mode editor --filter "<test-filter>" --async_tests true
+unity command --project-path "<ProjectPath>" test_status
 ```
+
+PlayMode Pipeline tests must use `--mode playmode --async_tests true`, followed by `test_status`, because domain reload can drop a synchronous request. Parse stringified nested JSON when returned, and fail on zero tests, failures, malformed data, or nonterminal status.
+
+### Isolated/report-producing tests
+
+Prefer `unity_run_test_batch` when available. Use the standalone CLI when portable NUnit XML evidence is needed:
+
+```bash
+unity test "<ProjectPath>" --mode EditMode --filter "<test-filter>" --output "<absolute-results-path>" -- -logFile "<absolute-log-path>"
+unity test "<ProjectPath>" --mode PlayMode --filter "<test-filter>" --output "<absolute-results-path>" -- -logFile "<absolute-log-path>"
+```
+
+Keep raw direct-Editor `-batchmode -runTests` commands only as explicit fallbacks. They require absolute result/log paths and must not include `-quit`. Do not pass `-nographics` to graphics-required PlayMode or screenshot tests.
 
 ### Manual Testing in Unity Editor
 
@@ -213,7 +198,7 @@ Before creating PR/code review, verify:
 
 - [ ] All clarifying questions asked and answered
 - [ ] All action items are complete and tracking checkboxes are up to date
-- [ ] Unity batchmode compile validation passed (Unity projects; required even if no tests exist)
+- [ ] Unity compile validation passed through a safe exact-copy connected or isolated route (required even if no tests exist)
 - [ ] Applicable project-defined tests pass, or `not applicable`/blocked evidence is recorded
 - [ ] Applicable lint/static checks pass, or `not applicable`/blocked evidence is recorded (`cg-lint-specialist` defaults to check-only)
 - [ ] Code follows existing patterns
@@ -283,7 +268,7 @@ fi
 **Load this file when:** Running quality checks before shipping (Phase 3 of work execution).
 
 **Execution order:**
-1. Unity batchmode compile validation (Unity projects, mandatory when safe to launch)
+1. Unity exact-copy compile validation (connected Pipeline when available, otherwise an isolated project-approved route)
 2. Run applicable project-defined tests
 3. Run applicable lint/static checks
 4. Perform applicable manual verification

@@ -88,8 +88,9 @@ assert(changelogText.includes("0.2.0") && changelogText.includes("cg_search_arti
 assert(artifactSearchDocText.includes(".compound-game-dev/") && artifactSearchDocText.includes("Do not ignore `docs/` or `todos/`"), "Expected artifact search docs to recommend ignoring only the generated cache directory.");
 assert(artifactSearchDocText.includes("Concurrent Search Safety") && artifactSearchDocText.includes("<artifact-index-name>.lock"), "Expected artifact search docs to describe lock behavior.");
 assert(artifactSearchDocText.includes("Hybrid Search Workflow") && artifactSearchDocText.includes('matchMode: "any"') && artifactSearchDocText.includes("Raw docs verification"), "Expected artifact search docs to describe hybrid indexed/raw search workflow.");
-assert(qualityChecklistText.includes("Do not issue multiple `unity_launch_batchmode` calls"), "Expected Unity validation guidance to forbid parallel batchmode runs for one project.");
-assert(qualityChecklistText.includes("load the `unity-batchmode-tests` skill"), "Expected Unity validation guidance to load the Unity batchmode skill before first run.");
+assert(qualityChecklistText.includes("Do not issue multiple Unity mutation/test calls") && qualityChecklistText.includes("exact project copy"), "Expected Unity validation guidance to forbid parallel mutation/test runs and require exact-copy routing.");
+assert(qualityChecklistText.includes("Load the applicable `pi-unity` workflow skill"), "Expected Unity validation guidance to load the applicable packaged Unity workflow skill before first run.");
+assert(qualityChecklistText.includes("recompile_status") && qualityChecklistText.includes("unity_run_test_batch") && qualityChecklistText.includes("unity test"), "Expected connected and isolated Unity compile/test routing guidance.");
 assert(qualityChecklistText.includes("full replacement") && qualityChecklistText.includes("backward-compatible support"), "Expected scope discipline guidance for replacement vs compatibility.");
 assert(qualityChecklistText.includes("UXML") && qualityChecklistText.includes("USS") && qualityChecklistText.includes("C#"), "Expected Unity UI Toolkit structure/style guidance.");
 assert(qualityChecklistText.includes("edit/design time") && qualityChecklistText.includes("magic-number"), "Expected authored-content validation and mutable designer-data test guidance.");

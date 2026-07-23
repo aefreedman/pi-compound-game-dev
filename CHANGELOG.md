@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Updated Unity work-quality guidance to prefer exact-copy connected Pipeline compile/test workflows when reachable, retain isolated/report-producing routes when appropriate, and remove ambiguous bare `unity -batchmode` examples.
+
 ## 0.6.1 - 2026-07-10
 
 ### Changed
