@@ -1,7 +1,7 @@
 {
   "name": "@aefree/pi-compound-game-dev",
   "private": true,
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Compound Game Dev workflows for Pi.",
   "license": "MIT",
   "type": "module",
@@ -37,5 +37,16 @@
   "bugs": {
     "url": "https://github.com/aefreedman/pi-compound-game-dev/issues"
   },
-  "homepage": "https://github.com/aefreedman/pi-compound-game-dev#readme"
+  "homepage": "https://github.com/aefreedman/pi-compound-game-dev#readme",
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "@earendil-works/pi-tui": {
+      "optional": true
+    },
+    "typebox": {
+      "optional": true
+    }
+  }
 }
