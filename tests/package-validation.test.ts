@@ -239,7 +239,7 @@ for (const oldPrompt of [
   assert(!topLevelPrompts.includes(oldPrompt), `Did not expect old prompt ${oldPrompt}`);
 }
 
-for (const skill of ["file-todos", "git-worktree", "unity-docs"]) {
+for (const skill of ["file-todos", "unity-docs"]) {
   assert(existsSync(new URL(`../skills/${skill}/SKILL.md`, import.meta.url)), `Expected retained skill ${skill}`);
 }
 
@@ -248,6 +248,7 @@ for (const removedSkill of [
   "capturing-screenshots-unity",
   "compound-docs",
   "executing-work",
+  "git-worktree",
   "planning-features",
   "resolve-todo-parallel",
   "reviewing-code",
