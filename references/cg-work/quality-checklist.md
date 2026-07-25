@@ -60,6 +60,15 @@ When using shell/Python helpers on Windows projects, keep commands portable and 
 - Before relying on non-stdlib imports, run a tiny import check with the chosen Python executable so missing packages fail early and clearly.
 - If Python must print non-ASCII text, set UTF-8 output explicitly or write UTF-8 files instead of relying on the console code page.
 
+## Evidence-to-Claim Scope
+
+Before reporting completion, state the proof target, the evidence actually observed, and any remaining validation gap. Keep each claim within that evidence:
+
+- Describe a validated subcomponent definitively only to the extent the observed check supports it.
+- Do not broaden a lower-level test, compile check, or inferred mechanism into "fixed," "resolved," or "root cause" for an unexercised player-facing path.
+- When the reported player path was not exercised, say that its outcome remains unverified and identify the proportionate follow-up evidence still needed.
+- Do not require a full playthrough when a narrower check is sufficient, but never claim an unrun check passed.
+
 ## Core Quality Checks
 
 Run every check that applies to the detected project, changed scope, and documented project workflow. Record `not applicable` or `blocked` with evidence when a configured check does not exist or cannot run safely; never claim an unrun check passed.
@@ -158,6 +167,10 @@ When delegating:
 
 Complete mandatory compile validation from Core Quality Checks step 0, then run the project-required tests through one explicit route.
 
+### Route-independent passing-evidence contract
+
+A completed Unity test run is passing evidence only when its terminal result is well formed, reports a known positive executed-test count, reports no failures, and reports successful completion. This contract is the same for connected Pipeline and isolated/report-producing routes. A terminal zero or unknown executed-test count is non-passing even when no failures are reported.
+
 ### Connected Pipeline tests
 
 Use only when the exact running project copy is reachable and advertises `run_tests`/`test_status`:
@@ -167,7 +180,7 @@ unity command --project-path "<ProjectPath>" run_tests --mode editor --filter "<
 unity command --project-path "<ProjectPath>" test_status
 ```
 
-PlayMode Pipeline tests must use `--mode playmode --async_tests true`, followed by `test_status`, because domain reload can drop a synchronous request. Parse stringified nested JSON when returned, and fail on zero tests, failures, malformed data, or nonterminal status.
+PlayMode Pipeline tests must use `--mode playmode --async_tests true`, followed by bounded `test_status` polling, because domain reload can drop a synchronous request. An initiating response with `Total: 0` and `result: running` is nonterminal: it is neither passing evidence nor a terminal zero-test failure, so continue polling. Require the terminal result to satisfy the route-independent contract. Parse stringified nested JSON when returned, and treat terminal zero/unknown counts, failures, nested `success:false`, malformed or incomplete payloads, project identity changes, and polling timeout as non-passing. Never silently switch to batchmode after an uncertain connected dispatch that may still be running. Do not claim connected success produced NUnit XML unless a separate report-producing step actually created it.
 
 ### Isolated/report-producing tests
 
@@ -178,7 +191,7 @@ unity test "<ProjectPath>" --mode EditMode --filter "<test-filter>" --output "<a
 unity test "<ProjectPath>" --mode PlayMode --filter "<test-filter>" --output "<absolute-results-path>" -- -logFile "<absolute-log-path>"
 ```
 
-Keep raw direct-Editor `-batchmode -runTests` commands only as explicit fallbacks. They require absolute result/log paths and must not include `-quit`. Do not pass `-nographics` to graphics-required PlayMode or screenshot tests.
+Keep raw direct-Editor `-batchmode -runTests` commands only as explicit fallbacks. They require absolute result/log paths and must not include `-quit`. Do not pass `-nographics` to graphics-required PlayMode or screenshot tests. Treat process status or parseable NUnit XML as passing only when the terminal result satisfies the same known-positive-count, zero-failures, successful-completion contract; zero or omitted/unknown totals are non-passing.
 
 ### Manual Testing in Unity Editor
 

@@ -29,4 +29,10 @@ A failed test command is evidence, not automatically a P1 defect. Distinguish:
 - compile/import failure
 - blocked launch or unavailable project copy
 
-Assign severity from demonstrated impact and confidence. Create a review finding/todo only when evidence supports a concrete actionable issue; otherwise record the validation limitation or blocker in the summary. Preserve test result and concise log evidence.
+Assign severity from demonstrated impact and confidence. For missing Unity acceptance proof:
+
+- use P1 only when required proof for a critical path is absent and the gap blocks safe merge or release;
+- use P2 when required confidence is absent for material behavior without being an immediate critical release blocker;
+- use P3 only for supplementary or bounded evidence that does not materially undermine acceptance or release confidence.
+
+Missing proof is not automatically P1, but do not downgrade a material or critical evidence gap to P3 merely because the implementation exists or compilation passed. Create a review finding/todo only when evidence supports a concrete actionable issue; otherwise record the validation limitation or blocker in the summary. Preserve test result and concise log evidence, distinguish direct observations from inference, and keep any "fixed," "resolved," or "root cause" claim within the exercised Unity scenario.

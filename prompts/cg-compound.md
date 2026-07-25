@@ -24,18 +24,21 @@ CRITICAL: Use `cg_read_reference` for Compound Game Dev package reference files.
 Load references/_shared/artifact-root-resolution.md and
 references/_shared/artifact-path-contract.md.
 
-### Step 1: Detect Solved Problems
+### Step 1: Detect and Verify Solved-Problem Candidates
 
-- Scan conversation for confirmation phrases.
-- Extract context windows and problem indicators.
-- Create a short description per solution.
+- Scan conversation for confirmation phrases as discovery signals, not proof by themselves.
+- Extract context windows, problem indicators, and the confirmation provenance for each candidate.
+- Require at least one recorded provenance source tied directly to the reported outcome: explicit user confirmation, direct validation of the reported scenario, a reproduced failure followed by a passing equivalent check, or another direct recorded evidence source.
+- Keep the resolution and root-cause claim within what that evidence supports. If provenance is absent or a generic phrase such as "done" is not tied to the original symptom, skip solution-document creation rather than presenting an investigation as solved.
+- Create a short description per verified solution candidate.
 
 See references/cg-compound/detection-phrases.md.
 
 ### Step 2: Document Each Solution (Sequential)
 
-- Invoke `unity-docs` one solution at a time.
-- Provide a focus hint (problem, timestamp, confirmation phrase).
+- Invoke `unity-docs` one verified solution at a time.
+- Provide a focus hint (problem, timestamp, candidate phrase, confirmation provenance, observed evidence, and remaining validation gaps).
+- Require the generated solution document to record that validation/confirmation evidence.
 - Wait for completion before moving on.
 
 ### Step 3: Summary Report

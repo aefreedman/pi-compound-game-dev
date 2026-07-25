@@ -22,6 +22,14 @@ Drop findings that target protected artifacts (`references/_shared/protected-art
 - P2: likely material correctness, operability, or maintainability problem requiring action
 - P3: bounded concrete improvement; never generic cleanup
 
+Classify missing evidence by its demonstrated impact on acceptance and release confidence, not merely by the existence of implementation code or an unrun check:
+
+- **P1:** required proof is missing for a critical path and that gap blocks safe merge or release.
+- **P2:** required acceptance confidence is absent for material behavior, but the gap is not an immediate critical release blocker.
+- **P3:** supplementary or bounded evidence would improve confidence without materially undermining acceptance or release safety.
+
+Missing proof is not automatically P1. Conversely, do not downgrade a material or critical required-proof gap to P3 just because implementation exists. If evidence is too weak to support a concrete impact classification, record the validation limitation instead of inventing severity.
+
 ## Todo Creation
 
 Create todo files under `${TODOS_ROOT}` using the `file-todos` skill for accepted actionable findings. Do not create todos for:

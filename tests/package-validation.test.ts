@@ -23,6 +23,12 @@ const repoResearchEfficiencyText = readFileSync(new URL("../references/_shared/r
 const reviewAgentPromptsText = readFileSync(new URL("../references/cg-review/agent-prompts.md", import.meta.url), "utf8");
 const reviewConditionalAgentsText = readFileSync(new URL("../references/cg-review/conditional-agents.md", import.meta.url), "utf8");
 const reviewUnityTestingText = readFileSync(new URL("../references/cg-review/unity-testing.md", import.meta.url), "utf8");
+const reviewSynthesisText = readFileSync(new URL("../references/cg-review/synthesis-and-todos.md", import.meta.url), "utf8");
+const compoundPromptText = readFileSync(new URL("../prompts/cg-compound.md", import.meta.url), "utf8");
+const compoundDetectionText = readFileSync(new URL("../references/cg-compound/detection-phrases.md", import.meta.url), "utf8");
+const compoundExamplesText = readFileSync(new URL("../references/cg-compound/examples.md", import.meta.url), "utf8");
+const unityDocsSkillText = readFileSync(new URL("../skills/unity-docs/SKILL.md", import.meta.url), "utf8");
+const resolutionTemplateText = readFileSync(new URL("../skills/unity-docs/assets/resolution-template.md", import.meta.url), "utf8");
 const resolveTodoImplementationText = readFileSync(new URL("../references/cg-resolve-todo-parallel/implementation.md", import.meta.url), "utf8");
 const planResearchAgentsText = readFileSync(new URL("../references/cg-plan/research-agents.md", import.meta.url), "utf8");
 const planSpecflowText = readFileSync(new URL("../references/cg-plan/specflow.md", import.meta.url), "utf8");
@@ -36,7 +42,11 @@ const changelogErrorHandlingText = readFileSync(new URL("../references/cg-change
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
 assert.match(pkg.version ?? "", /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/, "Expected a valid SemVer package version.");
-assert(changelogText.includes(`## ${pkg.version} -`), "Expected the current package version in CHANGELOG.md.");
+const latestReleasedVersion = changelogText.match(/^## (\d+\.\d+\.\d+) -/m)?.[1];
+assert(latestReleasedVersion, "Expected at least one released version in CHANGELOG.md.");
+const versionNumber = (version: string) => version.split(".").slice(0, 3).reduce((value, part) => value * 1_000 + Number.parseInt(part, 10), 0);
+assert(versionNumber(pkg.version ?? "0.0.0") >= versionNumber(latestReleasedVersion), "Package version must not be older than the latest CHANGELOG.md release; an authorized unreleased bump may be newer.");
+assert(/^## Unreleased$/m.test(changelogText), "Expected unreleased work to remain under the Unreleased changelog section.");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(!pkg.pi?.extensions?.some((entry: string) => entry.includes("repo-search/core")), "Repository-search helper modules must not be registered as extension factories.");
 const topLevelExtensionFiles = readdirSync(new URL("../extensions", import.meta.url), { withFileTypes: true })
@@ -92,6 +102,10 @@ assert(artifactSearchDocText.includes("Hybrid Search Workflow") && artifactSearc
 assert(qualityChecklistText.includes("Do not issue multiple Unity mutation/test calls") && qualityChecklistText.includes("exact project copy"), "Expected Unity validation guidance to forbid parallel mutation/test runs and require exact-copy routing.");
 assert(qualityChecklistText.includes("Load the applicable `pi-unity` workflow skill"), "Expected Unity validation guidance to load the applicable packaged Unity workflow skill before first run.");
 assert(qualityChecklistText.includes("recompile_status") && qualityChecklistText.includes("unity_run_test_batch") && qualityChecklistText.includes("unity test"), "Expected connected and isolated Unity compile/test routing guidance.");
+assert(qualityChecklistText.includes("Evidence-to-Claim Scope") && qualityChecklistText.includes("proof target") && qualityChecklistText.includes("reported player path") && qualityChecklistText.includes("remains unverified"), "Expected completion claims to remain within observed evidence and expose player-path gaps.");
+assert(qualityChecklistText.includes("Route-independent passing-evidence contract") && qualityChecklistText.includes("known positive executed-test count") && qualityChecklistText.includes("terminal zero or unknown"), "Expected connected and isolated Unity routes to share a known-positive terminal count contract.");
+assert(qualityChecklistText.includes("`Total: 0` and `result: running`") && qualityChecklistText.includes("neither passing evidence nor a terminal zero-test failure") && qualityChecklistText.includes("bounded `test_status` polling"), "Expected nonterminal connected Total: 0 to remain distinct from terminal zero-test evidence.");
+assert(qualityChecklistText.includes("nested `success:false`") && qualityChecklistText.includes("project identity changes") && qualityChecklistText.includes("Do not claim connected success produced NUnit XML"), "Expected connected Pipeline terminal parsing, identity, and artifact limits.");
 assert(qualityChecklistText.includes("full replacement") && qualityChecklistText.includes("backward-compatible support"), "Expected scope discipline guidance for replacement vs compatibility.");
 assert(qualityChecklistText.includes("UXML") && qualityChecklistText.includes("USS") && qualityChecklistText.includes("C#"), "Expected Unity UI Toolkit structure/style guidance.");
 assert(qualityChecklistText.includes("edit/design time") && qualityChecklistText.includes("magic-number"), "Expected authored-content validation and mutable designer-data test guidance.");
@@ -107,6 +121,18 @@ assert(qualityChecklistText.includes("check-only") && qualityChecklistText.inclu
 assert(reviewAgentPromptsText.includes("explicitly request") && reviewAgentPromptsText.includes('agentScope: "both"'), "Expected concern-driven review routing and project-local agent discovery.");
 assert(reviewConditionalAgentsText.includes("Both, dependent") && reviewConditionalAgentsText.includes("run migration first"), "Expected dependency-aware migration/deployment routing.");
 assert(reviewUnityTestingText.includes("not automatically a P1") && !reviewUnityTestingText.includes("create P1 todos for any failing tests"), "Expected evidence-based Unity test failure classification.");
+for (const reviewEvidenceText of [reviewSynthesisText, reviewUnityTestingText]) {
+  assert(reviewEvidenceText.includes("required proof") || reviewEvidenceText.includes("required confidence"), "Expected review guidance to identify required acceptance evidence.");
+  assert(reviewEvidenceText.includes("Missing proof is not automatically P1") && reviewEvidenceText.includes("downgrade") && reviewEvidenceText.includes("P3"), "Expected impact-based missing-proof severity without material-gap downgrades.");
+}
+for (const solutionDetectionText of [compoundPromptText, compoundDetectionText, unityDocsSkillText]) {
+  assert(solutionDetectionText.includes("provenance") && solutionDetectionText.includes("direct") && (solutionDetectionText.includes("skip") || solutionDetectionText.includes("do not create")), "Expected solved-problem candidates to require direct confirmation provenance.");
+}
+assert(compoundPromptText.includes("discovery signals, not proof") && compoundPromptText.includes("remaining validation gaps"), "Expected cg-compound to treat phrases as candidates and pass evidence limits onward.");
+assert(compoundDetectionText.includes('"done" or "completed') && compoundDetectionText.includes("does not establish a solved problem"), "Expected generic completion phrases to be insufficient proof.");
+assert(compoundExamplesText.includes("Confirmation provenance") && compoundExamplesText.includes("Observed evidence") && compoundExamplesText.includes("Skipped candidate") && compoundExamplesText.includes("no confirmation provenance"), "Expected compound examples to document only verified candidates and skip generic completion without provenance.");
+assert(unityDocsSkillText.includes("Establish Confirmation Provenance (Blocking)") && unityDocsSkillText.includes("do not create a `doc_type: solution`") && unityDocsSkillText.includes("Validation / Confirmation Evidence"), "Expected unity-docs to block solution creation without provenance and record it when present.");
+assert(resolutionTemplateText.includes("## Validation / Confirmation Evidence") && resolutionTemplateText.includes("Proof target") && resolutionTemplateText.includes("Confirmation provenance") && resolutionTemplateText.includes("Observed evidence") && resolutionTemplateText.includes("Scope and remaining gaps"), "Expected generated solution docs to preserve validation provenance and evidence scope.");
 assert(resolveTodoImplementationText.includes("cg-pr-comment-resolver") && resolveTodoImplementationText.includes('agentScope: "both"') && resolveTodoImplementationText.includes("Partial") && resolveTodoImplementationText.includes("Not Applied"), "Expected resolver routing to consume the current status and authority contract.");
 assert(planResearchAgentsText.includes("Not Found or Uncertain") && planResearchAgentsText.includes("budget-reached") && !planResearchAgentsText.includes("time-budget"), "Expected planning research briefs to match current stop/output contracts.");
 assert(planSpecflowText.includes('agentScope: "both"') && planSpecflowText.includes("Provisional Assumptions"), "Expected SpecFlow delegation to use current discovery and output contracts.");

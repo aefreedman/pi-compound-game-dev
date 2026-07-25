@@ -27,9 +27,16 @@ Load with `cg_read_reference`:
 - `references/_shared/artifact-root-resolution.md`
 - `references/_shared/artifact-path-contract.md`
 
-### Step 1: Detect Confirmation
+### Step 1: Establish Confirmation Provenance (Blocking)
 
-Only proceed for non-trivial solutions. If in doubt, ask for clarification.
+Treat confirmation phrases as candidate-discovery signals, not proof by themselves. Only proceed for a non-trivial solution when at least one provenance source directly supports resolution of the reported outcome:
+
+- explicit user confirmation tied to that outcome;
+- direct validation of the reported scenario;
+- a reproduced failure followed by a passing equivalent check; or
+- another recorded evidence source that directly supports the resolution claim.
+
+Record the provenance source and observed evidence for the document. Generic language such as "done" or "completed," implementation completion, or an unrelated passing check is insufficient. If provenance is absent, do not create a `doc_type: solution`; ask for clarification when useful, otherwise report that the candidate was skipped.
 
 ### Step 2: Gather Context
 
@@ -38,11 +45,12 @@ Required:
 - Module/subsystem
 - Exact symptoms or error message
 - Investigation attempts
-- Root cause
+- Root cause to the extent supported by evidence; distinguish a demonstrated cause from inference
 - Solution and prevention
 - Environment details (Unity version, platform, render pipeline)
+- Confirmation provenance, observed validation evidence, proof target, and remaining validation gaps
 
-If critical context is missing, ask and wait.
+Keep "fixed," "resolved," and root-cause language within the exercised scenario. If critical context is missing, ask and wait.
 
 ### Step 3: Check Existing Docs (Optional)
 
@@ -75,6 +83,8 @@ Do not use legacy `problem_type` in new docs. Do not proceed if validation fails
 Use `skills/unity-docs/assets/resolution-template.md` via `cg_read_reference` and write to the physical path:
 
 - `${DOCS_ROOT}/solutions/<category-folder>/<filename>.md`
+
+Complete the template's Validation / Confirmation Evidence section with the proof target, provenance source, observed result, and remaining gaps. Do not leave placeholders or imply that unrun player-facing or acceptance paths passed.
 
 ### Step 7: Critical Pattern Recommendation
 

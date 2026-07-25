@@ -2,9 +2,16 @@
 
 ## Unreleased
 
+### Changed
+
+- Scoped completion and root-cause claims to observed evidence, with explicit remaining player-path validation gaps.
+- Unified connected Pipeline and isolated/report-producing Unity guidance around well-formed terminal success with a known positive executed-test count, while preserving nonterminal connected `Total: 0` polling.
+- Required direct confirmation provenance before creating solved-problem documentation and added validation/confirmation evidence to the solution template.
+- Classified missing acceptance proof by release and behavior impact so material gaps are not treated as supplementary confidence.
+
 ### Fixed
 
-- Prevented package validation from going stale after releases by validating SemVer and the matching changelog section instead of a hard-coded version.
+- Prevented package validation from going stale after releases by validating SemVer against the latest released changelog version while allowing an authorized newer unreleased package version.
 
 ## 0.6.3 - 2026-07-24
 
