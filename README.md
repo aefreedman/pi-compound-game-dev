@@ -69,7 +69,6 @@ No compatibility aliases are provided for old workflow command names or earlier 
 ## Included skills
 
 - `file-todos`
-- `git-worktree`
 - `unity-docs`
 
 ## Companion packages

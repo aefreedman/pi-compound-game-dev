@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Removed
+
+- Retired the packaged `git-worktree` skill and manager script; agents now use ordinary Git worktree commands when needed.
+
 ### Changed
 
 - Scoped completion and root-cause claims to observed evidence, with explicit remaining player-path validation gaps.

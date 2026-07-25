@@ -86,17 +86,9 @@ git checkout -b task/short-description
 - Use meaningful name based on the work
 - Examples: `feat/user-authentication`, `fix/email-validation`, `refactor/api-client`
 
-#### Option B: Use a Worktree (Recommended for Parallel Development)
+#### Option B: Use a Standard Git Worktree
 
-```bash
-skill: git-worktree
-# The skill will create a new sub-branch from the current branch in an isolated worktree
-```
-
-**When to use worktree:**
-- Working on multiple features simultaneously
-- Want to keep the default branch clean while experimenting
-- Plan to switch between branches frequently
+When an isolated checkout is useful for parallel development, use ordinary Git worktree commands according to project guidance. No packaged worktree helper or skill is provided.
 
 #### Option C: Continue on Top-Level Branch
 

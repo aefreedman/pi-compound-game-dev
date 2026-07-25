@@ -11,7 +11,7 @@ This file contains Git-specific operations for code review setup and context col
 - [ ] Determine review type: PR number (numeric), GitHub URL, branch name, or empty (current branch)
 - [ ] Check current git branch
 - [ ] If ALREADY on the target branch → proceed with analysis on current branch
-- [ ] If DIFFERENT branch than the review target → offer to use worktree: "Use git-worktree skill for isolated review"
+- [ ] If DIFFERENT branch than the review target → choose an isolated checkout or standard Git worktree according to user/project guidance
 - [ ] Fetch PR metadata using `gh pr view --json` for title, body, files, linked issues
 - [ ] Use gh pr checkout to switch to the PR branch
 - [ ] Set up language-specific analysis tools
@@ -70,27 +70,6 @@ After running the section above, you will have:
 - `$FILE_COUNT` - Number of changed files
 
 These variables should be passed to agents in their prompts.
-
----
-
-## Worktree Strategy
-
-If the current branch is different from the review target, offer to use git worktree for isolated review:
-
-```bash
-CURRENT_BRANCH=$(git branch --show-current)
-TARGET_BRANCH="[branch from PR or argument]"
-
-if [ "$CURRENT_BRANCH" != "$TARGET_BRANCH" ]; then
-  echo "Current branch: $CURRENT_BRANCH"
-  echo "Review target: $TARGET_BRANCH"
-  echo ""
-  echo "Recommendation: Use git worktree for isolated review"
-  echo "This preserves your current work while reviewing the target branch"
-  echo ""
-  echo "Use: /git-worktree skill"
-fi
-```
 
 ---
 
