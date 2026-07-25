@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Prevented package validation from going stale after releases by validating SemVer and the matching changelog section instead of a hard-coded version.
 
 ## 0.6.3 - 2026-07-24
 

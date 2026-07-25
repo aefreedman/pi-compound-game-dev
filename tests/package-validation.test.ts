@@ -35,7 +35,8 @@ const changelogSourceSelectionText = readFileSync(new URL("../references/cg-chan
 const changelogErrorHandlingText = readFileSync(new URL("../references/cg-changelog/error-handling.md", import.meta.url), "utf8");
 
 assert.equal(pkg.name, "@aefree/pi-compound-game-dev");
-assert.equal(pkg.version, "0.6.2");
+assert.match(pkg.version ?? "", /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/, "Expected a valid SemVer package version.");
+assert(changelogText.includes(`## ${pkg.version} -`), "Expected the current package version in CHANGELOG.md.");
 assert(pkg.pi?.extensions?.includes("./extensions"), "Expected extension directory registration.");
 assert(!pkg.pi?.extensions?.some((entry: string) => entry.includes("repo-search/core")), "Repository-search helper modules must not be registered as extension factories.");
 const topLevelExtensionFiles = readdirSync(new URL("../extensions", import.meta.url), { withFileTypes: true })
