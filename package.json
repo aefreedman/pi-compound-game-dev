@@ -11,7 +11,7 @@
     "compound-game-dev"
   ],
   "scripts": {
-    "test": "npx --yes tsx tests/package-validation.test.ts && npx --yes tsx tests/repo-search.test.ts && npx --yes tsx tests/file-todos-portable-shell.test.ts",
+    "test": "npx --yes tsx tests/package-validation.test.ts && npx --yes tsx tests/legacy-tool-contract.test.ts && npx --yes tsx tests/artifact-search.test.ts && npx --yes tsx tests/repo-search.test.ts && npx --yes tsx tests/file-todos-portable-shell.test.ts",
     "migrate:unity-docs-schema": "npx --yes tsx scripts/migrate-unity-docs-schema.ts"
   },
   "pi": {
@@ -24,6 +24,12 @@
     "prompts": [
       "./prompts"
     ]
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "0.82.1",
+    "@earendil-works/pi-tui": "0.82.1",
+    "tsx": "4.23.1",
+    "typebox": "1.1.38"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*",

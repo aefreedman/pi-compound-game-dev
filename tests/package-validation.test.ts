@@ -11,7 +11,9 @@ const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url),
 const readmeText = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const extensionText = readFileSync(new URL("../extensions/register-subagents.ts", import.meta.url), "utf8");
 const referenceReaderText = readFileSync(new URL("../extensions/read-reference.ts", import.meta.url), "utf8");
-const artifactSearchText = readFileSync(new URL("../extensions/artifact-search.ts", import.meta.url), "utf8");
+const artifactSearchAdapterText = readFileSync(new URL("../extensions/artifact-search.ts", import.meta.url), "utf8");
+const artifactSearchCoreText = readFileSync(new URL("../extensions/artifact-search/core.ts", import.meta.url), "utf8");
+const artifactSearchText = `${artifactSearchAdapterText}\n${artifactSearchCoreText}`;
 const repoSearchText = readFileSync(new URL("../extensions/repo-search.ts", import.meta.url), "utf8");
 const repoSearchCoreText = readFileSync(new URL("../extensions/repo-search/core.ts", import.meta.url), "utf8");
 const repoSearchDocText = readFileSync(new URL("../docs/repo-search.md", import.meta.url), "utf8");
@@ -61,8 +63,9 @@ assert(pkg.peerDependencies?.["@earendil-works/pi-tui"] === "*", "Expected pi-tu
 assert(referenceReaderText.includes("cg_read_reference"), "Expected package reference reader tool registration.");
 assert(referenceReaderText.includes("renderResult"), "Expected package reference reader to provide expandable result rendering.");
 assert(referenceReaderText.includes("app.tools.expand"), "Expected package reference reader rendering to include the standard expand key hint.");
-assert(artifactSearchText.includes("cg_search_artifacts"), "Expected project artifact search tool registration.");
-assert(artifactSearchText.includes("buildOrRefreshIndex"), "Expected artifact search to refresh its generated project index.");
+assert(artifactSearchAdapterText.includes("cg_search_artifacts") && artifactSearchAdapterText.includes("executeArtifactSearch") && artifactSearchAdapterText.includes("trackArtifactToolResult"), "Expected project artifact search Pi adapter registration and dirty-tracking hookup.");
+assert(artifactSearchCoreText.includes("buildOrRefreshIndex") && artifactSearchCoreText.includes("executeArtifactSearch"), "Expected peer-free artifact search execution and index refresh seam.");
+assert(!artifactSearchCoreText.includes("@earendil-works/") && !artifactSearchCoreText.includes('from "typebox"'), "Artifact-search core must remain free of Pi, TUI, and TypeBox peers.");
 assert(artifactSearchText.includes("FIELD_WEIGHTS"), "Expected artifact search to expose ranking controls.");
 assert(artifactSearchText.includes(".compound-game-dev") && !artifactSearchText.includes(".pi\", \"compound-game-dev"), "Expected artifact index default to avoid the .pi runtime/config directory.");
 assert(artifactSearchText.includes("normalizeTodoStatus") && artifactSearchText.includes('normalized === "completed"'), "Expected artifact search to normalize legacy completed todo status.");
@@ -84,7 +87,9 @@ assert(repoSearchText.includes("Caller globs") && repoSearchText.includes("calle
 assert(repoSearchCoreText.includes("buildUnityGeneratedExclusions") && repoSearchCoreText.includes("!${excluded}/**") && !repoSearchCoreText.includes("!**/${excluded}/**"), "Expected Unity exclusions to target direct generated children rather than authored nested folders.");
 assert(repoSearchDocText.includes("Windows and macOS") && repoSearchDocText.includes("query/root pair") && repoSearchDocText.includes("no_matches"), "Expected cross-platform repository-search documentation.");
 assert(repoResearcherText.includes("cg_search_repo") && repoResearcherText.includes("tools: read, bash, cg_search_repo"), "Expected repo researcher access to deterministic search.");
-assert(pkg.scripts?.test?.includes("repo-search.test.ts"), "Expected repository-search behavior tests in npm test.");
+assert(pkg.scripts?.test?.includes("repo-search.test.ts") && pkg.scripts?.test?.includes("artifact-search.test.ts"), "Expected repository-search and artifact-search behavior tests in npm test.");
+assert(pkg.scripts?.test?.includes("legacy-tool-contract.test.ts"), "Expected registered legacy schema/result characterization in npm test.");
+assert(existsSync(new URL("./fixtures/legacy-tool-contract.json", import.meta.url)), "Expected golden legacy tool schema/result fixture.");
 assert(changelogText.includes("## 0.6.0 - 2026-07-09") && changelogText.includes("authoritative source-of-truth inputs") && changelogText.includes("uncompacted workflow phase"), "Expected 0.6.0 workflow-guidance changelog entries.");
 assert(changelogText.includes("cg_search_repo") && changelogText.includes("Windows CI"), "Expected unreleased cross-platform repository-search changelog entries.");
 assert(existsSync(new URL("../.github/workflows/macos.yml", import.meta.url)) && existsSync(new URL("../.github/workflows/windows.yml", import.meta.url)), "Expected macOS and Windows package validation workflows.");
@@ -270,6 +275,8 @@ assert(existsSync(new URL("../docs/artifact-search.md", import.meta.url)), "Expe
 assert(existsSync(new URL("../scripts/migrate-unity-docs-schema.ts", import.meta.url)), "Expected Unity docs schema migrator script.");
 assert(existsSync(new URL("../skills/unity-docs/references/category-selection.md", import.meta.url)), "Expected Unity docs category-selection guidance.");
 assert(existsSync(new URL("../docs/markdown-artifact-authoring.md", import.meta.url)), "Expected markdown artifact authoring documentation.");
+assert(existsSync(new URL("../evals/phase0/cases.json", import.meta.url)), "Expected package-owned Phase 0 behavioral eval seeds.");
+assert(existsSync(new URL("../evals/phase0/README.md", import.meta.url)), "Expected Phase 0 behavioral eval guidance.");
 assert(!existsSync(new URL("../references/cg-review/ultra-thinking.md", import.meta.url)), "Did not expect review ultra-thinking reference.");
 assert(existsSync(new URL("../references/cg-vcs-history-analyzer/git-backend.md", import.meta.url)), "Expected Git history backend guidance.");
 assert(existsSync(new URL("../references/cg-vcs-history-analyzer/plastic-backend.md", import.meta.url)), "Expected Plastic history backend guidance.");

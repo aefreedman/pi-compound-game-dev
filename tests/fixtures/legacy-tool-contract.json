@@ -1,0 +1,724 @@
+{
+  "schemaVersion": 1,
+  "tools": {
+    "cg_read_reference": {
+      "metadata": {
+        "name": "cg_read_reference",
+        "label": "Read Compound Game Dev Reference",
+        "description": "Read a Compound Game Dev package prompt, reference, skill asset, or other text file by package-relative path.",
+        "promptSnippet": "Read Compound Game Dev package files by package-relative path",
+        "promptGuidelines": [
+          "Use cg_read_reference for Compound Game Dev package files such as prompts/cg-work.md or references/cg-plan/research-agents.md instead of the read tool with package-relative paths.",
+          "Pass cg_read_reference package-relative paths only; do not pass project cwd-relative paths or absolute local package paths."
+        ]
+      },
+      "parameters": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Package-relative path such as prompts/cg-work.md or references/cg-plan/research-agents.md"
+          },
+          "offset": {
+            "type": "number",
+            "description": "1-indexed line number to start reading from"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Maximum number of lines to return"
+          }
+        }
+      },
+      "preparedArguments": {
+        "path": "references/_shared/vcs-detection.md",
+        "offset": 1,
+        "limit": 2
+      },
+      "successShape": {
+        "content": [
+          {
+            "text": "string",
+            "type": "string"
+          }
+        ],
+        "details": {
+          "absolutePath": "string",
+          "limit": "number",
+          "lines": "number",
+          "offset": "number",
+          "path": "string",
+          "totalLines": "number"
+        }
+      },
+      "failureShape": {
+        "content": [
+          {
+            "text": "string",
+            "type": "string"
+          }
+        ],
+        "details": {
+          "error": "string",
+          "path": "string"
+        },
+        "isError": "boolean"
+      }
+    },
+    "cg_search_artifacts": {
+      "metadata": {
+        "name": "cg_search_artifacts",
+        "label": "Search Compound Game Dev Artifacts",
+        "description": "Search project-local Compound Game Dev docs and todos using an automatically refreshed project index while keeping markdown files as the source of truth.",
+        "promptSnippet": "Search project docs/todos through an auto-refreshed Compound Game Dev markdown artifact index.",
+        "promptGuidelines": [
+          "Use cg_search_artifacts for structured searches across project-local DOCS_ROOT and TODOS_ROOT when looking for plans, solutions, or file-based todos.",
+          "For exploratory feature research with cg_search_artifacts, prefer a structured/scoped pass plus a broad matchMode='any' pass; add minTermMatches when a broad query has many common terms.",
+          "Use raw rg after cg_search_artifacts for exact API names, code symbols, paths, error text, and body-only verification; do not treat the index as a replacement for reading source markdown.",
+          "cg_search_artifacts keeps markdown files as the source of truth and auto-refreshes its project-local index before searching; do not manually edit the generated index.",
+          "For sibling workspaces, set workspaceRoot to the selected child and normally omit docsRoot/todosRoot; relative docs/todos roots are resolved from workspaceRoot.",
+          "When using cg_search_artifacts results, cite the returned markdown paths, not the generated index path.",
+          "Use rg/grep as a fallback when cg_search_artifacts is unavailable, and as a companion verification tool when exact raw-text evidence matters."
+        ]
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Plain-text search query. Quoted phrases are treated as single terms."
+          },
+          "requiredTerms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "optionalTerms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "searchFields": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": "path"
+                },
+                {
+                  "type": "string",
+                  "const": "title"
+                },
+                {
+                  "type": "string",
+                  "const": "tags"
+                },
+                {
+                  "type": "string",
+                  "const": "frontmatter"
+                },
+                {
+                  "type": "string",
+                  "const": "headings"
+                },
+                {
+                  "type": "string",
+                  "const": "body"
+                }
+              ]
+            },
+            "description": "Fields used for query matching and scoring. Defaults to all fields, or all except body when includeBody=false."
+          },
+          "workspaceRoot": {
+            "type": "string",
+            "description": "Project/workspace root. Defaults to the current pi cwd."
+          },
+          "docsRoot": {
+            "type": "string",
+            "description": "Docs root, absolute or workspace-relative. Defaults to <workspaceRoot>/docs."
+          },
+          "todosRoot": {
+            "type": "string",
+            "description": "Todos root, absolute or workspace-relative. Defaults to <workspaceRoot>/todos."
+          },
+          "indexPath": {
+            "type": "string",
+            "description": "Generated project-local index path. Defaults under <workspaceRoot>/.compound-game-dev/; custom docs/todos roots receive a stable identity suffix. Must stay inside workspaceRoot."
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "const": "all"
+                },
+                {
+                  "type": "string",
+                  "const": "docs"
+                },
+                {
+                  "type": "string",
+                  "const": "solutions"
+                },
+                {
+                  "type": "string",
+                  "const": "plans"
+                },
+                {
+                  "type": "string",
+                  "const": "todos"
+                }
+              ]
+            },
+            "description": "Artifact scopes to search: all, docs, solutions, plans, todos."
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "module": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "component": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "docType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "failureMode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "problemType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "rankProfile": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "balanced"
+              },
+              {
+                "type": "string",
+                "const": "frontmatter"
+              },
+              {
+                "type": "string",
+                "const": "recency"
+              },
+              {
+                "type": "string",
+                "const": "todos"
+              }
+            ]
+          },
+          "matchMode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "all"
+              },
+              {
+                "type": "string",
+                "const": "any"
+              },
+              {
+                "type": "string",
+                "const": "phrase"
+              }
+            ]
+          },
+          "minTermMatches": {
+            "type": "number",
+            "description": "Minimum number of unique query terms that must match. Useful with matchMode=any to reduce broad-search noise."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Maximum displayed results. Defaults to 20."
+          },
+          "maxSnippetChars": {
+            "type": "number",
+            "description": "Approximate max snippet characters per result. Defaults to 220."
+          },
+          "includeBody": {
+            "type": "boolean",
+            "description": "Whether query matching should include markdown body text. Defaults to true."
+          },
+          "includeCompletedTodos": {
+            "type": "boolean",
+            "description": "Whether todo searches include completed todos when no explicit status filter is supplied. Defaults to true."
+          },
+          "includeRelated": {
+            "type": "boolean",
+            "description": "Include directly linked/linking artifacts for returned results when references are present."
+          },
+          "relatedLimit": {
+            "type": "number",
+            "description": "Maximum related artifacts per result when includeRelated is true. Defaults to 5."
+          },
+          "groupByKind": {
+            "type": "boolean",
+            "description": "Group displayed results by artifact kind while preserving score order within each group."
+          },
+          "freshnessMode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "auto"
+              },
+              {
+                "type": "string",
+                "const": "strict"
+              },
+              {
+                "type": "string",
+                "const": "memory"
+              }
+            ],
+            "description": "Freshness strategy: auto uses dirty tracking and a TTL fast path, strict scans markdown every time, memory trusts the loaded index."
+          },
+          "freshnessTtlMs": {
+            "type": "number",
+            "description": "Auto-mode in-memory freshness TTL in milliseconds. Defaults to 30000."
+          },
+          "outputMode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "compact"
+              },
+              {
+                "type": "string",
+                "const": "detailed"
+              }
+            ],
+            "description": "Controls agent-facing result text. compact is default and omits snippets/index paths; detailed restores verbose snippets and full metadata."
+          },
+          "explain": {
+            "type": "boolean",
+            "description": "Include score/ranking reasons for each result."
+          },
+          "rebuild": {
+            "type": "boolean",
+            "description": "Force rebuilding the generated index before searching."
+          }
+        }
+      },
+      "successShape": {
+        "content": [
+          {
+            "text": "string",
+            "type": "string"
+          }
+        ],
+        "details": {
+          "controls": {
+            "concurrency": {
+              "lockRetryMs": "number",
+              "lockStaleMs": "number",
+              "lockTimeoutMs": "number"
+            },
+            "filters": [
+              "string"
+            ],
+            "index": [
+              "string"
+            ],
+            "ranking": {
+              "fieldWeights": {
+                "body": "number",
+                "frontmatter": "number",
+                "headings": "number",
+                "path": "number",
+                "phraseBonus": "number",
+                "tags": "number",
+                "title": "number"
+              },
+              "groupByKind": "boolean",
+              "includeBody": "boolean",
+              "includeRelated": "boolean",
+              "matchMode": "string",
+              "minTermMatches": "undefined",
+              "optionalTerms": [],
+              "rankProfile": "string",
+              "requiredTerms": [],
+              "searchFields": [
+                "string"
+              ],
+              "severityBoosts": {
+                "critical": "number",
+                "high": "number",
+                "low": "number",
+                "medium": "number"
+              },
+              "todoPriorityBoosts": {
+                "p1": "number",
+                "p2": "number",
+                "p3": "number"
+              },
+              "todoStatusBoosts": {
+                "blocked": "number",
+                "complete": "number",
+                "pending": "number",
+                "ready": "number"
+              }
+            }
+          },
+          "fastPath": "boolean",
+          "freshnessMode": "string",
+          "groups": "undefined",
+          "indexPath": "string",
+          "optionalTerms": "undefined",
+          "preparedResultCount": "number",
+          "query": "string",
+          "refreshed": "boolean",
+          "refreshStats": {
+            "added": "number",
+            "removed": "number",
+            "unchanged": "number",
+            "updated": "number"
+          },
+          "requiredTerms": "undefined",
+          "resultCount": "number",
+          "results": [
+            {
+              "frontmatter": {
+                "tags": [
+                  "string"
+                ]
+              },
+              "kind": "string",
+              "path": "string",
+              "reasons": [
+                "string"
+              ],
+              "score": "number",
+              "snippet": "string",
+              "title": "string"
+            }
+          ],
+          "returnedResultCount": "number",
+          "scopes": [
+            "string"
+          ],
+          "suggestedRg": "string",
+          "totalIndexedFiles": "number"
+        }
+      },
+      "failureShape": {
+        "content": [
+          {
+            "text": "string",
+            "type": "string"
+          }
+        ],
+        "details": {
+          "error": "string"
+        },
+        "isError": "boolean"
+      }
+    },
+    "cg_search_repo": {
+      "metadata": {
+        "name": "cg_search_repo",
+        "label": "Search Repository",
+        "description": "Run bounded, root-scoped ripgrep searches with per-query attribution, Plastic ignore handling, Unity generated-folder exclusions, and structured negative evidence.",
+        "promptSnippet": "Search project code/assets with bounded VCS- and Unity-aware ripgrep evidence",
+        "promptGuidelines": [
+          "Use cg_search_repo for bounded exact code/asset/file searches when roots and terms are known; use cg_search_artifacts for structured docs/todos discovery.",
+          "Pass cg_search_repo one or more narrow roots and query objects. Literal search is the default; set literal=false only for deliberate regex patterns.",
+          "Treat cg_search_repo no_matches as scoped negative evidence only under the roots and disclosed ignore/exclusion policy; partial_limit and not_run_global_limit are not negative evidence.",
+          "Set includeUnityGenerated=true in cg_search_repo only when the task explicitly concerns Unity Library/Temp/Logs/build outputs."
+        ]
+      },
+      "parameters": {
+        "type": "object",
+        "required": [
+          "queries"
+        ],
+        "properties": {
+          "queries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "pattern"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "maxLength": 80,
+                  "description": "Stable query label; defaults to q1, q2, etc."
+                },
+                "pattern": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "description": "Literal text by default, or a ripgrep regex when literal=false."
+                },
+                "literal": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Use fixed-string matching. Defaults to true."
+                },
+                "caseSensitive": {
+                  "type": "boolean",
+                  "description": "true=case-sensitive, false=case-insensitive, omitted=smart-case."
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 8
+          },
+          "workspaceRoot": {
+            "type": "string",
+            "description": "Workspace/repository boundary. Defaults to current Pi cwd."
+          },
+          "roots": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 10,
+            "description": "Existing files/directories inside workspaceRoot. Defaults to workspaceRoot."
+          },
+          "globs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 300
+            },
+            "maxItems": 20,
+            "description": "Additional ripgrep include/exclude globs."
+          },
+          "includeHidden": {
+            "type": "boolean",
+            "default": false
+          },
+          "includeUnityGenerated": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include detected Unity generated/cache/output folders."
+          },
+          "maxMatches": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 80,
+            "description": "Global displayed match cap across the query/root matrix."
+          },
+          "maxMatchesPerFile": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 5
+          },
+          "maxSnippetChars": {
+            "type": "integer",
+            "minimum": 80,
+            "maximum": 300,
+            "default": 240
+          },
+          "timeoutSecondsPerSearch": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120,
+            "default": 30
+          }
+        }
+      },
+      "successShape": {
+        "content": [
+          {
+            "text": "string",
+            "type": "string"
+          }
+        ],
+        "details": {
+          "cells": [
+            {
+              "appliedIgnoreFiles": [],
+              "exitCode": "number",
+              "matches": [
+                {
+                  "column": "number",
+                  "line": "number",
+                  "path": "string",
+                  "text": "string"
+                }
+              ],
+              "queryId": "string",
+              "root": "string",
+              "status": "string",
+              "stderr": "undefined",
+              "unityExclusions": []
+            }
+          ],
+          "policies": {
+            "binaryFiles": "string",
+            "callerGlobs": [],
+            "followsSymlinks": "boolean",
+            "gitIgnore": "boolean",
+            "includeHidden": "boolean",
+            "includeUnityGenerated": "boolean",
+            "maxMatches": "number",
+            "maxMatchesPerFile": "number"
+          },
+          "queries": [
+            {
+              "caseSensitive": "undefined",
+              "id": "string",
+              "literal": "boolean",
+              "pattern": "string"
+            }
+          ],
+          "roots": [
+            {
+              "displayPath": "string",
+              "excludedByPolicy": "boolean",
+              "ignoreFiles": [],
+              "path": "string",
+              "unityExclusions": []
+            }
+          ],
+          "truncated": "boolean",
+          "workspaceRoot": "string"
+        }
+      },
+      "failure": {
+        "throws": true,
+        "message": "workspaceRoot does not exist: <root>/missing"
+      }
+    }
+  }
+}

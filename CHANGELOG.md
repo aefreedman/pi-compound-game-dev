@@ -5,9 +5,12 @@
 ### Removed
 
 - Retired the packaged `git-worktree` skill and manager script; agents now use ordinary Git worktree commands when needed.
+- Deleted the unreferenced notes placeholder from the `unity-docs` skill instead of carrying it into the compatibility surface.
 
 ### Changed
 
+- Added a peer-free artifact-search core seam, deterministic fixture coverage, registered legacy tool-contract snapshots, and initial package-owned behavioral eval seeds for decomposition characterization.
+- Pinned the Phase 0 development/test toolchain with a lockfile and excluded generated `.compound-game-dev` cache state from packed artifacts.
 - Scoped completion and root-cause claims to observed evidence, with explicit remaining player-path validation gaps.
 - Unified connected Pipeline and isolated/report-producing Unity guidance around well-formed terminal success with a known positive executed-test count, while preserving nonterminal connected `Total: 0` polling.
 - Required direct confirmation provenance before creating solved-problem documentation and added validation/confirmation evidence to the solution template.

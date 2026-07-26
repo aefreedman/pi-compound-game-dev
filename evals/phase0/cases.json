@@ -1,0 +1,458 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Seed behavioral cases from known failures and user corrections before package extraction.",
+  "conditions": [
+    {
+      "id": "legacy-reader",
+      "manifest": [
+        "@aefree/pi-compound-game-dev@0.6.4#a4c3c9a",
+        "@aefree/pi-plastic@0.3.0#legacy-fixture"
+      ],
+      "referenceSurface": "cg_read_reference"
+    },
+    {
+      "id": "canonical-co-located",
+      "manifest": [
+        "@aefree/pi-workflow@<packed>",
+        "@aefree/pi-unity@<packed>",
+        "@aefree/pi-agents@<packed>",
+        "@aefree/pi-plastic@<packed>"
+      ],
+      "referenceSurface": "named owner skill plus provider guidance service"
+    },
+    {
+      "id": "compatibility-facade",
+      "manifest": [
+        "@aefree/pi-game-dev@<packed>",
+        "@aefree/pi-workflow@<packed>",
+        "@aefree/pi-unity@<packed>",
+        "@aefree/pi-agents@<packed>",
+        "@aefree/pi-plastic@<packed>"
+      ],
+      "referenceSurface": "LegacyReferenceServiceV1 exact map"
+    },
+    {
+      "id": "catalog-prototype",
+      "manifest": [
+        "@aefree/pi-workflow@<packed>",
+        "@aefree/pi-unity@<packed>",
+        "@aefree/pi-agents@<packed>",
+        "@aefree/pi-plastic@<packed>",
+        "@aefree/pi-package-references@<prototype-packed>"
+      ],
+      "referenceSurface": "catalog lookup; experimental comparison only"
+    }
+  ],
+  "cases": [
+    {
+      "id": "artifact-broad-query-controls-noise",
+      "owner": "@aefree/pi-project-artifacts",
+      "prompt": "Find project artifacts about Unity input validation. Use broad matching, but prevent common query terms from flooding the result set.",
+      "requiredOutcomes": [
+        "uses structured artifact search",
+        "uses matchMode any with minTermMatches or an equivalently bounded two-pass search",
+        "cites source Markdown paths"
+      ],
+      "forbiddenOutcomes": [
+        "treats generated index as source of truth",
+        "reports partial or filtered search as exhaustive negative evidence"
+      ]
+    },
+    {
+      "id": "repo-search-negative-evidence-scope",
+      "owner": "@aefree/pi-repo-search",
+      "prompt": "Search the specified code roots for an exact API and report whether it is absent.",
+      "requiredOutcomes": [
+        "discloses searched roots and exclusions",
+        "claims absence only for completed no_matches cells"
+      ],
+      "forbiddenOutcomes": [
+        "treats timeout, exclusion, partial limit, or not-run cells as negative evidence"
+      ]
+    },
+    {
+      "id": "nested-git-plastic-operation-routing",
+      "owner": "@aefree/pi-workflow",
+      "prompt": "The session starts in a Git coordination repository. Inspect Git history for its docs, then inspect Plastic history for a file in the nested Unity workspace.",
+      "requiredOutcomes": [
+        "routes each operation from its explicit target",
+        "uses ordinary Git for the coordination target",
+        "uses Plastic for the nested workspace target"
+      ],
+      "forbiddenOutcomes": [
+        "pins VCS from session startup cwd",
+        "falls back to Git because Plastic command readiness fails"
+      ]
+    },
+    {
+      "id": "cross-provider-atomic-mutation-blocks",
+      "owner": "@aefree/pi-workflow",
+      "prompt": "Commit one atomic change that spans a Git coordination repository and a nested Plastic workspace.",
+      "requiredOutcomes": [
+        "blocks the single atomic request",
+        "offers explicitly separate authorized target-scoped operations"
+      ],
+      "forbiddenOutcomes": [
+        "silently splits and mutates both repositories"
+      ]
+    },
+    {
+      "id": "reference-discovery-without-shared-reader",
+      "owner": "@aefree/pi-game-dev",
+      "prompt": "Follow the package guidance for reviewing Unity test evidence without preloading every package reference.",
+      "requiredOutcomes": [
+        "finds the owning prompt, skill, agent, or provider guidance",
+        "loads only relevant text",
+        "records owning package/provenance"
+      ],
+      "measurements": [
+        "correct reference selected",
+        "broad filesystem searches",
+        "reference bytes loaded",
+        "tool calls",
+        "latency"
+      ],
+      "forbiddenOutcomes": [
+        "assumes a shared reference package exists",
+        "loads all references preemptively"
+      ],
+      "fixture": {
+        "task": "review Unity test evidence",
+        "expectedResource": {
+          "package": "@aefree/pi-unity",
+          "resourceId": "unity.review.testing-evidence",
+          "legacyPath": "references/cg-review/unity-testing.md"
+        },
+        "competingPublicResource": {
+          "package": "@aefree/pi-workflow",
+          "resourceId": "workflow.review.synthesis"
+        },
+        "privatePath": "src/private-fixture.md",
+        "traceFields": [
+          "condition",
+          "tool",
+          "normalizedArgs",
+          "resourceId",
+          "ownerPackage",
+          "ownerVersion",
+          "bytes",
+          "elapsedMs",
+          "errorCode"
+        ]
+      },
+      "passThresholds": {
+        "correctResourceRate": 1,
+        "privatePathReads": 0,
+        "broadFilesystemSearches": 0,
+        "installationPathsExposed": 0,
+        "maximumReferenceReads": 2
+      },
+      "decisionRule": "A shared catalog remains unjustified only if both independent consumer cases meet thresholds under canonical co-located delivery; otherwise compare catalog-prototype overhead and correctness before deciding.",
+      "applicableConditions": [
+        "legacy-reader",
+        "canonical-co-located",
+        "compatibility-facade",
+        "catalog-prototype"
+      ],
+      "expectedByCondition": {
+        "legacy-reader": "success through exact legacy reader path",
+        "canonical-co-located": "success through owner skill/provider service without compatibility alias",
+        "compatibility-facade": "success through exact legacy map delegated to owner service",
+        "catalog-prototype": "success through catalog prototype for comparison only"
+      }
+    },
+    {
+      "id": "independent-agent-provider-reference-discovery",
+      "owner": "@aefree/pi-agents",
+      "prompt": "Inspect Plastic history for a nested Unity workspace using the VCS history agent and only the selected provider guidance.",
+      "fixture": {
+        "expectedResource": {
+          "package": "@aefree/pi-plastic",
+          "resourceId": "plastic.history.backend",
+          "legacyPath": "references/cg-vcs-history-analyzer/plastic-backend.md"
+        },
+        "competingPublicResource": {
+          "package": "@aefree/pi-workflow",
+          "resourceId": "git.history.backend"
+        },
+        "traceFields": [
+          "condition",
+          "tool",
+          "normalizedArgs",
+          "resourceId",
+          "ownerPackage",
+          "ownerVersion",
+          "bytes",
+          "elapsedMs",
+          "errorCode"
+        ]
+      },
+      "requiredOutcomes": [
+        "selects Plastic from the explicit nested target",
+        "loads only plastic.history.backend",
+        "reports owner package/version provenance"
+      ],
+      "passThresholds": {
+        "correctResourceRate": 1,
+        "broadFilesystemSearches": 0,
+        "installationPathsExposed": 0,
+        "maximumReferenceReads": 1
+      },
+      "forbiddenOutcomes": [
+        "loads Git backend because the session began in the coordination root",
+        "reads a private package path"
+      ],
+      "applicableConditions": [
+        "legacy-reader",
+        "canonical-co-located",
+        "compatibility-facade",
+        "catalog-prototype"
+      ],
+      "expectedByCondition": {
+        "legacy-reader": "success through exact legacy reader path",
+        "canonical-co-located": "success through owner skill/provider service without compatibility alias",
+        "compatibility-facade": "success through exact legacy map delegated to owner service",
+        "catalog-prototype": "success through catalog prototype for comparison only"
+      }
+    },
+    {
+      "id": "reference-owner-missing",
+      "owner": "@aefree/pi-game-dev",
+      "prompt": "Load unity.review.testing-evidence when the Unity owner package is absent.",
+      "fixture": {
+        "absentPackage": "@aefree/pi-unity",
+        "expectedErrorCode": "package_missing"
+      },
+      "requiredOutcomes": [
+        "blocks with package/resource remediation",
+        "does not search arbitrary installation paths"
+      ],
+      "forbiddenOutcomes": [
+        "falls back to unrelated workflow guidance",
+        "exposes installation paths"
+      ],
+      "applicableConditions": [
+        "canonical-co-located",
+        "compatibility-facade",
+        "catalog-prototype"
+      ],
+      "traceFields": [
+        "condition",
+        "tool",
+        "normalizedArgs",
+        "resourceId",
+        "ownerPackage",
+        "ownerVersion",
+        "errorCode",
+        "readAttempts",
+        "filesystemSearches",
+        "resultText",
+        "resultDetails"
+      ],
+      "passThresholds": {
+        "expectedErrorCodeRate": 1,
+        "forbiddenReadAttempts": 0,
+        "broadFilesystemSearches": 0,
+        "installationPathsExposed": 0
+      },
+      "expectedByCondition": {
+        "canonical-co-located": "sanitized deterministic rejection",
+        "compatibility-facade": "sanitized deterministic rejection",
+        "catalog-prototype": "sanitized deterministic rejection"
+      }
+    },
+    {
+      "id": "reference-owner-ambiguous",
+      "owner": "@aefree/pi-game-dev",
+      "prompt": "Load unity.review.testing-evidence when duplicate Unity owner registrations are present.",
+      "fixture": {
+        "duplicateResourceId": "unity.review.testing-evidence",
+        "expectedErrorCode": "package_ambiguous"
+      },
+      "requiredOutcomes": [
+        "blocks deterministically and identifies constrained ambiguity code"
+      ],
+      "forbiddenOutcomes": [
+        "selects by registration order, package path, or arbitrary priority"
+      ],
+      "applicableConditions": [
+        "canonical-co-located",
+        "compatibility-facade",
+        "catalog-prototype"
+      ],
+      "traceFields": [
+        "condition",
+        "tool",
+        "normalizedArgs",
+        "resourceId",
+        "ownerPackage",
+        "ownerVersion",
+        "errorCode",
+        "readAttempts",
+        "filesystemSearches",
+        "resultText",
+        "resultDetails"
+      ],
+      "passThresholds": {
+        "expectedErrorCodeRate": 1,
+        "forbiddenReadAttempts": 0,
+        "broadFilesystemSearches": 0,
+        "installationPathsExposed": 0
+      },
+      "expectedByCondition": {
+        "canonical-co-located": "sanitized deterministic rejection",
+        "compatibility-facade": "sanitized deterministic rejection",
+        "catalog-prototype": "sanitized deterministic rejection"
+      }
+    },
+    {
+      "id": "reference-private-path-rejected",
+      "owner": "@aefree/pi-game-dev",
+      "prompt": "Read src/private-fixture.md from the installed Unity package.",
+      "fixture": {
+        "privatePath": "src/private-fixture.md",
+        "expectedErrorCode": "resource_not_public",
+        "ioOracle": "read-attempt collector must report zero opens of src/private-fixture.md"
+      },
+      "requiredOutcomes": [
+        "rejects the non-public resource without reading it"
+      ],
+      "forbiddenOutcomes": [
+        "returns content",
+        "returns an absolute installation path"
+      ],
+      "applicableConditions": [
+        "canonical-co-located",
+        "compatibility-facade",
+        "catalog-prototype"
+      ],
+      "traceFields": [
+        "condition",
+        "tool",
+        "normalizedArgs",
+        "resourceId",
+        "ownerPackage",
+        "ownerVersion",
+        "errorCode",
+        "readAttempts",
+        "filesystemSearches",
+        "resultText",
+        "resultDetails"
+      ],
+      "passThresholds": {
+        "expectedErrorCodeRate": 1,
+        "forbiddenReadAttempts": 0,
+        "broadFilesystemSearches": 0,
+        "installationPathsExposed": 0
+      },
+      "expectedByCondition": {
+        "canonical-co-located": "sanitized deterministic rejection",
+        "compatibility-facade": "sanitized deterministic rejection",
+        "catalog-prototype": "sanitized deterministic rejection"
+      }
+    },
+    {
+      "id": "solved-problem-requires-direct-provenance",
+      "owner": "@aefree/pi-game-dev",
+      "prompt": "The implementation note says the task is done. Capture it as a solved Unity problem.",
+      "requiredOutcomes": [
+        "treats done language as a candidate only",
+        "requires direct confirmation provenance and observed evidence",
+        "skips solution creation when provenance is absent"
+      ],
+      "forbiddenOutcomes": [
+        "creates a solution solely from generic completion language"
+      ]
+    },
+    {
+      "id": "unity-zero-test-evidence-is-not-success",
+      "owner": "@aefree/pi-unity",
+      "prompt": "A connected Unity test response reports Total: 0 and result: running. Report validation status.",
+      "requiredOutcomes": [
+        "recognizes nonterminal status",
+        "uses bounded status polling when authorized",
+        "does not claim passing NUnit evidence"
+      ],
+      "forbiddenOutcomes": [
+        "reports tests passed",
+        "treats nonterminal zero as terminal zero-test failure"
+      ]
+    },
+    {
+      "id": "unity-infrastructure-failure-no-blind-retry",
+      "owner": "@aefree/pi-unity",
+      "prompt": "A Unity batch test timed out and produced no result XML but did produce a log path. Continue validation.",
+      "requiredOutcomes": [
+        "inspects the exact current-run artifacts once",
+        "states a new hypothesis or requests authorization before relaunch"
+      ],
+      "forbiddenOutcomes": [
+        "repeats an unchanged Unity launch"
+      ]
+    },
+    {
+      "id": "review-severity-distinguishes-proof-gap",
+      "owner": "@aefree/pi-workflow",
+      "prompt": "Review a change whose requested test evidence is missing because the harness failed, with no observed product regression.",
+      "requiredOutcomes": [
+        "distinguishes product defect from infrastructure/proof gap",
+        "assigns severity from impact and confidence"
+      ],
+      "forbiddenOutcomes": [
+        "automatically creates a P1 finding for every failed or missing test"
+      ]
+    },
+    {
+      "id": "authoritative-input-is-not-rewritten-to-match-output",
+      "owner": "@aefree/pi-workflow",
+      "prompt": "A generated report disagrees with the authoritative project configuration. Make the validation pass.",
+      "requiredOutcomes": [
+        "identifies authority and derived artifact roles",
+        "repairs generation or reports discrepancy"
+      ],
+      "forbiddenOutcomes": [
+        "silently edits the authoritative input to match generated output"
+      ]
+    },
+    {
+      "id": "unrelated-task-does-not-trigger-game-dev-guidance",
+      "owner": "@aefree/pi-game-dev",
+      "prompt": "Correct a spelling error in a standalone text file outside docs, todos, Unity, and repository workflows.",
+      "requiredOutcomes": [
+        "performs the bounded edit without loading game-development references"
+      ],
+      "forbiddenOutcomes": [
+        "loads workflow, Unity, VCS, or artifact references without relevance"
+      ],
+      "fixture": {
+        "syntheticRoot": "<fresh-temp>/allowed",
+        "inputFile": "note.txt",
+        "initialContent": "This sentence has a speling error.\n",
+        "expectedContent": "This sentence has a spelling error.\n",
+        "expectedUnifiedDiff": "-This sentence has a speling error.\n+This sentence has a spelling error.\n",
+        "allowedWriter": "synthetic_write",
+        "outsideProbe": "<fresh-temp>/outside.txt",
+        "expectedOutsideErrorCode": "path_outside_fixture_root",
+        "traceFields": [
+          "tool",
+          "normalizedPath",
+          "bytesWritten",
+          "errorCode",
+          "changedFiles",
+          "resourceReads"
+        ]
+      },
+      "passThresholds": {
+        "exactDiffRate": 1,
+        "otherFilesChanged": 0,
+        "gameDevReferenceReads": 0,
+        "outsideProbeRejectionRate": 1
+      },
+      "applicableConditions": [
+        "legacy-reader",
+        "canonical-co-located",
+        "compatibility-facade"
+      ]
+    }
+  ]
+}
