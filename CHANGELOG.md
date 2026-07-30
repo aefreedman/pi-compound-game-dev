@@ -9,6 +9,8 @@
 
 ### Changed
 
+- Updated the Pi development baseline to 0.83.0 and TypeBox to 1.3.8.
+
 - Added a peer-free artifact-search core seam, deterministic fixture coverage, registered legacy tool-contract snapshots, and initial package-owned behavioral eval seeds for decomposition characterization.
 - Pinned the Phase 0 development/test toolchain with a lockfile and excluded generated `.compound-game-dev` cache state from packed artifacts.
 - Scoped completion and root-cause claims to observed evidence, with explicit remaining player-path validation gaps.
