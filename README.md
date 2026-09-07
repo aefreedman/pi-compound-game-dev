@@ -70,6 +70,7 @@ No compatibility aliases are provided for old workflow command names or earlier 
 
 - `file-todos`
 - `unity-docs`
+- `narrative-adaptation` — optional, on-demand preservation of source logic and accepted target copy in a representative branching-dialogue slice; invoke with `/skill:narrative-adaptation`. Includes a public synthetic example, not a bulk converter or runtime validator.
 
 ## Companion packages
 

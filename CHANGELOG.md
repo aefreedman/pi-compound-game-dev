@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Added an optional on-demand `narrative-adaptation` skill covering copy/logic authority, forward flow, natural fallthrough, appropriate jumps/detours, and substantive external reuse, with a public synthetic multi-route slice and static document regression checks (not model-behavior validation).
+
 ### Removed
 
 - Retired the packaged `git-worktree` skill and manager script; agents now use ordinary Git worktree commands when needed.
